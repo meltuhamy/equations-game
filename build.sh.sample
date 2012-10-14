@@ -1,0 +1,5 @@
+#!bin/sh
+
+#Copy this file and name it build.sh
+#Replace command below your coffee file here
+~/node_modules/coffee-script/bin/coffee  --compile --output build/ src/

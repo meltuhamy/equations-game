@@ -1,0 +1,1 @@
+.coffee files in the src directory should compile here
