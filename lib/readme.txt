@@ -1,1 +1,1 @@
-.coffee files in the src directory should compile here
+Store all external libraries such as jQuery here.
