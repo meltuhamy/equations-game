@@ -21,3 +21,41 @@ Steps to set up:
 
 5. Open test/index.html in the browser to run unit tests.
 
+Game Components
+---------------
+
+Game
+ - Compiler
+ 	- Scanner
+ 	- Grammer
+ 	- Parse table
+ 	- LR parser
+ 	- Unit tests
+ - Rest of game
+ 	- Networking
+ 		- System architecture design
+ 		- Synchronisations
+ 		
+ 	- UI
+ 		- Draggin & dropping
+ 		- Graphics (html,css,etc)
+ 			- Dice
+ 			- Mats
+ 			- Challenge buttons
+ 			- Timer
+ 			- Profile picture layouts
+ 			- Tips (tutorial mode)
+ 		- Equations box
+ 		- Drawing pad
+ 		- Timer
+ 		- Profile pics
+ 	- Game logic
+ 		- Challenges
+ 		- Equation equality
+ 		- Scoring
+ 		- Goal setting
+ 		- Turns system
+ 		- Unit tests
+
+
+
