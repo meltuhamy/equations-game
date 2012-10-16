@@ -30,3 +30,41 @@ The project uses a cakefile to compile the coffeescript stuff.
 Go to the project folder and type "cake" for more info. 
 
 If cake isn't found, create an alias for it. It is most likely ~/node_modules/coffee-script/bin/cake.
+
+Game Components
+---------------
+
+Game
+ - Compiler
+ 	- Scanner
+ 	- Grammer
+ 	- Parse table
+ 	- LR parser
+ 	- Unit tests
+ - Rest of game
+ 	- Networking
+ 		- System architecture design
+ 		- Synchronisations
+ 		
+ 	- UI
+ 		- Draggin & dropping
+ 		- Graphics (html,css,etc)
+ 			- Dice
+ 			- Mats
+ 			- Challenge buttons
+ 			- Timer
+ 			- Profile picture layouts
+ 			- Tips (tutorial mode)
+ 		- Equations box
+ 		- Drawing pad
+ 		- Timer
+ 		- Profile pics
+ 	- Game logic
+ 		- Challenges
+ 		- Equation equality
+ 		- Scoring
+ 		- Goal setting
+ 		- Turns system
+ 		- Unit tests
+
+
