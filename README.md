@@ -3,6 +3,21 @@ Equations Game Group Project
 
 This is an implementation to the game "Equations" found here: http://www.academicgames.org/games/equations/index.html
 
+Sublime Settings for indentation
+--------------------------------
+go to Preference -> Settings - Default. 
+
+    // The number of spaces a tab is considered equal to
+
+
+    "tab_size": 2,
+
+
+    // Set to true to insert spaces when tab is pressed
+
+    "translate_tabs_to_spaces": true,
+
+    
 
 Steps to set up:
 ----------------
