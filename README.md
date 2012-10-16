@@ -11,13 +11,13 @@ Steps to set up:
    node: http://nodejs.org/
    coffeescript: http://coffeescript.org/
 
-2. Copy build.sh.sample and call it build.sh
-   cp build.sh.sample build.sh
+2. Copy Cakefile.sample and call it Cakefile
+   cp Cakefile.sample Cakefile
 
-3. Change COFFEE variable in build.sh to point to your coffee compiler file. If not sure, run the command 'whereis coffee'. If not found, you need to install coffeescript. If you did not install CoffeeScript globally (like in Lab Machines), then point to your local node_modules/coffee-script/bin/coffee file.
+3. Change myCoffee variable in Cakefile to point to your coffee compiler file. If not sure, run the command 'whereis coffee'. If not found, you need to install coffeescript. If you did not install CoffeeScript globally (like in Lab Machines), then point to your local node_modules/coffee-script/bin/coffee file.
 
 4. Run the build script. 
-   sh build.sh
+   cake build
 
 5. Open test/index.html in the browser to run unit tests.
 
