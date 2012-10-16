@@ -3,15 +3,42 @@
     <head>
         <title>Equations</title>
         <script type="text/javascript" src="http://localhost:8080/nowjs/now.js"></script>
-        <script type="text/javascript">
-          now.ready(function(){
-            // "Hello World!" will print on server
-            now.logStuff("Hello World!");
-          });
-        </script>
-        <script type="text/javascript" src="build/main.js"></script>
+        <script type="text/javascript" src="build/game.js"></script>
     </head>
     <body>
         <h1>Equations Project</h1>
+        <h4>Unallocated mat</h4>
+        <div class="mat" id="unallocated">
+            <ul>
+                <li class="dice">1</li>
+                <li class="dice">+</li>
+                <li class="dice">3</li>
+                <li class="dice">5</li>
+            </ul>
+        </div>
+
+        <h4>Required mat</h4>
+        <div class="mat" id="required">
+            <ul>
+                <li class="dice">3</li>
+                <li class="dice">7</li>
+            </ul>
+        </div>
+
+        <h4>Optional mat</h4>
+        <div class="mat" id="optional">
+            <ul>
+                <li class="dice">-</li>
+            </ul>
+        </div>
+
+        <h4>Forbidden mat</h4>
+        <div class="mat" id="forbidden">
+            <ul>
+                <li class="dice">1</li>
+            </ul>
+        </div>
+
+
     </body>
 </html>

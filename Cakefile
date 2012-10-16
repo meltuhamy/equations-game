@@ -16,7 +16,7 @@ server = (callback) ->
     callback?() if code is 0
 
 client = (callback) ->
-  fileNames = ['main', 'Dice']
+  fileNames = ['Network','main']
   options = [].concat(['-b', '--join', 'client/build/game.js', '--compile'], (fileNames.map (filename) -> 'client/src/' + filename + '.coffee'))
   coffee = spawn myCoffee, options
   coffee.stderr.on 'data', (data) ->
