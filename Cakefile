@@ -1,5 +1,5 @@
-# Change this to wherever your coffee file is.
-myCoffee = '/homes/usg110/node_modules/coffee-script/bin/coffee'
+# Change this to wherever your coffee file is. (change the username below)
+myCoffee = '/homes/me1810/node_modules/coffee-script/bin/coffee'
 
 fs = require 'fs'
 
@@ -7,7 +7,7 @@ fs = require 'fs'
 spawn = require('child_process').spawn
 
 server = (callback) ->
-  coffee = spawn myCoffee, ['-b', '-c', '-o', 'server/', 'server/src/']
+  coffee = spawn myCoffee, ['-b', '-c', '-o', './', 'server/src/']
   coffee.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
   coffee.stdout.on 'data', (data) ->
@@ -29,6 +29,15 @@ client = (callback) ->
 build = (callback) ->
   server(client)
 
+run = ->
+  server(client(->
+    newNode = spawn 'node', ['server.js']
+    newNode.stderr.on 'data', (data) ->
+      process.stderr.write data.toString()
+    newNode.stdout.on 'data', (data) ->
+      print data.toString()
+  ))
+
 tests = (callback) ->
   server(client(->
     coffee = spawn myCoffee, ['-b', '-c', '-o', 'test/spec/', 'test/coffeespec/']
@@ -39,17 +48,6 @@ tests = (callback) ->
     coffee.on 'exit', (code) ->
       if code is 0 then spawn 'open', ['test/index.html']
   ))
-  
-
-open = (callback) ->
-  spawn 'open', ['client/index.html']
-  coffee.stderr.on 'data', (data) ->
-    process.stderr.write data.toString()
-  coffee.stdout.on 'data', (data) ->
-    print data.toString()
-  coffee.on 'exit', (code) ->
-    callback?() if code is 0
-
 
 
 task 'build', 'Compile client and server code', ->
@@ -61,11 +59,8 @@ task 'client', 'Compile client code', ->
 task 'server', 'Compile server code', ->
   server()
 
-task 'run', 'Compile client and server code, run the server, open index.html', ->
-  
+task 'run', 'Compile client, server code, run the server', ->
+  run()
 
-task 'test', 'Compile client, server and test code, run the server, open the test html', ->
+task 'test', 'Compile client, server, test code + run the server', ->
   tests()
-
-task 'open', 'Open index.html', ->
-  open()
