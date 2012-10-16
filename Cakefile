@@ -1,5 +1,5 @@
 # Change this to wherever your coffee file is.
-myCoffee = '~/node_modules/coffee-script/bin/coffee'
+myCoffee = '/homes/usg110/node_modules/coffee-script/bin/coffee'
 
 fs = require 'fs'
 
@@ -16,7 +16,7 @@ server = (callback) ->
     callback?() if code is 0
 
 client = (callback) ->
-  fileNames = ['main']
+  fileNames = ['main', 'Dice']
   options = [].concat(['-b', '--join', 'client/build/game.js', '--compile'], (fileNames.map (filename) -> 'client/src/' + filename + '.coffee'))
   coffee = spawn myCoffee, options
   coffee.stderr.on 'data', (data) ->
