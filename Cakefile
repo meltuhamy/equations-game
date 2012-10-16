@@ -1,5 +1,5 @@
 # Change this to wherever your coffee file is.
-myCoffee = 'coffee'
+myCoffee = '~/node_modules/coffee-script/bin/coffee'
 
 fs = require 'fs'
 

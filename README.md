@@ -21,3 +21,12 @@ Steps to set up:
 
 5. Open test/index.html in the browser to run unit tests.
 
+
+Compile
+=======
+
+The project uses a cakefile to compile the coffeescript stuff.
+
+Go to the project folder and type "cake" for more info. 
+
+If cake isn't found, create an alias for it. It is most likely ~/node_modules/coffee-script/bin/cake.
