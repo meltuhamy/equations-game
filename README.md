@@ -22,9 +22,10 @@ go to Preference -> Settings - Default.
 Steps to set up:
 ----------------
 
-1. Install node and CoffeeScript
+1. Install node and CoffeeScript and now.js
    node: http://nodejs.org/
    coffeescript: http://coffeescript.org/
+   now: npm install now
 
 2. Copy Cakefile.sample and call it Cakefile
    cp Cakefile.sample Cakefile

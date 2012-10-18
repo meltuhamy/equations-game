@@ -51,8 +51,29 @@ module.exports.Mats = Mats;
 
 class Game
   mats: undefined
+  goal: undefined
+  players: []
+  #turn
   constructor: ->
     @mats = new Mats()
     @mats.allocate()
 
+  setGoal: (diceTypes) ->
+    @goal = diceTypes
+
+#  addEveryoneToGame: () ->
+ #   everyone.now.ready()
+    #everyone.now.joinGame()
+
+  addClient: (clientid) ->
+    @players.push(new Player(clientid))
+    console.log @players
+
 module.exports.Game = Game;
+
+class Player
+  id: 0
+  constructor: (id) ->
+    @id = id
+
+module.exports.Player = Player;
