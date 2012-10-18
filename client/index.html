@@ -4,41 +4,94 @@
         <title>Equations</title>
         <script type="text/javascript" src="http://localhost:8080/nowjs/now.js"></script>
         <script type="text/javascript" src="build/game.js"></script>
+        <link rel="stylesheet" href="css/main.css" type="text/css" />
     </head>
     <body>
-        <h1>Equations Project</h1>
-        <h4>Unallocated mat</h4>
-        <div class="mat" id="unallocated">
-            <ul>
-                <li class="dice">1</li>
-                <li class="dice">+</li>
-                <li class="dice">3</li>
-                <li class="dice">5</li>
-            </ul>
+        <div id="container">
+            <h1>Equations</h1>
+
+            <div id="goal" class="clearfix">
+                <div id="goal-text">
+                    <span>Goal</span>
+                </div>
+
+                <ul>
+                    <li class="goal-dice"><span>7</span></li>
+                    <li class="goal-dice"><span>1</span></li>
+                    <li class="goal-dice"><span>+</span></li>
+                    <li class="goal-dice"><span>3</span></li>
+                </ul>
+     
+                <div id="now-never-text">
+                    <span id="now-button">Now</span>
+                    <span id="now-button">Never</span>
+                </div>
+            </div>
+
+
+            <div id="unallocated" class="clearfix">
+                <ul>
+                    <li class="dice"><span>1</span></li>
+                    <li class="dice"><span>+</span></li>
+                    <li class="dice"><span>3</span></li>
+                    <li class="dice"><span>5</span></li>
+                    <li class="dice"><span>5</span></li>
+                </ul>
+            </div>
+
+            <div id="mats-flexbox-container">
+                <div class="mat" id="required">
+                    <ul>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>7</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>7</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>7</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>7</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>7</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>7</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>7</span></li>
+                    </ul>
+                </div>
+                <div class="mat" id="required">
+                    <ul>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>7</span></li>
+                    </ul>
+                </div>
+                <div class="mat" id="required">
+                    <ul>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>7</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <ul id="main-columns">
+
+                <li>
+                    <div id="answer-area">
+                        <p>Hello</p>
+                    </div>
+                </li>
+
+                <li>
+                    <div id="rough-area">
+                        <p>Hello</p>
+                    </div>
+                </li>
+
+
+            </div>
+
+
+
+
         </div>
-
-        <h4>Required mat</h4>
-        <div class="mat" id="required">
-            <ul>
-                <li class="dice">3</li>
-                <li class="dice">7</li>
-            </ul>
-        </div>
-
-        <h4>Optional mat</h4>
-        <div class="mat" id="optional">
-            <ul>
-                <li class="dice">-</li>
-            </ul>
-        </div>
-
-        <h4>Forbidden mat</h4>
-        <div class="mat" id="forbidden">
-            <ul>
-                <li class="dice">1</li>
-            </ul>
-        </div>
-
-
     </body>
 </html>
