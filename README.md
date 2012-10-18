@@ -22,15 +22,17 @@ go to Preference -> Settings - Default.
 Steps to set up:
 ----------------
 
-1. Install node and CoffeeScript and now.js
-   node: http://nodejs.org/
-   coffeescript: http://coffeescript.org/
-   now: npm install now
+1. Install node (http://nodejs.org/) and these things (add -g if not in labs): 
+  - npm install coffee-script
+  - npm install express
+  - npm install socket.io
+  - npm install now
+  - npm install node.js
 
-2. Copy Cakefile.sample and call it Cakefile
-   cp Cakefile.sample Cakefile
+2. cp config.js.sample config.js
 
-3. Change myCoffee variable in Cakefile to point to your coffee compiler file. If not sure, run the command 'whereis coffee'. If not found, you need to install coffeescript. If you did not install CoffeeScript globally (like in Lab Machines), then point to your local node_modules/coffee-script/bin/coffee file.
+3. Change the coffee variable in your config.js file. If in labs, replace USERNAME below, otherwise if at home set it to 'coffee'
+    module.exports.COFFEE = '/homes/USERNAME/node_modules/coffee-script/bin/coffee';
 
 4. Run the build script. 
    cake build
@@ -52,35 +54,34 @@ Game Components
 
 Game
  - Compiler
- 	- Scanner
- 	- Grammer
- 	- Parse table
- 	- LR parser
- 	- Unit tests
+  - Scanner
+  - Grammer
+  - Parse table
+  - LR parser
+  - Unit tests
  - Rest of game
- 	- Networking
- 		- System architecture design
- 		- Synchronisations
- 		
- 	- UI
- 		- Draggin & dropping
- 		- Graphics (html,css,etc)
- 			- Dice
- 			- Mats
- 			- Challenge buttons
- 			- Timer
- 			- Profile picture layouts
- 			- Tips (tutorial mode)
- 		- Equations box
- 		- Drawing pad
- 		- Timer
- 		- Profile pics
- 	- Game logic
- 		- Challenges
- 		- Equation equality
- 		- Scoring
- 		- Goal setting
- 		- Turns system
- 		- Unit tests
-
+  - Networking
+    - System architecture design
+    - Synchronisations
+    
+  - UI
+    - Draggin & dropping
+    - Graphics (html,css,etc)
+      - Dice
+      - Mats
+      - Challenge buttons
+      - Timer
+      - Profile picture layouts
+      - Tips (tutorial mode)
+    - Equations box
+    - Drawing pad
+    - Timer
+    - Profile pics
+  - Game logic
+    - Challenges
+    - Equation equality
+    - Scoring
+    - Goal setting
+    - Turns system
+    - Unit tests
 
