@@ -4,3 +4,4 @@ server/server.js
 test/spec/*.js
 Cakefile
 *.js
+*~
