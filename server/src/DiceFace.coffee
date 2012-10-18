@@ -13,6 +13,9 @@ class DICEFACES
   @minus       : 11
 module.exports.DICEFACES = DICEFACES;
 
+numOps = 2
+
+###
 class MATTYPES
   @forbidden        : 0
   @required         : 1
@@ -25,11 +28,6 @@ class Mats
   optional: []
   forbidden: []
 
-  allocate: ->
-    @unallocated =  [DICEFACES.zero, DICEFACES.one]
-    @required =  [DICEFACES.plus]
-    @optional =  [DICEFACES.seven, DICEFACES.nine, DICEFACES.plus]
-    @forbidden =  []
 
   moveUnallocatedToMat: (destinationMatType, unallocatedIndex) ->
     #Put it in the destinationMatType mat
@@ -44,19 +42,43 @@ class Mats
       when MATTYPES.forbidden then @forbidden
       when MATTYPES.required then @required
       when MATTYPES.optional then @optional 
+###
 
-
-module.exports.Mats = Mats;
+#module.exports.Mats = Mats;
 
 
 class Game
-  mats: undefined
-  goal: undefined
+  #mats: undefined
+  goal: []
   players: []
+  state: {
+    unallocated: []
+    required: []
+    optional: []
+    forbidden: []
+    currentPlayer: 0
+  }
   #turn
-  constructor: ->
-    @mats = new Mats()
-    @mats.allocate()
+  constructor: (players) ->
+    @players = players
+    @allocate()
+    console.log @state.unallocated
+
+  allocate: ->
+    ops = 0
+    for x in [1..24]
+      rand = Math.random()
+      console.log rand
+      if rand < 2/3
+        rand = Math.floor(Math.random() * 10)
+      else
+        rand = Math.floor(Math.random() * numOps) + 10
+        ops++
+      @state.unallocated.push(rand)
+    console.log ops
+    if (ops < 2) || (ops > 21)
+      @state.unallocated = []
+      @allocate()
 
   setGoal: (diceTypes) ->
     @goal = diceTypes
