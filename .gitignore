@@ -2,6 +2,5 @@
 client/build/*.js
 server/server.js
 test/spec/*.js
-Cakefile
 *.js
 *~

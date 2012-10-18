@@ -1,12 +1,16 @@
 express = require("express")
-server = express.createServer()
-server.use(express.static(__dirname + "/client"))
-server.listen 8080
+http = require('http')
+nowjs = require("now")
+
+app = express()
+server = http.createServer(app)
+app.use(express.static(__dirname + "/client"))
+
+server.listen(8080)
 console.log "Listening"
 
-nowjs = require("now")
-everyone = nowjs.initialize(server)
 
+everyone = nowjs.initialize(server)
 
 DiceFace = require './DiceFace.js'
 DICEFACES = DiceFace.DICEFACES
