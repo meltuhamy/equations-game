@@ -6,13 +6,127 @@
     visibility: hidden;
 }
 
-#container{
+div#container{
   margin: 0 auto;
   width: 1000px;
 }
 
 
-#unallocated {
+
+/************** GOAL *************/
+
+
+div#goal {
+  background: #EEE;
+  border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px;
+  margin-bottom: 30px;
+  padding: 10px 10px;
+  display: block;
+  position: relative;
+  text-align: center;
+}
+
+div#goal-text{
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: -30px;
+  text-transform: uppercase;
+  font-family: "Helvetica Neue","Hevletica","Arial","DejaVu Sans","Kozuka Gothic Pro R","Meiryo","MS Gothic","Osaka",sans-serif;
+  font-size: 42px;
+  
+}
+
+div#goal-text span {
+  background: #EEE;
+  border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px;
+  padding: 10px; }
+
+
+
+
+#goal > ul > li.goal-dice {
+  display: inline-block;
+  text-align: center;
+  font-family: "Helvetica Neue","Hevletica","Arial","DejaVu Sans","Kozuka Gothic Pro R","Meiryo","MS Gothic","Osaka",sans-serif;
+  font-size: 32px;
+  font-weight: bold;
+  width: 40px;  height: 40px;
+  background: #BBB;
+  padding-top: 5px;
+}
+
+
+div#now-never-text{
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  bottom: -20px;}
+
+
+span#now-button {
+  background: #e3e3e3;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0 0 1px 1px #f6f6f6;
+  box-shadow: inset 0 0 1px 1px #f6f6f6;
+  color: #333;
+  font: bold 12px/1 "helvetica neue", helvetica, arial, sans-serif;
+  padding: 8px 0 9px;
+  text-align: center;
+  text-shadow: 0 1px 0 #fff;
+  display: inline-block;
+  width: 150px; }
+
+span#now-button:hover {
+  background: #d9d9d9;
+  -webkit-box-shadow: inset 0 0 1px 1px #eaeaea;
+  box-shadow: inset 0 0 1px 1px #eaeaea;
+  color: #222;
+  cursor: pointer; }
+
+span#now-button:active {
+  background: #d0d0d0;
+  -webkit-box-shadow: inset 0 0 1px 1px #e3e3e3;
+  box-shadow: inset 0 0 1px 1px #e3e3e3;
+  color: #000; }
+
+
+
+div#never-button {
+  background: #e3e3e3;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0 0 1px 1px #f6f6f6;
+  box-shadow: inset 0 0 1px 1px #f6f6f6;
+  color: #333;
+  font: bold 12px/1 "helvetica neue", helvetica, arial, sans-serif;
+  padding: 8px 0 9px;
+  text-align: center;
+  text-shadow: 0 1px 0 #fff;
+  width: 150px; }
+
+div#never-button:hover {
+  background: #d9d9d9;
+  -webkit-box-shadow: inset 0 0 1px 1px #eaeaea;
+  box-shadow: inset 0 0 1px 1px #eaeaea;
+  color: #222;
+  cursor: pointer; }
+div#never-button:active {
+  background: #d0d0d0;
+  -webkit-box-shadow: inset 0 0 1px 1px #e3e3e3;
+  box-shadow: inset 0 0 1px 1px #e3e3e3;
+  color: #000; }
+
+
+
+
+
+
+
+
+
+div#unallocated {
   display: block;
   width: 100%;
   background: #EEE;
@@ -21,20 +135,20 @@
   padding: 10px 0px;
 }
 
-#unallocated ul {
+div#unallocated ul {
   list-style: none; padding: 0; margin: 0;
 }
 
-#unallocated ul li {
+div#unallocated ul li {
   margin-left: 10px;
 }
 
-#unallocated ul li.dice:first-child {
+div#unallocated ul li.dice:first-child {
   margin-left: 10px;
 }
 
 
-#container li.dice {
+div#container li.dice {
   float: left;
   text-align: center;
   background: #CCC;
@@ -43,23 +157,24 @@
 }
 
 
-#container li.dice span{
+div#container li.dice span{
   font-family: "Helvetica Neue","Hevletica","Arial","DejaVu Sans","Kozuka Gothic Pro R","Meiryo","MS Gothic","Osaka",sans-serif;
   font-size: 22px;
   font-weight: bold;
   vertical-align: middle; display:table-cell;
 }
 
-#mats-flexbox-container {
+div#mats-flexbox-container {
   width: 100%;
   /* flexbox setup */
   display: -webkit-box; display: -moz-box; display: box;
   -moz-box-orient: horizontal; -webkit-box-orient: horizontal; box-orient: horizontal;
   -webkit-flex-wrap: wrap; 
   -webkit-flex-direction: row;
+  margin-bottom: 10px;
 }
 
-#mats-flexbox-container > div.mat{
+div#mats-flexbox-container > div.mat{
   box-flex: 1; -moz-box-flex:1.0; -webkit-box-flex:1.0;
   margin-left: 5px; margin-right: 5px;
   padding-right: 10px; padding-bottom: 10px;
@@ -78,6 +193,20 @@
 }
 
 
-#main-columns {
-
+ul#main-columns {
+  /* flexbox setup */
+  display: -webkit-box; display: -moz-box; display: box;
+  -moz-box-orient: horizontal; -webkit-box-orient: horizontal; box-orient: horizontal;
+  -webkit-flex-wrap: wrap; 
+  -webkit-flex-direction: row;
+  padding: 0; margin: 0;
 }
+
+ul#main-columns li{
+  box-flex: 1; -moz-box-flex:1.0; -webkit-box-flex:1.0;
+  background: #DDD;
+  list-style: none;
+  margin: 5px;
+}
+
+
