@@ -1,0 +1,1 @@
+Stylus .styl files stored in the stylus directory are compiled to .css files and stored in this directory. They are therefore not versioned.

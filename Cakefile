@@ -2,6 +2,7 @@
 config = require('./config.js')
 
 myCoffee = config.COFFEE
+myStylus = config.STYLUS
 
 fs = require 'fs'
 
@@ -18,6 +19,7 @@ server = (callback) ->
     callback?() if code is 0
 
 client = (callback) ->
+  dostylus()
   fileNames = ['Network','main']
   options = [].concat(['-b', '--join', 'client/build/game.js', '--compile'], (fileNames.map (filename) -> 'client/src/' + filename + '.coffee'))
   coffee = spawn myCoffee, options
@@ -51,6 +53,17 @@ tests = (callback) ->
       if code is 0 then spawn 'open', ['test/index.html']
   ))
 
+dostylus = (watch) ->
+  if watch? && watch
+    stylus = spawn myStylus, ['-w','-o', 'client/css/', 'client/css/stylus']
+  else
+    stylus = spawn myStylus, ['-o', 'client/css/', 'client/css/stylus']
+  stylus.stderr.on 'data', (data) ->
+    process.stderr.write data.toString()
+  stylus.stdout.on 'data', (data) ->
+    print data.toString()
+
+
 
 task 'build', 'Compile client and server code', ->
   build()
@@ -66,3 +79,7 @@ task 'run', 'Compile client, server code, run the server', ->
 
 task 'test', 'Compile client, server, test code + run the server', ->
   tests()
+
+task 'stylus', 'Compiles and watches styl to css', ->
+  dostylus(true)
+

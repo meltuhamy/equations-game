@@ -1,1 +1,2 @@
 module.exports.COFFEE = '/homes/USERNAME/node_modules/coffee-script/bin/coffee';
+module.exports.STYLUS = '/homes/USERNAME/node_modules/stylus/bin';

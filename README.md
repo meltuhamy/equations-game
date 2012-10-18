@@ -27,11 +27,12 @@ Steps to set up:
   - npm install express
   - npm install socket.io
   - npm install now
-  - npm install node.js
+  - npm install stylus
 
 2. cp config.js.sample config.js
 
-3. Change the coffee variable in your config.js file. If in labs, replace USERNAME below, otherwise if at home set it to 'coffee'
+3. Change the coffee variable in your config.js file. If in labs, replace USERNAME below, otherwise if at home set it to 'coffee'. Do the same for stylus.
+
     module.exports.COFFEE = '/homes/USERNAME/node_modules/coffee-script/bin/coffee';
 
 4. Run the build script. 
