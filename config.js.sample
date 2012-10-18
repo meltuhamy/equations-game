@@ -1,0 +1,1 @@
+module.exports.COFFEE = '/homes/USERNAME/node_modules/coffee-script/bin/coffee';
