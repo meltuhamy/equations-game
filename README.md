@@ -14,6 +14,7 @@ Steps to set up:
   - npm install now
   - npm install stylus
   - npm install jasmine-node
+  - npm install node-inspector
 
 2. cp config.js.sample config.js
 
@@ -25,8 +26,25 @@ Steps to set up:
 
 5. Open a browser and go to localhost:8080/
 
+6. Add node-inspector to your alias / path. (you did this for cake, coffee, and stylus. Now do it for node-inspector)
+
 
 For more info, type 'cake'. This will show you available commands.
+
+New! Debugging
+==============
+1. Make sure you have all the requirements (see steps above). Chrome is required (or Safari). Note node-inspector must be in your path/aliases.
+
+2. Open two terminal windows, navigate to the project directory.
+  - On terminal window 1, type: 'cake debug'. This will compile everything and start the server for debugging.
+  - On terminal window 2, type: 'node-inspector --web-port=8081'
+    - This should show you a URL that you should go to in your browser
+    - Point your browser to this URL now in a new tab/window.
+    - You'll notice the file server.js is open and there's a breakpoint on the first line.
+
+3. Now that you have an inspector open, navigate to localhost:8080, which is where our project is hosted. 
+
+4. Done :) Everything works including the console (note that when you do stuff like 'console.log()', it logs ON THE SERVER and not the log area.)
 
 Compile
 =======

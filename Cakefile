@@ -19,6 +19,8 @@ server = (callback) ->
   coffee.on 'exit', (code) ->
     callback?() if code is 0
 
+
+
 client = (callback) ->
   dostylus()
   fileNames = ['Network','main']
@@ -43,6 +45,16 @@ run = ->
       print data.toString()
   ))
 
+debug = ->
+  server(client(->
+    newNode = spawn 'node', ['--debug-brk','server.js']
+    newNode.stderr.on 'data', (data) ->
+      process.stderr.write data.toString()
+    newNode.stdout.on 'data', (data) ->
+      print data.toString()
+  ))
+
+
 tests = (callback) ->
   jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
   jnode.stderr.on 'data', (data) ->
@@ -51,6 +63,7 @@ tests = (callback) ->
     print data.toString()
   jnode.on 'exit', (code) ->
     callback?() if code is 0
+
 
 
 dostylus = (watch) ->
@@ -65,6 +78,7 @@ dostylus = (watch) ->
 
 
 
+
 task 'build', 'Compile everything', ->
   build()
 
@@ -76,6 +90,9 @@ task 'server', 'Compile server code', ->
 
 task 'run', 'Compile everything and run the server', ->
   run()
+
+task 'debug', 'Run the server with debugging. Break on line 1', ->
+  debug()
 
 task 'test', 'Compile everything and run unit tests', ->
   tests()
