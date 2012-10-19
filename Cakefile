@@ -3,6 +3,7 @@ config = require('./config.js')
 
 myCoffee = config.COFFEE
 myStylus = config.STYLUS
+myJnode  = config.JASMINE
 
 fs = require 'fs'
 
@@ -43,15 +44,14 @@ run = ->
   ))
 
 tests = (callback) ->
-  server(client(->
-    coffee = spawn myCoffee, ['-b', '-c', '-o', 'test/spec/', 'test/coffeespec/']
-    coffee.stderr.on 'data', (data) ->
-      process.stderr.write data.toString()
-    coffee.stdout.on 'data', (data) ->
-      print data.toString()
-    coffee.on 'exit', (code) ->
-      if code is 0 then spawn 'open', ['test/index.html']
-  ))
+  jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
+  jnode.stderr.on 'data', (data) ->
+    process.stderr.write data.toString()
+  jnode.stdout.on 'data', (data) ->
+    print data.toString()
+  jnode.on 'exit', (code) ->
+    callback?() if code is 0
+
 
 dostylus = (watch) ->
   if watch? && watch
@@ -65,19 +65,19 @@ dostylus = (watch) ->
 
 
 
-task 'build', 'Compile client and server code', ->
+task 'build', 'Compile everything', ->
   build()
 
-task 'client', 'Compile client code', ->
+task 'client', 'Compile client code including .styl', ->
   client()
 
 task 'server', 'Compile server code', ->
   server()
 
-task 'run', 'Compile client, server code, run the server', ->
+task 'run', 'Compile everything and run the server', ->
   run()
 
-task 'test', 'Compile client, server, test code + run the server', ->
+task 'test', 'Compile everything and run unit tests', ->
   tests()
 
 task 'stylus', 'Compiles and watches styl to css', ->
