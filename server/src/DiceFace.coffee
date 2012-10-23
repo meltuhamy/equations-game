@@ -1,4 +1,6 @@
 class DICEFACES
+  @plus        : -2
+  @minus       : -1
   @zero        : 0
   @one         : 1
   @two         : 2
@@ -9,8 +11,7 @@ class DICEFACES
   @seven       : 7
   @eight       : 8
   @nine        : 9
-  @plus        : 10
-  @minus       : 11
+
 module.exports.DICEFACES = DICEFACES;
 
 numOps = 2
@@ -37,17 +38,17 @@ class Game
     @allocate()
 
   allocate: ->
+    @state.unallocated = []
     ops = 0
     for x in [1..24]  #24 dice rolls
       rand = Math.random()  #get a random number
       if rand < 2/3  #first we decide if the roll yields an operator or a digit
         rand = Math.floor(Math.random() * 10)  #2/3 of the time we get a digit, decided by a new random number
       else  #1/3 of the time we get an operator, again we generate a new random number to decide which operator to use
-        rand = Math.floor(Math.random() * numOps) + 10
+        rand = Math.floor(Math.random() * - numOps)
         ops++ #we keep track of the number of operators generated so that later we can check if there are enough
       @state.unallocated.push(rand)  #here we add the die to the unallocated resources array
     if (ops < 2) || (ops > 21)  #if there are too few or too many operators, we must roll again
-      @state.unallocated = []  #clear the unallocated resources array
       @allocate()  #do the allocation again
 
   setGoal: (dice) ->
@@ -55,18 +56,27 @@ class Game
 
   scan: (dice) ->
     scanned = []
-    for index in [0..dice.length]
-      if 0 <= dice[index] <= 9
-        if (index < dice.length - 1) && (0 <= dice[index + 1] <= 9)
-          if (index < dice.length - 2) && (0 <= dice[index + 2] <= 9) 
+    index = 0
+    while index < dice.length
+      if 0 <= dice[index] <= 9  #if current element is a number
+        if (index < dice.length - 1) && (0 <= dice[index + 1] <= 9) #if next element is a number
+          if (index < dice.length - 2) && (0 <= dice[index + 2] <= 9) #if third element is a number
             throw "Numbers limited to 2 digits in a row"
-          scanned.push(dice[index] * 10 + dice[index + 1])
-          index++
+          else
+            scanned.push(dice[index] * 10 + dice[index + 1]) #concatenate
+            console.log "index before = #{index}"
+            index++
+            console.log "index after = #{index}"
         else
           scanned.push(dice[index])
+      else
+        scanned.push(dice[index])
+      index++
     scanned
 
   addClient: (clientid) ->
+    @allocate()
+    console.log @state.unallocated
     if @players.length == @playerLimit
       throw new Error("Game full")
     else
@@ -120,3 +130,5 @@ class Player
     @id = id
 
 module.exports.Player = Player;
+
+
