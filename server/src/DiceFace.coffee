@@ -1,4 +1,10 @@
 class DICEFACES
+  @bracketL    : -8
+  @bracketR    : -7
+  @sqrt        : -6
+  @power       : -5
+  @multiply    : -4
+  @divide      : -3
   @plus        : -2
   @minus       : -1
   @zero        : 0
@@ -20,6 +26,75 @@ class GoalNode
   operator: undefined
   e1: undefined
   e2: undefined
+
+class ExpNode
+  constructor: ->
+
+class PlusNode extends ExpNode
+  exp: undefined
+  term: undefined
+  constructor: (exp, term) ->
+    @exp = exp
+    @term = term
+
+class MinusNode extends ExpNode
+  exp: undefined
+  term: undefined
+  constructor: (exp, term) ->
+    @exp = exp
+    @term = term
+
+class TermNode
+  constructor: ->
+
+class MultiNode extends TermNode
+  term: undefined
+  factor: undefined
+  constructor: (term, factor) ->
+    @term = term
+    @factor = factor
+
+class DivNode extends TermNode
+  term: undefined
+  factor: undefined
+  constructor: (term, factor) ->
+    @term = term
+    @factor = factor
+
+class FactorNode
+  constructor: ->
+
+class PosNode extends FactorNode
+  factor: undefined
+  constructor: (factor) ->
+    @factor = factor
+
+class NegNode extends FactorNode
+  factor: undefined
+  constructor: (factor) ->
+    @factor = factor
+
+class SqrtNode extends FactorNode
+  exp: undefined
+  constructor: (exp) ->
+    @exp = exp
+
+class BracketNode extends FactorNode
+  exp: undefined
+  constructor: (exp) ->
+    @exp = exp
+
+class PowerNode extends FactorNode
+  factor: undefined
+  exp: undefined
+  constructor: (factor, exp) ->
+    @factor = factor
+    @exp = exp
+
+class Constant extends FactorNode
+  value: undefined
+  constructor: (value)->
+    @value = value 
 
 class Game
   goalResources: []
@@ -73,6 +148,10 @@ class Game
         scanned.push(dice[index])
       index++
     scanned
+
+  parse: (pre_tree_array) ->
+
+
 
   addClient: (clientid) ->
     @allocate()
