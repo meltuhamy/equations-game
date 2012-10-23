@@ -1,5 +1,6 @@
 @import 'nib'
 
+
 .clearfix
   clearfix()
 
@@ -8,15 +9,25 @@ display-box()
   display: -moz-box
   display: box
 
+vertical-text()
+  writing-mode:tb-rl;
+  -webkit-transform:rotate(90deg);
+  -moz-transform:rotate(90deg);
+  -o-transform: rotate(90deg);
+  white-space:nowrap;
+
+
 div#container
   margin: 0 auto
-  width: 1000px
+  width: 80%
+  max-width: 1200px;
 
 div#goal
   background: #EEE
   border-radius(5px)
   margin-bottom: 30px
   padding: 10px 10px
+
   display: block
   position: relative
   text-align: center
@@ -160,6 +171,7 @@ div#mats-flexbox-container > div.mat
   margin: 10px 0 0 10px
 
 ul#main-columns
+  width: 100%
   display-box()
   box-orient(horizontal)
   flex-wrap(wrap)
@@ -172,4 +184,28 @@ ul#main-columns li
   background: #DDD
   list-style: none
   margin: 5px
+  width 0;
 
+#answer-area-container
+  #answer-area-toolbar ul
+    float:left
+    reset-box-model()
+    li 
+      background: #AAA
+      float: left
+      clear: left
+      display: inline-block
+      width: 20px
+
+      
+#player-list ul
+  reset-box-model()
+  li
+    background: #CCC;
+
+
+#rough-area-board 
+  display: block;
+  height: 100px;
+  margin: 10px;
+  background: #fff;
