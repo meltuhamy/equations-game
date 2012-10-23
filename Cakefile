@@ -56,6 +56,7 @@ debug = ->
 
 
 tests = (callback) ->
+  build()
   jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
   jnode.stderr.on 'data', (data) ->
     process.stderr.write data.toString()

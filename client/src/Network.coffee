@@ -1,6 +1,6 @@
-playerNo = 0
+playerNo = -1
 
-now.acceptPlayer = (number) ->
+now.acceptPlayer = (number) -> #called by the server if player is accepted
   playerNo = number
 
 now.ready ->
