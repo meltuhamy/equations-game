@@ -17,8 +17,7 @@ DICEFACES = DiceFace.DICEFACES
 
 game = new DiceFace.Game([])
 
-everyone.now.addClient = () ->
-  console.log this
+everyone.now.addClient = () -> #called by client when connected
   try
     pNo = game.addClient(this.user.clientId)
     this.now.acceptPlayer(pNo)

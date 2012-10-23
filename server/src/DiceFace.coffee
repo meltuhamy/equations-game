@@ -15,8 +15,13 @@ module.exports.DICEFACES = DICEFACES;
 
 numOps = 2
 
+class GoalNode
+  operator: undefined
+  e1: undefined
+  e2: undefined
+
 class Game
-  goal: []
+  goalResources: []
   players: []
   playerLimit: 3
   state: {
@@ -48,6 +53,19 @@ class Game
   setGoal: (dice) ->
     @goal = dice
 
+  scan: (dice) ->
+    scanned = []
+    for index in [0..dice.length]
+      if 0 <= dice[index] <= 9
+        if (index < dice.length - 1) && (0 <= dice[index + 1] <= 9)
+          if (index < dice.length - 2) && (0 <= dice[index + 2] <= 9) 
+            throw "Numbers limited to 2 digits in a row"
+          scanned.push(dice[index] * 10 + dice[index + 1])
+          index++
+        else
+          scanned.push(dice[index])
+    scanned
+
   addClient: (clientid) ->
     if @players.length == @playerLimit
       throw new Error("Game full")
@@ -55,7 +73,46 @@ class Game
       @players.push(new Player(clientid))
       @players.length
 
-module.exports.Game = Game;
+  resourceExists: (resource) ->
+    index = @state.unallocated.indexOf resource
+    if (index) == -1
+      throw new Error("Resource #{resource} not in Unallocated")
+    else
+      index
+
+  moveToRequired: (resource) ->
+    try
+      index = resourceExists(resource)
+      @state.unallocated.splice(index, 1)
+      @state.required.push(resource)
+    catch e
+      console.warn e
+
+  moveToOptional: (resource) ->
+    try
+      index = resourceExists(resource)
+      @state.unallocated.splice(index, 1)
+      @state.required.push(resource)
+    catch e
+      console.warn e
+
+  moveToForbidden: (resource) ->
+    try
+      index = resourceExists(resource)
+      @state.unallocated.splice(index, 1)
+      @state.forbidden.push(resource)
+    catch e
+      console.warn e
+
+  moveToGoal: (resource) ->
+    try
+      index = resourceExists(resource)
+      @state.unallocated.splice(index, 1)
+      @state.goalResources.push(resource)
+    catch e
+      console.warn e
+
+module.exports.Game = Game
 
 class Player
   id: 0
