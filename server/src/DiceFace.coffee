@@ -15,42 +15,10 @@ module.exports.DICEFACES = DICEFACES;
 
 numOps = 2
 
-###
-class MATTYPES
-  @forbidden        : 0
-  @required         : 1
-  @optional         : 2
-module.exports.MATTYPES = MATTYPES;
-
-class Mats
-  unallocated: []
-  required: []
-  optional: []
-  forbidden: []
-
-
-  moveUnallocatedToMat: (destinationMatType, unallocatedIndex) ->
-    #Put it in the destinationMatType mat
-    theMat = @getMatArrayByType(destinationMatType)
-    theMat.push(@unallocated[unallocatedIndex])
-
-    #Remove from unallocated: slice the array into 2 parts, missing out the element at unallocatedIndex, then join back together
-    @unallocated = @unallocated[0...unallocatedIndex].concat(@unallocated[unallocatedIndex+1...@unallocated.length])
-
-  getMatArrayByType: (type) ->
-    switch type
-      when MATTYPES.forbidden then @forbidden
-      when MATTYPES.required then @required
-      when MATTYPES.optional then @optional 
-###
-
-#module.exports.Mats = Mats;
-
-
 class Game
-  #mats: undefined
   goal: []
   players: []
+  playerLimit: 3
   state: {
     unallocated: []
     required: []
@@ -58,38 +26,34 @@ class Game
     forbidden: []
     currentPlayer: 0
   }
-  #turn
+
   constructor: (players) ->
     @players = players
     @allocate()
-    console.log @state.unallocated
 
   allocate: ->
     ops = 0
-    for x in [1..24]
-      rand = Math.random()
-      console.log rand
-      if rand < 2/3
-        rand = Math.floor(Math.random() * 10)
-      else
+    for x in [1..24]  #24 dice rolls
+      rand = Math.random()  #get a random number
+      if rand < 2/3  #first we decide if the roll yields an operator or a digit
+        rand = Math.floor(Math.random() * 10)  #2/3 of the time we get a digit, decided by a new random number
+      else  #1/3 of the time we get an operator, again we generate a new random number to decide which operator to use
         rand = Math.floor(Math.random() * numOps) + 10
-        ops++
-      @state.unallocated.push(rand)
-    console.log ops
-    if (ops < 2) || (ops > 21)
-      @state.unallocated = []
-      @allocate()
+        ops++ #we keep track of the number of operators generated so that later we can check if there are enough
+      @state.unallocated.push(rand)  #here we add the die to the unallocated resources array
+    if (ops < 2) || (ops > 21)  #if there are too few or too many operators, we must roll again
+      @state.unallocated = []  #clear the unallocated resources array
+      @allocate()  #do the allocation again
 
-  setGoal: (diceTypes) ->
-    @goal = diceTypes
-
-#  addEveryoneToGame: () ->
- #   everyone.now.ready()
-    #everyone.now.joinGame()
+  setGoal: (dice) ->
+    @goal = dice
 
   addClient: (clientid) ->
-    @players.push(new Player(clientid))
-    console.log @players
+    if @players.length == @playerLimit
+      throw new Error("Game full")
+    else
+      @players.push(new Player(clientid))
+      @players.length
 
 module.exports.Game = Game;
 
