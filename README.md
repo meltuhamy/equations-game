@@ -15,6 +15,7 @@ Steps to set up:
   - npm install stylus
   - npm install jasmine-node
   - npm install node-inspector
+  - npm install nib
 
 2. cp config.js.sample config.js
 
@@ -33,7 +34,7 @@ For more info, type 'cake'. This will show you available commands.
 
 New! Debugging
 ==============
-1. Make sure you have all the requirements (see steps above). Chrome is required (or Safari). Note node-inspector must be in your path/aliases.
+1. Make sure you have all the requirements (see steps above). Cqhrome is required (or Safari). Note node-inspector must be in your path/aliases.
 
 2. Open two terminal windows, navigate to the project directory.
   - On terminal window 1, type: 'cake debug'. This will compile everything and start the server for debugging.
@@ -59,12 +60,7 @@ Game Components
 ---------------
 
 Game
- - Compiler
-  - Scanner
-  - Grammer
-  - Parse table
-  - LR parser
-  - Unit tests
+
  - Rest of game
   - Networking
     - System architecture design
@@ -85,11 +81,35 @@ Game
     - Profile pics
   - Game logic
     - Challenges
-    - Equation equality
+      - make now challenges
+      - make never challenges
+    - Check solutions
+      - Compiler
+        - Scanner
+        - Grammer
+        - Parse table
+        - LR parser
+    - Draw on their working area
     - Scoring
     - Goal setting
+    - Lobby
+      - Creating a game
+      - Joining a game
+      - Starting a game when there are enough players
     - Turns system
+      - wait for their turn
+      - play their turn
+      - moving stuff from mat to mat / user area
+      - Timing out    
+      - Challenges
+        - make now challenges
+        - make never challenges
+        - Ability to play when someone challenge
     - Unit tests
+
+Tristan's Group
+---------------
+
 
 Sublime Settings for indentation
 --------------------------------

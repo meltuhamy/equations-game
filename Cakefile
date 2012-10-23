@@ -68,9 +68,9 @@ tests = (callback) ->
 
 dostylus = (watch) ->
   if watch? && watch
-    stylus = spawn myStylus, ['-w','-o', 'client/css/', 'client/css/stylus']
+    stylus = spawn myStylus, ['-u', 'nib', '-w','-o', 'client/css/', 'client/css/stylus']
   else
-    stylus = spawn myStylus, ['-o', 'client/css/', 'client/css/stylus']
+    stylus = spawn myStylus, ['-u', 'nib', '-o', 'client/css/', 'client/css/stylus']
   stylus.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
   stylus.stdout.on 'data', (data) ->
