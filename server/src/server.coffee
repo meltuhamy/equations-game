@@ -18,20 +18,17 @@ DICEFACES = DiceFace.DICEFACES
 game = new DiceFace.Game([])
 
 everyone.now.addClient = () ->
-  game.addClient(this.user.clientId)
+  console.log this
+  try
+    pNo = game.addClient(this.user.clientId)
+    this.now.acceptPlayer(pNo)
+  catch e
+    console.warn e
+  
 
 
 everyone.now.logStuff = (message) ->
   console.log message
-
-###
-everyone.now.moveUnallocatedToMat = (destinationMatType, unallocatedIndex) ->
-  console.log "Previous game state: "
-  console.log game
-  game.mats.moveUnallocatedToMat(destinationMatType, unallocatedIndex)
-###
-
-  #everyone.now.draw(this.user.clientId, message);
 
 everyone.now.testFunc = () ->
   console.log(this.user.addClient)
