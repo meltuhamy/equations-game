@@ -27,6 +27,13 @@ class GoalNode
   e1: undefined
   e2: undefined
 
+#Grammer:
+#E -> E'+'T|E'-'T|T
+#T-> T'*'F|T'/'F|F
+#F->'+'P|'-'P|sqr'E'|P'^'E|constant|'('E')'
+
+
+#these are the nodes that we will be using for the tree:
 class ExpNode
   constructor: ->
 
@@ -150,7 +157,6 @@ class Game
     scanned
 
   parse: (pre_tree_array) ->
-
 
 
   addClient: (clientid) ->
