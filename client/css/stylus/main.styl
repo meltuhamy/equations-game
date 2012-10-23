@@ -1,11 +1,12 @@
 @import 'nib'
 
-.clearfix:after
-  content: "."
-  display: block
-  height: 0
-  clear: both
-  visibility: hidden
+.clearfix
+  clearfix()
+
+display-box()
+  display: -webkit-box
+  display: -moz-box
+  display: box
 
 div#container
   margin: 0 auto
@@ -134,7 +135,7 @@ div#container li.dice span
 
 div#mats-flexbox-container
   width: 100%
-  display: box
+  display-box()
   box-orient(horizontal)
   flex-wrap(wrap)
   flex-direction(row)
@@ -159,7 +160,7 @@ div#mats-flexbox-container > div.mat
   margin: 10px 0 0 10px
 
 ul#main-columns
-  display(box)
+  display-box()
   box-orient(horizontal)
   flex-wrap(wrap)
   flex-direction(row)
