@@ -1,8 +1,11 @@
 @import 'nib'
 
+/** Let us choose the styles, not the browser! **/
+/** Reset padding and margins that the browser gives to elements as well as annoying list styles etc. **/
+*
+  reset-box-model()
 
-.clearfix
-  clearfix()
+
 
 display-box()
   display: -webkit-box
@@ -21,6 +24,12 @@ div#container
   margin: 0 auto
   width: 80%
   max-width: 1200px;
+
+
+/*************************************************************/
+/*********************    GOAL       *************************/
+/******* styles for the goal dice and challenge buttons ******/
+/*************************************************************/
 
 div#goal
   background: #EEE
@@ -110,39 +119,45 @@ div#never-button:active
   box-shadow(inset 0 0 1px 1px #e3e3e3)
   color: #000
 
+
+
+
+
 div#unallocated
   display: block
   width: 100%
   background: #EEE
+  padding-top: 10px;
   border-radius(5px)
-  margin-bottom: 10px
-  padding: 10px 0px
-
-div#unallocated ul
-  list-style: none
-  padding: 0
-  margin: 0
-
-div#unallocated ul li
-  margin-left: 10px
-
-div#unallocated ul li.dice:first-child
-  margin-left: 10px
-
-div#container li.dice
-  float: left
   text-align: center
-  background: #CCC
-  display: table
-  width: 30px
-  height: 30px
+  margin-bottom: 10px // separate unallocated box from the mats
 
-div#container li.dice span
-  font-family: "Helvetica Neue","Hevletica","Arial","DejaVu Sans","Kozuka Gothic Pro R","Meiryo","MS Gothic","Osaka",sans-serif
-  font-size: 22px
-  font-weight: bold
-  vertical-align: middle
-  display: table-cell
+
+/* For each mat, tell them about dice layout properties */
+mats = required-mat, optional-mat, forbidden-mat, unallocated
+for m in mats
+  div#{m} ul
+    text-align: left
+    margin: 0px 0px 0px 10px
+    > li.dice 
+      margin-right: 10px
+      margin-bottom: 10px
+      display: inline-block
+      text-align: center
+      background: #CCC
+      width: $dicewidth = 30px
+      height: $dicewidth
+      > span
+        font-family: "Helvetica Neue","Hevletica","Arial","DejaVu Sans","Kozuka Gothic Pro R","Meiryo","MS Gothic","Osaka",sans-serif
+        font-size: 20px
+        padding-top: 4px;
+        line-height: $dicewidth;
+
+
+
+
+
+
 
 div#mats-flexbox-container
   width: 100%
@@ -154,21 +169,37 @@ div#mats-flexbox-container
 
 div#mats-flexbox-container > div.mat
   box-flex(1)
-  margin-left: 5px
-  margin-right: 5px
-  padding-right: 10px
-  padding-bottom: 10px
+  margin-left: 10px
   border-radius(5px)
   background: #999
   width: 0px
+div#mats-flexbox-container > div.mat:first-child
+  margin-left: 0px
 
-#mats-flexbox-container > div.mat ul
-  list-style: none
-  padding: 0
-  margin: 0
 
-#mats-flexbox-container > div.mat > ul > li.dice
-  margin: 10px 0 0 10px
+
+div#mats-flexbox-container > div#optional-mat
+  box-shadow(inset 0 0 1px 1px #f6f6f6)
+  background: linear-gradient(top, #2989d8 0%, #1a7fb2 78%, #2066a0 100%);
+  border: 1px solid #000000
+
+
+ 
+
+
+// Style the headers for the text in the mats
+#mats-flexbox-container > div.mat > h3
+  font-family: "Helvetica Neue","Hevletica","Arial","DejaVu Sans","Kozuka Gothic Pro R","Meiryo","MS Gothic","Osaka",sans-serif
+  text-transform: uppercase
+  color: #000000
+  font-size: 17px
+  letter-spacing: 1px
+  reset-box-model()
+
+
+
+
+
 
 ul#main-columns
   width: 100%
@@ -215,7 +246,6 @@ ul#main-columns li
   box-shadow(0px 0px 8px 2px rgba(255, 0, 0, .75));
 
 #forbidden.glow
-
   box-shadow(0px 0px 8px 2px rgba(0, 255, 0, .75));
 
 #required.glow

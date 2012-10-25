@@ -4,14 +4,14 @@ $(document).ready ->
     $(this).toggleClass('glow')
     
     ###
-    $('#forbidden').popover({content: 'Now click here!', placement: 'top'})
-    $('#forbidden').popover('show')
+    $('#forbidden-mat').popover({content: 'Now click here!', placement: 'top'})
+    $('#forbidden-mat').popover('show')
 
-    $('#optional').popover({content: 'Now click here!', placement: 'top'})
-    $('#optional').popover('show')
+    $('#optional-mat').popover({content: 'Now click here!', placement: 'top'})
+    $('#optional-mat').popover('show')
 
-    $('#required').popover({content: 'Now click here!', placement: 'top'})
-    $('#required').popover('show')
+    $('#required-mat').popover({content: 'Now click here!', placement: 'top'})
+    $('#required-mat').popover('show')
     ###
 
     $('.mat').toggleClass('glow')
