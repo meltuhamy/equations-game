@@ -1,3 +1,16 @@
+###
+Tests:
+
+-(5+5)
+---+++5
++++---5
+1++2
+1--2
+-1--3
+2*3
+*3
+**3
+###
 class Node
   type: undefined     # 'number'/'binop'/'unaryop'
   token: undefined    # The token
@@ -99,7 +112,7 @@ class MathParser
     if c == '('
       ++@idx
       node = @handleAddMinus()
-      if @expr[@idx] != ')' then throw "Error Unbalanced Parenthesis"
+      if @expr[@idx] != ')' then throw new Error("Error Unbalanced Parenthesis")
       ++@idx # move past the '('
     else
       node = @atom()
@@ -114,6 +127,8 @@ class MathParser
     else if this.isIdent(c)
       node.type = "ident"
       node.text = this.matchIdent()
+    else
+      throw new Error("UNEXPECTED TOKEN: #{c}")
 
     node
 
@@ -132,7 +147,7 @@ class MathParser
 
 
 p = new MathParser()
-prettyPrint p.parse("(1+(2*6)-6/3*(5+5*9/2))/2+3")
+prettyPrint p.parse "**3"
 
 # Export these so I can test them
 exports.MathParser = MathParser
