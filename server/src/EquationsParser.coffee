@@ -58,6 +58,7 @@ class MathParser
   constructor: ()->
 
   parse:(expr) ->
+    # expr is an array of tokens
     @expr = expr
     @idx =0
     this.handleAddMinus()
@@ -124,19 +125,13 @@ class MathParser
     if this.isDigit(c)
       node.type = "number"
       node.text= this.matchNumber()
-    else if this.isIdent(c)
-      node.type = "ident"
-      node.text = this.matchIdent()
     else
       throw new Error("UNEXPECTED TOKEN: #{c}")
 
     node
 
-  isDigit : (c) -> !!(c.match(/^\d/))
+  isDigit : (c) -> 9 >= c >= 0 
   matchNumber:()-> this.match(this.isDigit)
-
-  isIdent : (c) -> !!(c.match(/^[a-zA-z]/))
-  matchIdent:() -> this.match(this.isIdent)
   
   atEnd: () -> @idx == @expr.length
 

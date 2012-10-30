@@ -17,92 +17,146 @@ class DICEFACES
   @seven       : 7
   @eight       : 8
   @nine        : 9
+  @getString = (face) ->
+    if 0 <= face <=0
+      "#{face}"
+    else
+      switch face
+        when @bracketL then "("
+        when @bracketR then ")"
+        when @sqrt     then "sqrt"
+        when @power    then "^"
+        when @multiply then "*"
+        when @divide   then "/"
+        when @plus     then "+"
+        when @minus    then "-"
 
 module.exports.DICEFACES = DICEFACES;
 
-numOps = 2
+########### Parser ###########
+class Node
+  type: undefined     # 'number'/'binop'/'unaryop'
+  token: []           # The token. Array because [two three] is "23"
+  children: []        # An array of Nodes
+  constructor: ({type, token, children}) ->
+    @type = type
+    @token = token
+    @children = if children? then children else []
+module.exports.Node = Node
 
-class GoalNode
-  operator: undefined
-  e1: undefined
-  e2: undefined
+flatten = (node) ->
+  str = ""
+  if node.children then str += "["
+  str+= " "
+  str += DICEFACES.getString node.token
+  if node.children
+    str+=" "
+    str += flatten(child) for child in node.children
+  str+= " "
+  if node.children then str +="]"
+  str
 
-#Grammer:
-#E -> E'+'T|E'-'T|T
-#T-> T'*'F|T'/'F|F
-#F->'+'P|'-'P|sqr'E'|P'^'E|constant|'('E')'
+prettyPrint = (node) -> console.log flatten(node)
+module.exports.prettyPrint = prettyPrint
+ 
+class Evaluator
+  getFuncFromOp: (type, op) ->
+    if(type == 'binop')
+      switch op
+        when DICEFACES.plus     then (lhs, rhs) => @evaluate(lhs) + @evaluate(rhs)
+        when DICEFACES.minus    then (lhs, rhs) => @evaluate(lhs) - @evaluate(rhs)
+        when DICEFACES.multiply then (lhs, rhs) => @evaluate(lhs) * @evaluate(rhs)
+        when DICEFACES.divide   then (lhs, rhs) => @evaluate(lhs) / @evaluate(rhs)
+    else if(type == 'unaryop')
+      switch op
+        when DICEFACES.plus     then (rhs) => @evaluate(rhs)
+        when DICEFACES.minus    then (rhs) => - @evaluate(rhs)
+  evaluate:(node) ->
+    switch node.type
+      when 'number'
+        node.token
+      when 'binop'
+        func = @getFuncFromOp('binop', node.token)
+        func(node.children[0], node.children[1])
+      when 'unaryop'
+        func = @getFuncFromOp('unaryop', node.token)
+        func(node.children[0])
+
+module.exports.Evaluator = Evaluator;
+
+class MathParser
+  constructor: ()->
+
+  parse:(expr) ->
+    @expr = expr           # expr is an array of tokens
+    @idx  = 0              # start at token 0
+    this.handleAddMinus()  # Start with minus because it has lowest precedence
+
+  handleAddMinus: () ->
+    child1 = @handleMultiplyDivide()
+    node = child1
+    c = @expr[@idx]
+    while c == DICEFACES.plus or c == DICEFACES.minus
+      ++@idx
+      child2 = @handleMultiplyDivide()
+      node = new Node(type: "binop", token: [c], children: [child1, child2])
+      c = @expr[@idx]
+      child1 = node
+    node
+  
+  handleMultiplyDivide: () ->
+    child1 = @handleUnaryOps()
+    node = child1
+    c = @expr[@idx]
+    while c == DICEFACES.multiply or c == DICEFACES.divide
+      ++@idx
+      child2 = @handleUnaryOps()
+      node = new Node(type : "binop", token: [c], children: [ child1, child2 ]);
+      c = @expr[@idx]
+      child1 = node
+    node
+  handleUnaryOps: () ->
+    c = @expr[@idx]
+    node = {}
+    if c == DICEFACES.minus or c == DICEFACES.plus
+      ++@idx
+      node = new Node(type: "unaryop", token: [c], children: [@handleUnaryOps()])
+    else
+      node = @handleParen()
+    node
+  handleParen: () ->
+    c = @expr[@idx]
+    if c == DICEFACES.bracketL
+      ++@idx
+      node = @handleAddMinus()
+      if @expr[@idx] != DICEFACES.bracketR then throw new Error("Error Unbalanced Parenthesis")
+      ++@idx # move past the '('
+    else
+      node = @atom()
+    node
+  # Handle atomimic bits, numbers and variables
+  atom:() ->
+    c = @expr[@idx]
+    if this.isDigit(c)
+      node = new Node(type: "number", token: this.matchNumber())
+    else
+      throw new Error("UNEXPECTED TOKEN: #{c}")
+    node
+
+  isDigit : (c) -> DICEFACES.nine >= c >= DICEFACES.zero
+  matchNumber:()-> this.match(this.isDigit)
+  
+  atEnd: () -> @idx == @expr.length
+
+  match:(matchFn) ->
+    result = []
+    result.push @expr[@idx++] while !this.atEnd() and matchFn(@expr[@idx])
+    result
+
+module.exports.MathParser = MathParser;
 
 
-#these are the nodes that we will be using for the tree:
-class ExpNode
-  constructor: ->
-
-class PlusNode extends ExpNode
-  exp: undefined
-  term: undefined
-  constructor: (exp, term) ->
-    @exp = exp
-    @term = term
-
-class MinusNode extends ExpNode
-  exp: undefined
-  term: undefined
-  constructor: (exp, term) ->
-    @exp = exp
-    @term = term
-
-class TermNode
-  constructor: ->
-
-class MultiNode extends TermNode
-  term: undefined
-  factor: undefined
-  constructor: (term, factor) ->
-    @term = term
-    @factor = factor
-
-class DivNode extends TermNode
-  term: undefined
-  factor: undefined
-  constructor: (term, factor) ->
-    @term = term
-    @factor = factor
-
-class FactorNode
-  constructor: ->
-
-class PosNode extends FactorNode
-  factor: undefined
-  constructor: (factor) ->
-    @factor = factor
-
-class NegNode extends FactorNode
-  factor: undefined
-  constructor: (factor) ->
-    @factor = factor
-
-class SqrtNode extends FactorNode
-  exp: undefined
-  constructor: (exp) ->
-    @exp = exp
-
-class BracketNode extends FactorNode
-  exp: undefined
-  constructor: (exp) ->
-    @exp = exp
-
-class PowerNode extends FactorNode
-  factor: undefined
-  exp: undefined
-  constructor: (factor, exp) ->
-    @factor = factor
-    @exp = exp
-
-class Constant extends FactorNode
-  value: undefined
-  constructor: (value)->
-    @value = value 
-
+########### Game class ###########
 class Game
   goalResources: []
   players: []
