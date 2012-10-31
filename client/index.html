@@ -14,11 +14,9 @@
     </head>
     <body>
         <div id="container">
-            <h1>Equations</h1>
+
             <div id="goal" class="clearfix">
-                <div id="goal-text">
-                    <span>Goal</span>
-                </div>
+                <span>Goal</span>
 
                 <ul>
                     <li class="goal-dice"><span>7</span></li>
@@ -34,98 +32,97 @@
             </div>
 
             <div id="unallocated">
-                <ul>
-                    <li class="dice"><span>1</span></li>
-                    <li class="dice"><span>+</span></li>
-                    <li class="dice"><span>3</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>1</span></li>
-                    <li class="dice"><span>+</span></li>
-                    <li class="dice"><span>3</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>1</span></li>
-                    <li class="dice"><span>+</span></li>
-                    <li class="dice"><span>3</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>1</span></li>
-                    <li class="dice"><span>+</span></li>
-                    <li class="dice"><span>3</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>1</span></li>
-                    <li class="dice"><span>+</span></li>
-                    <li class="dice"><span>3</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>1</span></li>
-                    <li class="dice"><span>+</span></li>
-                    <li class="dice"><span>3</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>5</span></li>
-                </ul>
+                <div id="dice_container">
+                    <ul id="required">
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                    </ul>
+                    <ul id="optional">
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                    </ul>
+                    <ul id="resource">
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                    </ul>
+                </div>
             </div>
 
+            
+           
             <div id="mats-flexbox-container">
-                <div class="mat" id="required-mat">
-                    <h3>Required</h3>
-                    <ul>
-                        <li class="dice"><span>3</span></li>
-                        <li class="dice"><span>7</span></li>
-                        <li class="dice"><span>1</span></li>
-                        <li class="dice"><span>+</span></li>
-                        <li class="dice"><span>3</span></li>
-                        <li class="dice"><span>5</span></li>
-                        <li class="dice"><span>5</span></li>
-                        <li class="dice"><span>1</span></li>
-                        <li class="dice"><span>+</span></li>
-                        <li class="dice"><span>3</span></li>
-                        <li class="dice"><span>5</span></li>
-                        <li class="dice"><span>5</span></li>
-                        <li class="dice"><span>1</span></li>
-                        <li class="dice"><span>+</span></li>
-                        <li class="dice"><span>3</span></li>
-                        <li class="dice"><span>5</span></li>
-                        <li class="dice"><span>5</span></li>
-                        <li class="dice"><span>1</span></li>
-                        <li class="dice"><span>+</span></li>
-                        <li class="dice"><span>3</span></li>
-                        <li class="dice"><span>5</span></li>
-                        <li class="dice"><span>5</span></li>
-                        <li class="dice"><span>1</span></li>
-                        <li class="dice"><span>+</span></li>
-                        <li class="dice"><span>3</span></li>
-                        <li class="dice"><span>5</span></li>
-                        <li class="dice"><span>5</span></li>
-                        <li class="dice"><span>1</span></li>
-                        <li class="dice"><span>+</span></li>
-                        <li class="dice"><span>3</span></li>
-                        <li class="dice"><span>5</span></li>
-                        <li class="dice"><span>5</span></li>
-                        <li class="dice"><span>7</span></li>
-                    </ul>
+                <div id="required-mat-outer">
+                    <div class="mat" id="required-mat-inner">
+                        <h3>Required</h3>
+                        <ul>
+                            <li class="dice"><span>3</span></li>
+                            <li class="dice"><span>7</span></li>
+                            <li class="dice"><span>1</span></li>
+                            <li class="dice"><span>+</span></li>
+                            <li class="dice"><span>3</span></li>
+                            <li class="dice"><span>5</span></li>
+                            <li class="dice"><span>5</span></li>
+                            <li class="dice"><span>1</span></li>
+                            <li class="dice"><span>+</span></li>
+
+                        </ul>
+                    </div>
                 </div>
 
-                <div class="mat" id="optional-mat">
-                    <h3>Optional</h3>
-                    <ul>
-                        <li class="dice"><span>3</span></li>
-                        <li class="dice"><span>7</span></li>
-                    </ul>
+                <div id="optional-mat-outer">
+                    <div class="mat" id="optional-mat-inner">
+                        <h3>Optional</h3>
+                        <ul>
+                            <li class="dice"><span>3</span></li>
+                            <li class="dice"><span>7</span></li>
+                        </ul>
+                    </div>
                 </div>
 
 
-                <div class="mat" id="forbidden-mat">
-                    <h3>Forbidden</h3>
-                    <ul>
-                        <li class="dice"><span>3</span></li>
-                        <li class="dice"><span>7</span></li>
-                    </ul>
+
+                <div id="forbidden-mat-outer">
+                    <div class="mat" id="forbidden-mat-inner">
+                        <h3>Forbidden</h3>
+                        <ul>
+                            <li class="dice"><span>3</span></li>
+                            <li class="dice"><span>7</span></li>
+                        </ul>
+                    </div>
                 </div>
-                
+
             </div>
+            
 
             <ul id="main-columns">
 
@@ -164,14 +161,15 @@
                 </li>
 
             </div>
-
+            
+            <!--
             <div id="player-list">
                 <ul>
                     <li>Player 1 - 2 points</li>
                     <li>Player 2 - 2 points</li>
                     <li>Player 3 - 2 points</li>
                 </ul>
-            </div>
+            </div>-->
 
 
 
