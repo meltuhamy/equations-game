@@ -51,14 +51,14 @@ div#goal
   padding: 10px 10px
 
   display: block
-  position: relative
+  //position: relative
   text-align: center
 
 div#goal-text
-  position: absolute
+  //position: absolute
   width: 100%
   text-align: center
-  top: -30px
+  //top: -30px
   text-transform: uppercase
   font-family: $font-list
   font-size: 42px
@@ -74,16 +74,19 @@ div#goal-text span
   font-family: $font-list
   font-size: 32px
   font-weight: bold
-  width: 40px
-  height: 40px
-  background: #BBB
-  padding-top: 5px
+  background: #FFC818
+  width: $dicewidth = 40px
+  height: $dicewidth
+  span
+    color: #BE6B00
+    text-shadow: rgba(0, 0, 0, .15) 0px 1px 0px
+    line-height: $dicewidth;
 
 div#now-never-text
-  position: absolute
-  width: 100%
+  //position: absolute
+  //width: 100%
   text-align: center
-  bottom: -20px
+  //bottom: -20px
 
 span#now-button
   background: #e3e3e3
@@ -137,31 +140,26 @@ div#never-button:active
 
 
 
+div#unallocated ul,
+ul#answers
+  display: inline
+  text-align: left
+  margin: 0px 10px 0px 20px
 
+  li.dice 
+    margin-right: -5px
+    border: 4px solid red
+    display: inline-block
+    text-align: center
+    background: #CCC
+    width: $dicewidth = 30px
+    height: $dicewidth
+    span
+      font-family: $font-list
+      font-size: 20px
+      padding-top: 4px;
+      line-height: $dicewidth;
 
-/* For each mat, tell the inner container about dice layout properties */
-mats = required-mat-inner, optional-mat-inner, forbidden-mat-inner, unallocated
-for m in mats
-  div#{m} ul
-    text-align: left
-    margin: 0px 10px 0px 20px
-    li.dice:before
-      content: ' '
-      margin: 5px
-    li.dice 
-      margin-right: -5px
-      border: 4px solid red
-      display: inline-block
-      text-align: center
-      background: #CCC
-      width: $dicewidth = 30px
-      height: $dicewidth
-      
-      span
-        font-family: $font-list
-        font-size: 20px
-        padding-top: 4px;
-        line-height: $dicewidth;
 
 
 div#unallocated
@@ -170,10 +168,9 @@ div#unallocated
   background: #0066AD
   padding-top: 10px;
   padding-bottom: 10px;
+  margin-bottom: 10px
   border-radius(5px)
   text-align: left
-  ul
-    display: inline
   ul#required li.dice
     color: #FFFFFF
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
@@ -199,64 +196,23 @@ div#unallocated
 
 
 
+ul#answers 
+  margin-left: -5px;
+  li.dice
+    color: #FFFFFF
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+    border-color:#007BD1
+    background: #777777
+    border-width: 8px
 
-
-
-
-#testspan ul li.dice
-  border-color: blue
- 
-
-#testspan2 ul li.dice
-  border-color: blue
-
-
-
-
-// Box Flex Parent
-div#mats-flexbox-container
-  width: 100%
-  display-box()
-  box-orient(horizontal)
-  flex-wrap(wrap)
-  flex-direction(row)
-  margin-bottom: 10px
-
-
-div#required-mat-outer,
-div#optional-mat-outer,
-div#forbidden-mat-outer
-  box-flex(1)
-  background: #0066AD
-  width: 0px
-  border-right: 2px solid #00518A;
-  //box-shadow(inset 0 0 1px 1px #f6f6f6)
-
-
-div#required-mat-outer
-  border-radius(5px 0px 0px 5px)
-div#forbidden-mat-outer
-  border-radius(5px 0px 0px 5px)
-
-
-
-// Style the headers for the text in the mats
-#mats-flexbox-container div.mat h3
-  font-family: $font-list
-  color: #FFFFFF
-  font-size: 13px
-  letter-spacing: 1px
-  text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
-  margin-left: 5px
-  margin-top: 5px
-  padding: 5px
 
 
 
 
 a.mini-button
+  cursor: pointer
   background: #007DD5
-  font: bold 12px/1 $font-list
+  font: bold 13px/1 $font-list
   padding: 1px
   margin: 1px
   display: inline-block
@@ -276,6 +232,8 @@ a.mini-button
 
 ul#main-columns
   width: 100%
+  background: #0066AD
+  border-radius(5px)
   display-box()
   box-orient(horizontal)
   flex-wrap(wrap)
@@ -301,6 +259,16 @@ ul#main-columns li
       display: inline-block
       width: 20px
 
+
+#rough-area-container
+  padding: 1px
+
+#rough-area-board 
+  display: block;
+  height: 100px;
+  margin: 10px;
+  background: #005983;
+
       
 #player-list ul
   reset-box-model()
@@ -308,11 +276,7 @@ ul#main-columns li
     background: #CCC;
 
 
-#rough-area-board 
-  display: block;
-  height: 100px;
-  margin: 10px;
-  background: #fff;
+
 
 .glow
   transition(box-shadow 0.5s)
