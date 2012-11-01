@@ -11,9 +11,39 @@ html, body
 
 
 body
-  background:#0078CD
+  background:#2066a0
   background: linear-gradient(top, #2989d8 0%, #1a7fb2 58%, #2066a0 100%);
   min-height: 100%;
+
+div#container
+  margin: 0 auto
+  width: 80%
+  min-height: 100%;
+
+// For screen widths 0 <= w <= 999
+@media all and (max-width: 999px)
+  div#container
+    width: 95%
+  ul#main-columns
+    box-orient(vertical) // When the screen is too small, make the answer/rough area rows become columns
+    li
+      box-flex(1)
+      
+
+// For screen widths 1200 <= w <= 1200
+@media all and (min-width: 1000px)
+  div#container
+    width: 80%
+  ul#main-columns
+    box-orient(horizontal) // When the screen is big enough, make the answer/rough area rows become columns
+    li
+      box-flex(1)
+      width: 0 // give columns equal maximum shared width (hack to work on both FF and CHR)
+
+
+
+
+
 
 
 display-box()
@@ -29,11 +59,6 @@ vertical-text()
   white-space:nowrap;
 
 
-div#container
-  margin: 0 auto
-  width: 80%
-  max-width: 1200px;
-  min-height: 100%;
 
 
 
@@ -47,7 +72,7 @@ $font-list = "Helvetica Neue","Hevletica","Arial","DejaVu Sans","Kozuka Gothic P
 div#goal
   background: #0078CD
   border-radius(5px)
-  margin-bottom: 30px
+  margin-bottom: 10px
   padding: 10px 10px
 
   display: block
@@ -142,8 +167,8 @@ div#never-button:active
 
 div#unallocated ul,
 ul#answers
-  display: inline
-  text-align: left
+  display: inline-block
+  text-align: center
   margin: 0px 10px 0px 20px
 
   li.dice 
@@ -170,6 +195,7 @@ div#unallocated
   padding-bottom: 10px;
   margin-bottom: 10px
   border-radius(5px)
+  border: 1px solid #55A3D6
   text-align: left
   ul#required li.dice
     color: #FFFFFF
@@ -192,12 +218,12 @@ div#unallocated
 
 
 #dice_container
-  margin 0px 30px 0px 10px
+  margin 0px 20px 0px 0px
 
 
 
 ul#answers 
-  margin-left: -5px;
+  margin-left: -5px
   li.dice
     color: #FFFFFF
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
@@ -225,28 +251,26 @@ a.mini-button
     display: inline-block
     border-radius(2px)
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+a.mini-button:first-child
+  margin-left: 10px
 
 
-
-
+// The columns/rows for the answer area ad rough area 
 
 ul#main-columns
   width: 100%
   background: #0066AD
   border-radius(5px)
   display-box()
-  box-orient(horizontal)
-  flex-wrap(wrap)
-  flex-direction(row)
   padding: 0
   margin: 0
 
 ul#main-columns li
-  box-flex(1)
+  display-box() //making the boxflex children display box messes up FF
   background: #007DD5
   list-style: none
   margin: 5px
-  width 0;
+  margin-bottom: 5px
 
 #answer-area-container
   #answer-area-toolbar ul
@@ -274,8 +298,6 @@ ul#main-columns li
   reset-box-model()
   li
     background: #CCC;
-
-
 
 
 .glow
