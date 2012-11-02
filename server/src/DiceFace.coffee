@@ -1,3 +1,4 @@
+numOps = 4
 class DICEFACES
   @bracketL    : -8
   @bracketR    : -7
