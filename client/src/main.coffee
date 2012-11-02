@@ -24,13 +24,44 @@ class ClientGoal
     setGoal : (start, extends) ->
         answerDice = numbers[0..2] 
 ###
+class Screen
+  file: undefined
+  hasLoaded: false
+  content: undefined
+  constructor: (@file, screenSystem) ->
+    $.ajax(
+      url: "views/" + @file,
+      success: (data) ->
+        @hasLoaded = true
+        @content = data
+        alert('Load was performed. ');
+        screenSystem.onAssetLoad()
+    )
+
+
+class ScreenSystem
+  numberLoaded: 0
+  totalAssets: 0
+  allLoaded: false
+  currentScreen: undefined
+  container: undefined
+  constructor: (containerId, @screens, @callback) ->
+    @container = $(containerId)
+    @totalAssets = @screens.length
+  renderScreen: (theScreen) ->
+    @currentScreen = theScreen
+    if(theScreen.hasLoaded) then container.html(theScreen.content) else throw "SCREEN HASNT LOADED";
+  onAssetLoad: () ->
+    @numberLoaded++
+    @allLoaded = (@numberLoaded >= @totalAssets)
+    if(@allLoaded) then @callback()
+
+
+
 $(document).ready(->
-  $.ajax(
-    url: '/views/home.html',
-    success: (data) ->
-      $('#container').html(data)
-      alert('Load was performed. ')
-  )
+  screensystem = new ScreenSystem("#container", [homeScreen, goalScreen], -> alert ("mmmm"))
+  homeScreen = new Screen('home.html', screensystem)
+  goalScreen = new Screen('goal.html', screensystem)
 
   $('#unallocated ul li').click(->
     $(this).toggleClass('glow')
