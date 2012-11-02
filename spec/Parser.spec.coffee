@@ -1,5 +1,5 @@
 
-{DICEFACES, prettyPrint, Evaluator, MathParser, Node} = require '../DiceFace.js'
+{DICEFACES, prettyPrint, Evaluator, ExpressionParser, Node} = require '../DiceFace.js'
 
 describe "parser", ->
   it "should construct a node", ->
@@ -9,14 +9,14 @@ describe "parser", ->
     expect(node.children).toEqual []
 
   it "should parse single digit numbers", ->
-    p = new MathParser
+    p = new ExpressionParser
     tree = p.parse [DICEFACES.one]
     expect(tree.type).toEqual "number"
     expect(tree.token).toEqual [DICEFACES.one]
     expect(tree.children).toEqual []
 
   it "should parse >= two digit numbers", ->
-    p = new MathParser
+    p = new ExpressionParser
     tree = p.parse [DICEFACES.one, DICEFACES.two]   # "12"
     expect(tree.type).toEqual "number"
     expect(tree.token).toEqual [DICEFACES.one, DICEFACES.two]
@@ -28,7 +28,7 @@ describe "parser", ->
     expect(tree.children).toEqual []
 
   it "should parse unary operators on single digit numbers", ->
-    p = new MathParser
+    p = new ExpressionParser
     tree = p.parse [DICEFACES.minus, DICEFACES.one]   # "-1"
     expect(tree.type).toEqual "unaryop"
     expect(tree.token).toEqual [DICEFACES.minus]
@@ -40,7 +40,7 @@ describe "parser", ->
     expect(child1.children).toEqual []
 
   it "should parse unary operators on >= 2 digit numbers", ->
-    p = new MathParser
+    p = new ExpressionParser
     tree = p.parse [DICEFACES.minus, DICEFACES.one, DICEFACES.two]   # "-12"
     expect(tree.type).toEqual "unaryop"
     expect(tree.token).toEqual [DICEFACES.minus]
@@ -62,7 +62,7 @@ describe "parser", ->
     expect(child1.children).toEqual []
 
   it "should parse binary operators on single digits", ->
-    p = new MathParser
+    p = new ExpressionParser
     tree = p.parse [DICEFACES.one, DICEFACES.plus, DICEFACES.two]
 
     expect(tree.type).toEqual "binop"
@@ -79,6 +79,15 @@ describe "parser", ->
     expect(secondChild.token).toEqual [DICEFACES.two]
     expect(secondChild.children).toEqual []
 
-  it "should parse combinations of binary and unary operators", ->
-    console.log "Need to implement this!"
+  it "should evaluate a number", ->
+    p = new ExpressionParser
+    tree = p.parse [DICEFACES.minus, DICEFACES.one, DICEFACES.two]
+
+    e = new Evaluator
+    console.log tree
+    console.log e.evaluate tree
+    #expect(val).toEqual(3)
+
+  #it "should parse combinations of binary and unary operators", ->
+   # console.log "Need to implement this!"
 
