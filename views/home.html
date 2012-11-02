@@ -1,0 +1,132 @@
+
+            <div id="goal">
+                <ul>
+                    <li class="goal-dice"><span>7</span></li>
+                    <li class="goal-dice"><span>1</span></li>
+                    <li class="goal-dice"><span>+</span></li>
+                    <li class="goal-dice"><span>3</span></li>
+                </ul>
+     
+                <div id="now-never-text">
+                    <span id="now-button">Now</span>
+                    <span id="now-button">Never</span>
+                </div>
+            </div>
+
+            <div id="unallocated">
+                <div id="dice_container">
+                    <ul id="required">
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                    </ul>
+                    <ul id="optional">
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                    </ul>
+                    <ul id="resources">
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                        <li class="dice"><span>3</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>5</span></li>
+                        <li class="dice"><span>1</span></li>
+                        <li class="dice"><span>+</span></li>
+                    </ul>
+                </div>
+            </div>
+            <ul id="main-columns">
+
+                <li>
+                    <div id="answer-area">
+                        <div id="answer-dice">
+                            <ul id="answers">
+                                <li class="dice"><span>1</span></li>
+                                <li class="dice"><span>+</span></li>
+                                <li class="dice"><span>3</span></li>
+                                <li class="dice"><span>5</span></li>
+                                <li class="dice"><span>5</span></li>
+                                <li class="dice"><span>1</span></li>
+                                <li class="dice"><span>+</span></li>
+                                <li class="dice"><span>3</span></li>
+                                <li class="dice"><span>5</span></li>
+                                <li class="dice"><span>5</span></li>
+                                <li class="dice"><span>1</span></li>
+                                <li class="dice"><span>+</span></li>
+                            </ul>
+                        </div>
+
+                        <div id="answer-buttons">
+                            <a class="mini-button"><span>Brackets</span></span></a>
+                            <a class="mini-button"><span>Delete</span></span></a>
+                            <a class="mini-button"><span>Submit</span></span></a>
+                            <a class="mini-button"><span>Undo</span></span></a>
+                            <a class="mini-button"><span>Redo</span></span></a>
+                            <a class="mini-button"><span>Clear</span></span></a>
+                        </div>
+                    </div>
+                </li>
+
+                <li>
+                    <div id="rough-area-container">
+                        <div id="rough-area-board">
+                            <canvas id="simple_sketch"></canvas>
+                            <script type="text/javascript">
+
+                              $(function() {
+                                var cv = document.getElementById('simple_sketch');
+                                var ctx = cv.getContext('2d');
+                                ctx.canvas.width  = $(cv).parent().width();
+                                ctx.canvas.height = $(cv).parent().height();
+                                $(window).resize(function(){
+                                    ctx.canvas.width  = $(cv).parent().width();
+                                    ctx.canvas.height = $(cv).parent().height();
+                                });
+                                $('#simple_sketch').sketch();
+                              });
+
+                            </script>
+                        </div>
+
+                        <div id="rough-area-buttons">
+                            <a class="mini-button"><span>Undo</span></span></a>
+                            <a class="mini-button"><span>Redo</span></span></a>
+                            <a class="mini-button"><span>Clear</span></span></a>
+                        </div>
+                    </div>
+                </li>
+
+            </div>
+            
+            <!--
+            <div id="player-list">
+                <ul>
+                    <li>Player 1 - 2 points</li>
+                    <li>Player 2 - 2 points</li>
+                    <li>Player 3 - 2 points</li>
+                </ul>
+            </div>-->

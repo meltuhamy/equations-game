@@ -1,10 +1,6 @@
 ###
 class DiceFace
 class NumberDiceFace extends DiceFace
-    *
-     * Assigns the number to the DiceFace object.
-     * @param {int} @number The number that appears on the dice face
-    
     constructor: (@number) ->
 
 class BracketsFace extends DiceFace
@@ -29,6 +25,13 @@ class ClientGoal
         answerDice = numbers[0..2] 
 ###
 $(document).ready(->
+  $.ajax(
+    url: '/views/home.html',
+    success: (data) ->
+      $('#container').html(data)
+      alert('Load was performed. ')
+  )
+
   $('#unallocated ul li').click(->
     $(this).toggleClass('glow')
     $('.mat').toggleClass('glow')
