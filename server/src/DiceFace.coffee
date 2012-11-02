@@ -1,3 +1,5 @@
+numOps = 4 #temp
+
 class DICEFACES
   @bracketL    : -8
   @bracketR    : -7
@@ -172,6 +174,7 @@ class Game
   constructor: (players) ->
     @players = players
     @allocate()
+    console.log @state.unallocated
 
   allocate: ->
     @state.unallocated = []
@@ -210,12 +213,7 @@ class Game
       index++
     scanned
 
-  parse: (pre_tree_array) ->
-
-
   addClient: (clientid) ->
-    @allocate()
-    console.log @state.unallocated
     if @players.length == @playerLimit
       throw new Error("Game full")
     else
