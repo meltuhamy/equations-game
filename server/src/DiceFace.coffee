@@ -1,4 +1,3 @@
-numOps = 4
 class DICEFACES
   @bracketL    : -8
   @bracketR    : -7
@@ -18,6 +17,7 @@ class DICEFACES
   @seven       : 7
   @eight       : 8
   @nine        : 9
+  @numOps : 4
   @getString = (face) ->
     if 0 <= face <=0
       "#{face}"
@@ -61,6 +61,7 @@ prettyPrint = (node) -> console.log flatten(node)
 module.exports.prettyPrint = prettyPrint
  
 class Evaluator
+  constructor: ->
   getFuncFromOp: (type, op) ->
     if(type == 'binop')
       switch op
@@ -69,23 +70,21 @@ class Evaluator
         when DICEFACES.multiply then (lhs, rhs) => @evaluate(lhs) * @evaluate(rhs)
         when DICEFACES.divide   then (lhs, rhs) => @evaluate(lhs) / @evaluate(rhs)
     else if(type == 'unaryop')
-      switch op
-        when DICEFACES.plus     then (rhs) => @evaluate(rhs)
-        when DICEFACES.minus    then (rhs) => - @evaluate(rhs)
-  evaluate:(node) ->
+      (rhs) => - @evaluate(rhs)
+  evaluate: (node) ->
     switch node.type
       when 'number'
-        node.token
+        return node.token
       when 'binop'
         func = @getFuncFromOp('binop', node.token)
-        func(node.children[0], node.children[1])
+        return func(node.children[0], node.children[1])
       when 'unaryop'
         func = @getFuncFromOp('unaryop', node.token)
-        func(node.children[0])
+        return func(node.children[0])
 
 module.exports.Evaluator = Evaluator;
 
-class MathParser
+class ExpressionParser
   constructor: ()->
 
   parse:(expr) ->
@@ -138,14 +137,14 @@ class MathParser
   # Handle atomimic bits, numbers and variables
   atom:() ->
     c = @expr[@idx]
-    if this.isDigit(c)
+    if this.isNumber(c)
       node = new Node(type: "number", token: this.matchNumber())
     else
       throw new Error("UNEXPECTED TOKEN: #{c}")
     node
 
-  isDigit : (c) -> DICEFACES.nine >= c >= DICEFACES.zero
-  matchNumber:()-> this.match(this.isDigit)
+  isNumber : (c) -> c >= DICEFACES.zero
+  matchNumber:()-> this.match(this.isNumber)
   
   atEnd: () -> @idx == @expr.length
 
@@ -154,12 +153,14 @@ class MathParser
     result.push @expr[@idx++] while !this.atEnd() and matchFn(@expr[@idx])
     result
 
-module.exports.MathParser = MathParser;
+module.exports.ExpressionParser = ExpressionParser;
+
+parser = new ExpressionParser()
 
 
 ########### Game class ###########
 class Game
-  goalResources: []
+  goalTree: undefined
   players: []
   playerLimit: 3
   state: {
@@ -173,6 +174,7 @@ class Game
   constructor: (players) ->
     @players = players
     @allocate()
+    console.log @state.unallocated
 
   allocate: ->
     @state.unallocated = []
@@ -182,14 +184,18 @@ class Game
       if rand < 2/3  #first we decide if the roll yields an operator or a digit
         rand = Math.floor(Math.random() * 10)  #2/3 of the time we get a digit, decided by a new random number
       else  #1/3 of the time we get an operator, again we generate a new random number to decide which operator to use
-        rand = Math.floor(Math.random() * - numOps)
+        rand = Math.floor(Math.random() * - DICEFACES.numOps)
         ops++ #we keep track of the number of operators generated so that later we can check if there are enough
       @state.unallocated.push(rand)  #here we add the die to the unallocated resources array
     if (ops < 2) || (ops > 21)  #if there are too few or too many operators, we must roll again
       @allocate()  #do the allocation again
 
   setGoal: (dice) ->
-    @goal = dice
+    scanned = @scan(dice)
+    @goalTree = parser.parse(scanned)
+    #e = new Evaluator()
+    #val = e.evaluate(@goalTree)
+    #console.log "Goal parsed and evaluates to #{val}"
 
   scan: (dice) ->
     scanned = []
@@ -211,12 +217,7 @@ class Game
       index++
     scanned
 
-  parse: (pre_tree_array) ->
-
-
   addClient: (clientid) ->
-    @allocate()
-    console.log @state.unallocated
     if @players.length == @playerLimit
       throw new Error("Game full")
     else

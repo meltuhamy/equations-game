@@ -28,8 +28,17 @@ everyone.now.addClient = () -> #called by client when connected
     this.now.acceptPlayer(pNo)
   catch e
     console.warn e
+ 
+ everyone.now.receiveGoal = (goalArray) -> #recieves the goal array from client
+  #need to validate goal array at some point
+  try
+    game.setGoal(goalArray)
+  catch e
+    this.now.badGoal("Bad goal:" + e)
   
 
+
+  
 
 everyone.now.logStuff = (message) ->
   console.log message
