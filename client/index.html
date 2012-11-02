@@ -108,11 +108,21 @@
                 <li>
                     <div id="rough-area-container">
                         <div id="rough-area-board">
-                            <canvas id="simple_sketch" width="570" height="100"></canvas>
+                            <canvas id="simple_sketch"></canvas>
                             <script type="text/javascript">
+
                               $(function() {
+                                var cv = document.getElementById('simple_sketch');
+                                var ctx = cv.getContext('2d');
+                                ctx.canvas.width  = $(cv).parent().width();
+                                ctx.canvas.height = $(cv).parent().height();
+                                $(window).resize(function(){
+                                    ctx.canvas.width  = $(cv).parent().width();
+                                    ctx.canvas.height = $(cv).parent().height();
+                                });
                                 $('#simple_sketch').sketch();
                               });
+
                             </script>
                         </div>
 
