@@ -11,7 +11,8 @@ now.receiveState = (s) ->
 sendGoal = (goalArray) -> #When client clicks send goal on the gui, call this function
   now.receiveGoal(goalArray) #calls the server function receiveGoal, which parses it and stores it in the game object
 
-
+now.badGoal = (message) ->
+  console.log message
 
 now.ready ->
   now.addClient()

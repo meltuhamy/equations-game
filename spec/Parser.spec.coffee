@@ -17,9 +17,9 @@ describe "parser", ->
 
   it "should parse >= two digit numbers", ->
     p = new ExpressionParser
-    tree = p.parse [DICEFACES.one, DICEFACES.two]   # "12"
+    tree = p.parse [12]   # "12"
     expect(tree.type).toEqual "number"
-    expect(tree.token).toEqual [DICEFACES.one, DICEFACES.two]
+    expect(tree.token).toEqual [12]
     expect(tree.children).toEqual []
 
     tree = p.parse [DICEFACES.one, DICEFACES.two, DICEFACES.three] # "123"

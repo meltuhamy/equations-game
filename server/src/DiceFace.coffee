@@ -138,14 +138,14 @@ class ExpressionParser
   # Handle atomimic bits, numbers and variables
   atom:() ->
     c = @expr[@idx]
-    if this.isDigit(c)
+    if this.isNumber(c)
       node = new Node(type: "number", token: this.matchNumber())
     else
       throw new Error("UNEXPECTED TOKEN: #{c}")
     node
 
-  isDigit : (c) -> DICEFACES.nine >= c >= DICEFACES.zero
-  matchNumber:()-> this.match(this.isDigit)
+  isNumber : (c) -> c >= DICEFACES.zero
+  matchNumber:()-> this.match(this.isNumber)
   
   atEnd: () -> @idx == @expr.length
 
@@ -191,10 +191,11 @@ class Game
       @allocate()  #do the allocation again
 
   setGoal: (dice) ->
-    @goalTree = parser.parse(dice)
-    e = new Evaluator()
-    val = e.evaluate(@goalTree)
-    console.log "Goal parsed and evaluates to #{val}"
+    scanned = @scan(dice)
+    @goalTree = parser.parse(scanned)
+    #e = new Evaluator()
+    #val = e.evaluate(@goalTree)
+    #console.log "Goal parsed and evaluates to #{val}"
 
   scan: (dice) ->
     scanned = []
