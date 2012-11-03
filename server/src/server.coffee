@@ -1,26 +1,13 @@
-express = require("express")
-http = require('http')
-nowjs = require("now")
+{app, server, nowjs} = require './ServerListener.js'
 
-app = express()
-server = http.createServer(app)
-app.use(express.static(__dirname + "/client"))
-
-app.get('/views/:viewName', (req, res) ->
-  console.log("REQUEST MADE #{req.params.viewName}")
-  res.sendfile(__dirname + "/views/#{req.params.viewName}")
-)
-
-server.listen(8080)
-console.log "Listening"
+{DICEFACES} = require './DiceFace.js'
+{Game} = require './Game.js'
 
 everyone = nowjs.initialize(server)
 
 
-DiceFace = require './DiceFace.js'
-DICEFACES = DiceFace.DICEFACES
 
-game = new DiceFace.Game([])
+game = new Game([])
 
 everyone.now.addClient = () -> #called by client when connected
   try
