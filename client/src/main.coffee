@@ -28,41 +28,58 @@ class Screen
   file: undefined
   hasLoaded: false
   content: undefined
-  constructor: (@file, screenSystem) ->
+  constructor: (@file) ->
+  load: (callback) ->
     $.ajax(
       url: "views/" + @file,
-      success: (data) ->
+      success: (data) =>
         @hasLoaded = true
         @content = data
-        alert('Load was performed. ');
-        screenSystem.onAssetLoad()
+        #alert('Load was performed. ')
+        callback()
     )
 
 
 class ScreenSystem
   numberLoaded: 0
-  totalAssets: 0
+  screens: []
+  totalScreens: () -> @screens.length
   allLoaded: false
+  currentScreenId: undefined
   currentScreen: undefined
   container: undefined
-  constructor: (containerId, @screens, @callback) ->
+  constructor: (containerId) ->
     @container = $(containerId)
-    @totalAssets = @screens.length
-  renderScreen: (theScreen) ->
-    @currentScreen = theScreen
-    if(theScreen.hasLoaded) then container.html(theScreen.content) else throw "SCREEN HASNT LOADED";
-  onAssetLoad: () ->
-    @numberLoaded++
-    @allLoaded = (@numberLoaded >= @totalAssets)
-    if(@allLoaded) then @callback()
-
-
+  renderScreen: (screenId) ->
+    if(@getScreen(screenId).hasLoaded)
+      @updateCurrentScreen(screenId)
+      @container.html(@currentScreen.content)
+    else 
+      throw "SCREEN HASNT LOADED"
+  updateCurrentScreen: (screenId) ->
+    @currentScreenId = screenId
+    @currentScreen = @screens[screenId]
+  addScreen: (filename) ->
+    @screens.push(new Screen(filename)) - 1 # Push returns length after the item is added
+  getScreen: (screenId) -> 
+    @screens[screenId]
+  loadAllScreens: (callback) ->
+    for screen in @screens 
+      if !screen.hasLoaded
+        screen.load(=> 
+          @numberLoaded++
+          if(@numberLoaded >= @totalScreens())
+            @allLoaded = true
+            callback()
+        )
 
 $(document).ready(->
-  screensystem = new ScreenSystem("#container", [homeScreen, goalScreen], -> alert ("mmmm"))
-  homeScreen = new Screen('home.html', screensystem)
-  goalScreen = new Screen('goal.html', screensystem)
-
+  screensystem = new ScreenSystem("#container")
+  homeScreenId = screensystem.addScreen('home.html')
+  goalScreenId = screensystem.addScreen('goal.html')
+  console.log goalScreenId
+  console.log homeScreenId
+  screensystem.loadAllScreens(->screensystem.renderScreen(goalScreenId))
   $('#unallocated ul li').click(->
     $(this).toggleClass('glow')
     $('.mat').toggleClass('glow')
