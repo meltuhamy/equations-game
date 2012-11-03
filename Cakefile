@@ -56,14 +56,16 @@ debug = ->
 
 
 tests = (callback) ->
-  build()
-  jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
-  jnode.stderr.on 'data', (data) ->
-    process.stderr.write data.toString()
-  jnode.stdout.on 'data', (data) ->
-    print data.toString()
-  jnode.on 'exit', (code) ->
-    callback?() if code is 0
+  server(client(->
+    jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
+    jnode.stderr.on 'data', (data) ->
+      process.stderr.write data.toString()
+    jnode.stdout.on 'data', (data) ->
+      print data.toString()
+    jnode.on 'exit', (code) ->
+      callback?() if code is 0
+  ))
+
 
 
 

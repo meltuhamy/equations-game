@@ -45,3 +45,20 @@ everyone.now.logStuff = (message) ->
 
 everyone.now.testFunc = () ->
   console.log(this.user.addClient)
+
+###
+flatten = (node) ->
+  str = ""
+  if node.children then str += "["
+  str+= " "
+  str += DICEFACES.getString node.token
+  if node.children
+    str+=" "
+    str += flatten(child) for child in node.children
+  str+= " "
+  if node.children then str +="]"
+  str
+
+prettyPrint = (node) -> console.log flatten(node)
+module.exports.prettyPrint = prettyPrint
+###
