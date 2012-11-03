@@ -1,5 +1,8 @@
 {DICEFACES} = require '../DiceFace.js'
+DICEFACES = DICEFACES.symbols
+
 {Evaluator} = require '../Evaluator.js'
+
 {ExpressionParser, Node} = require '../Parser.js'
 
 describe "parser", ->

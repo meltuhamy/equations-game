@@ -1,4 +1,5 @@
 {DICEFACES} = require './DiceFace.js'
+DICEFACES = DICEFACES.symbols
 
 class Node
   type: undefined     # 'number'/'binop'/'unaryop'

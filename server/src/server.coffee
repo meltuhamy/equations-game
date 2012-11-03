@@ -1,20 +1,30 @@
 {app, server, nowjs} = require './ServerListener.js'
 
 {DICEFACES} = require './DiceFace.js'
+DICEFACES = DICEFACES.symbols
+
 {Game} = require './Game.js'
+{Player} = require './Player.js'
 
 everyone = nowjs.initialize(server)
 
 
 
 game = new Game([])
+everyone.now.DICEFACES = DICEFACES
 
 everyone.now.addClient = () -> #called by client when connected
-  try
-    pNo = game.addClient(this.user.clientId)
-    this.now.acceptPlayer(pNo)
-  catch e
-    console.warn e
+  if(!game.isFull())
+    # add the player, tell him he was accepted and give him his playerId for the game
+    assignedPlayerId = game.addClient(this.user.clientId)
+    this.now.acceptPlayer(assignedPlayerId)
+    #now see if the game is full after adding him (i.e see if is the last player)
+    if(game.isFull())
+      everyone.now.receiveStartGame(DICEFACES.symbols, game.players, 0)
+  else
+    # else the game is already full, so tell him - tough luck
+
+    
  
  everyone.now.receiveGoal = (goalArray) -> #recieves the goal array from client
   #need to validate goal array at some point

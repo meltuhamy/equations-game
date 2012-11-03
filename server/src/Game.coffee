@@ -1,7 +1,11 @@
 {DICEFACES} = require './DiceFace.js'
+DICEFACE = DICEFACES.symbols
+
+{Player} = require './Player.js'
+
 class Game
   goalTree: undefined
-  players: []
+  players: [] #private Player[] the players who have joined the game
   playerLimit: 3
   state: {
     unallocated: []
@@ -37,25 +41,6 @@ class Game
     #val = e.evaluate(@goalTree)
     #console.log "Goal parsed and evaluates to #{val}"
 
-  scan: (dice) ->
-    scanned = []
-    index = 0
-    while index < dice.length
-      if 0 <= dice[index] <= 9  #if current element is a number
-        if (index < dice.length - 1) && (0 <= dice[index + 1] <= 9) #if next element is a number
-          if (index < dice.length - 2) && (0 <= dice[index + 2] <= 9) #if third element is a number
-            throw "Numbers limited to 2 digits in a row"
-          else
-            scanned.push(dice[index] * 10 + dice[index + 1]) #concatenate
-            console.log "index before = #{index}"
-            index++
-            console.log "index after = #{index}"
-        else
-          scanned.push(dice[index])
-      else
-        scanned.push(dice[index])
-      index++
-    scanned
 
   addClient: (clientid) ->
     if @players.length == @playerLimit
@@ -63,6 +48,10 @@ class Game
     else
       @players.push(new Player(clientid))
       @players.length
+
+  isFull: () -> @players.length == @playerLimit
+  getNumPlayers: () -> return @players.length
+  getFirstTurnPlayer: () -> 0 # return the index of the player who will set the goal
 
   resourceExists: (resource) ->
     index = @state.unallocated.indexOf resource

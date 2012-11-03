@@ -1,4 +1,6 @@
 {DICEFACES} = require './DiceFace.js'
+DICEFACES = DICEFACES.symbols
+
 class Evaluator
   constructor: ->
   getFuncFromOp: (type, op) ->
