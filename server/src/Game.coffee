@@ -56,9 +56,12 @@ class Game
   getNumPlayers: () -> return @players.length
   getFirstTurnPlayer: () -> 0 # return the index of the player who will set the goal
 
+  authenticateMove: (socketId) -> #returns a boolean indicating whether or not the player is authorised to move
+    (socketId == @playerSocketIds[@state.currentPlayer])
+
+
   nextTurn: () ->
     @state.currentPlayer = (@state.currentPlayer + 1) % @players.length
-    console.log @state.currentPlayer
 
   resourceExists: (resource) ->
     index = @state.unallocated.indexOf resource
@@ -67,31 +70,34 @@ class Game
     else
       index
 
-  moveToRequired: (resource) ->
-    try
-      index = @resourceExists(resource)
+  moveToRequired: (index, clientId) ->
+    if !@authenticateMove(clientId)
+      throw "Unauthenticated move rejected"
+    else if index < 0 || index >= @state.unallocated.length
+      throw "Index for move out of bounds"
+    else
+      @state.required.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
-      @state.required.push(resource)
       @nextTurn()
-    catch e
-      console.warn e
 
-  moveToOptional: (resource) ->
-    try
-      index = @resourceExists(resource)
+  moveToOptional: (index, clientId) ->
+    if !@authenticateMove(clientId)
+      throw "Unauthenticated move rejected"
+    else if index < 0 || index >= @state.unallocated.length
+      throw "Index for move out of bounds"
+    else
+      @state.optional.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
-      @state.optional.push(resource)
       @nextTurn()
-    catch e
-      console.warn e
 
-  moveToForbidden: (resource) ->
-    try
-      index = @resourceExists(resource)
+  moveToForbidden: (index, clientId) ->
+    if !@authenticateMove(clientId)
+      throw "Unauthenticated move rejected"
+    else if index < 0 || index >= @state.unallocated.length
+      throw "Index for move out of bounds"
+    else
+      @state.forbidden.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
-      @state.forbidden.push(resource)
       @nextTurn()
-    catch e
-      console.warn e
 
 module.exports.Game = Game

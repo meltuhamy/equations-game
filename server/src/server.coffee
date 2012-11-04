@@ -31,17 +31,26 @@ everyone.now.receiveGoal = (goalArray) -> #recieves the goal array from client
     this.now.badGoal("Bad goal:" + e)
   
 
-everyone.now.moveToRequired = (resource) ->
-  game.moveToRequired(resource)
-  everyone.now.receiveState(game.state)
+everyone.now.moveToRequired = (index) ->
+  try
+    game.moveToRequired(index, this.user.clientId)
+    everyone.now.receiveState(game.state)
+  catch e
+    console.warn e
 
-everyone.now.moveToOptional = (resource) ->
-  game.moveToOptional(resource)
-  everyone.now.receiveState(game.state)
+everyone.now.moveToOptional = (index) ->
+  try
+    game.moveToOptional(index, this.user.clientId)
+    everyone.now.receiveState(game.state)
+  catch e
+    console.warn e
 
-everyone.now.moveToForbidden = (resource) ->
-  game.moveToForbidden(resource)
-  everyone.now.receiveState(game.state)
+everyone.now.moveToForbidden = (index) ->
+  try
+    game.moveToForbidden(index, this.user.clientId)
+    everyone.now.receiveState(game.state)
+  catch e
+    console.warn e
   
 
 everyone.now.logStuff = (message) ->

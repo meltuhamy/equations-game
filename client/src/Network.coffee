@@ -5,7 +5,7 @@
  * Called by the server once a player is accepted
  * @param  {String} id The client id returned from the server
 ###
-now.acceptPlayer = (id, diceface) ->
+now.acceptPlayer = (id, diceface) -> #id is the index
   game.myPlayerId = id
   game.dicefaces = diceface
 
