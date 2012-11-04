@@ -77,7 +77,10 @@ class ExpressionParser
 
   match:(matchFn) ->
     result = []
-    result.push @expr[@idx++] while !this.atEnd() and matchFn(@expr[@idx])
+    numMatched = 0
+    result.push @expr[@idx++] while !this.atEnd() and matchFn(@expr[@idx]) and ++numMatched <=2
+    if(numMatched >2)
+      throw "Can't have more than two digits, maytey"
     result
 
 module.exports.ExpressionParser = ExpressionParser;
