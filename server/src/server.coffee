@@ -14,11 +14,12 @@ game = new Game([])
 everyone.now.addClient = () -> #called by client when connected
   if(!game.isFull())
     # add the player, tell him he was accepted and give him his playerId for the game
-    assignedPlayerId = game.addClient(this.user.clientId)
+    assignedPlayerId = this.user.clientId
+    game.addClient(assignedPlayerId)
     this.now.acceptPlayer(assignedPlayerId, DICEFACESYMBOLS)
     #now see if the game is full after adding him (i.e see if is the last player)
     if(game.isFull())
-      everyone.now.receiveStartGame(game.players, 0)
+      everyone.now.receiveStartGame(game.players, game.state.unallocated, 0)
   else
     # else the game is already full, so tell him - tough luck
 

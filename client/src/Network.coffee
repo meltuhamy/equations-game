@@ -1,7 +1,3 @@
-goal = undefined
-state = undefined 
-game = undefined
-
 
 ### Handle events fired by the server ###
 
@@ -14,18 +10,28 @@ now.acceptPlayer = (id, diceface) ->
   game.dicefaces = diceface
 
 
+# this is when the server is telling the client to update his version of the state
 now.receiveState = (s) ->
-  state = s
+  game.updateState(s) 
 
 ###*
  * Called by the server once sufficient players have joined the game, to start the game.
- * @param  {JSON object} diceJson             Lets you use stuff like diceJson.one etc.
  * @param  {Player[]} players                 An array of player object
+ * @param  {Number[]} unallocated             Array of dicefaces reperesenting the unallocated dicefaces
  * @param  {Number} firstTurnPlayerIndex      The index to this.players that specifies the goal setter
 ###
-now.receiveStartGame = (players, firstTurnPlayerIndex) ->
+now.receiveStartGame = (players, unallocated, firstTurnPlayerIndex) ->
   game.players = players
+  game.state.unallocated = unallocated
+  game.state.currentplayer = firstTurnPlayerIndex
+  if (game.myPlayerId == game.players[firstTurnPlayerIndex].id )
+    #  the server sends the id of the first player, and its the same as our id, so we're first
+    #  time to set the goal. We need to show the goal settings screen and let the player set the goal
+    # show screen
+    ui.showUnallocated(unallocated) # convert the unallocated array to html and display on the screen
+
   game.goingFirst = firstTurnPlayerIndex
+
 
 ###*
  * This is an event triggered by nowjs that says everything's ready to synchronise server/client

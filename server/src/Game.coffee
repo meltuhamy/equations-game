@@ -7,18 +7,17 @@ class Game
   goalTree: undefined
   players: [] #private Player[] the players who have joined the game
   playerLimit: 2
-  state: {
+  state:
     unallocated: []
     required: []
     optional: []
     forbidden: []
     currentPlayer: 0
-  }
+  
 
   constructor: (players) ->
     @players = players
     @allocate()
-    #console.log @state.unallocated # Stop committing useless console logging please ~ moh
 
   allocate: ->
     @state.unallocated = []

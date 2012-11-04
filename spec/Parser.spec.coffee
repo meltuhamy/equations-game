@@ -84,8 +84,6 @@ describe "parser", ->
     tree = p.parse [DICEFACESYMBOLS.minus, DICEFACESYMBOLS.one, DICEFACESYMBOLS.two]
 
     e = new Evaluator
-    console.log tree
-    console.log e.evaluate tree
     #expect(val).toEqual(3)
 
   #it "should parse combinations of binary and unary operators", ->
