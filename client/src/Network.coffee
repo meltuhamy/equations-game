@@ -24,7 +24,7 @@ now.receiveStartGame = (players, unallocated, firstTurnPlayerIndex) ->
   game.players = players
   game.state.unallocated = unallocated
   game.state.currentplayer = firstTurnPlayerIndex
-  if (game.myPlayerId == firstTurnPlayerIndex)
+  if (game.myPlayerId == firstTurnPlayerIndex) #is this a potential security threat? ie - should we store and compare socketIds instead?
     #  the server sends the id of the first player, and its the same as our id, so we're first
     #  time to set the goal. We need to show the goal settings screen and let the player set the goal
     # show screen
@@ -49,10 +49,17 @@ now.ready ->
 ###
 
 sendGoal = (goalArray) -> 
-  now.receiveGoal(goalArray) #calls the server function receiveGoal, which parses it and stores it in the server-side game object
+  try
+    now.receiveGoal(goalArray) #calls the server function receiveGoal, which parses it and stores it in the server-side game object
+    console.log "goal successfully sent"
+  catch e #Catches when wrong client tries to send goal
+    console.log "something wrong with goal"
+    console.warn e
+  
 
-now.badGoal = (message) ->
-  console.log message
+now.badGoal = (parserMessage) ->
+  #do something here to show which part of the goal is malformed
+  console.warn parserMessage
 
 moveToRequired = (index) ->
   now.moveToRequired(index)

@@ -9,12 +9,13 @@ class Game
   players: [] #private Player[] the players who have joined the game
   playerSocketIds: [] # Matching indices with players
   playerLimit: 2
+  goalSetter: undefined
   state:
     unallocated: []
     required: []
     optional: []
     forbidden: []
-    currentPlayer: 0
+    currentPlayer: 0 #this tells us the index of the player who's turn it is, and is automatically incremented after each resource move
   
 
   constructor: (players) ->
@@ -37,8 +38,14 @@ class Game
       @allocate()  #do the allocation again
 
   setGoal: (dice) ->  #the function that calls this (everyone.now.receiveGoal() in server.coffee) handles any thrown exceptions
-    @goalTree = parser.parse(dice)
-    @goalArray = dice
+    p = new Parser()
+    try
+      @goalTree = p.parse(dice)
+      @goalArray = dice
+      console.log "parsed successfully"
+      @start()
+    catch e
+      console.warn e
     #e = new Evaluator()
     #val = e.evaluate(@goalTree)
     #console.log "Goal parsed and evaluates to #{val}"
@@ -55,11 +62,16 @@ class Game
 
   isFull: () -> @players.length == @playerLimit
   getNumPlayers: () -> return @players.length
-  getFirstTurnPlayer: () -> 0 # return the index of the player who will set the goal
+  getFirstTurnPlayer: () -> # return the index of the player who will set the goal
+    if !@goalSetter?
+      @goalSetter = Math.floor(Math.random() * @players.length) #set a random goalSetter
+    @goalSetter
 
   authenticateMove: (socketId) -> #returns a boolean indicating whether or not the player is authorised to move
     (socketId == @playerSocketIds[@state.currentPlayer])
 
+  start: ->
+    @state.currentPlayer = (goalSetter + 1) % @players.length
 
   nextTurn: () ->
     @state.currentPlayer = (@state.currentPlayer + 1) % @players.length

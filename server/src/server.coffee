@@ -17,7 +17,7 @@ everyone.now.addClient = () -> #called by client when connected
     this.now.acceptPlayer(game.addClient(this.user.clientId), DICEFACESYMBOLS)
     #now see if the game is full after adding him (i.e see if is the last player)
     if(game.isFull())
-      everyone.now.receiveStartGame(game.players, game.state.unallocated, 0)
+      everyone.now.receiveStartGame(game.players, game.state.unallocated, game.getFirstTurnPlayer())
   else
     # else the game is already full, so tell him - tough luck
 
@@ -25,10 +25,12 @@ everyone.now.addClient = () -> #called by client when connected
  
 everyone.now.receiveGoal = (goalArray) -> #recieves the goal array from client
   #need to validate goal array at some point
+  if !(this.user.clientId == game.playerSocketIds[game.goalSetter])
+    throw "Unauthorised goal setter"
   try
     game.setGoal(goalArray)
-  catch e
-    this.now.badGoal("Bad goal:" + e)
+  catch e #catches when parser returns error for goal
+    this.now.badGoal(e)
   
 
 everyone.now.moveToRequired = (index) ->
