@@ -5,6 +5,7 @@ DICEFACESYMBOLS = DICEFACES.symbols
 
 class Game
   goalTree: undefined
+  goalArray: []
   players: [] #private Player[] the players who have joined the game
   playerSocketIds: [] # Matching indices with players
   playerLimit: 2
@@ -35,9 +36,9 @@ class Game
     if (ops < 2) || (ops > 21)  #if there are too few or too many operators, we must roll again
       @allocate()  #do the allocation again
 
-  setGoal: (dice) ->
-    scanned = @scan(dice)
-    @goalTree = parser.parse(scanned)
+  setGoal: (dice) ->  #the function that calls this (everyone.now.receiveGoal() in server.coffee) handles any thrown exceptions
+    @goalTree = parser.parse(dice)
+    @goalArray = dice
     #e = new Evaluator()
     #val = e.evaluate(@goalTree)
     #console.log "Goal parsed and evaluates to #{val}"
