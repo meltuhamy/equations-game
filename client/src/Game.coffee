@@ -15,5 +15,5 @@ class Game
     @goal = goal
   updateState: (newState) ->
     state = newState
-  
+
 game = undefined

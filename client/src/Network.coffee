@@ -24,7 +24,7 @@ now.receiveStartGame = (players, unallocated, firstTurnPlayerIndex) ->
   game.players = players
   game.state.unallocated = unallocated
   game.state.currentplayer = firstTurnPlayerIndex
-  if (game.myPlayerId == game.players[firstTurnPlayerIndex].id )
+  if (game.myPlayerId == firstTurnPlayerIndex)
     #  the server sends the id of the first player, and its the same as our id, so we're first
     #  time to set the goal. We need to show the goal settings screen and let the player set the goal
     # show screen

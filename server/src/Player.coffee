@@ -1,5 +1,4 @@
 class Player
-  id: 0
-  constructor: (id) ->
-    @id = id
+  name: ''
+  constructor: (@name) ->
 module.exports.Player = Player;

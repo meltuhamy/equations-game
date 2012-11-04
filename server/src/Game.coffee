@@ -6,6 +6,7 @@ DICEFACESYMBOLS = DICEFACES.symbols
 class Game
   goalTree: undefined
   players: [] #private Player[] the players who have joined the game
+  playerSocketIds: [] # Matching indices with players
   playerLimit: 2
   state:
     unallocated: []
@@ -18,6 +19,7 @@ class Game
   constructor: (players) ->
     @players = players
     @allocate()
+
 
   allocate: ->
     @state.unallocated = []
@@ -40,13 +42,15 @@ class Game
     #val = e.evaluate(@goalTree)
     #console.log "Goal parsed and evaluates to #{val}"
 
-
+  
   addClient: (clientid) ->
     if @players.length == @playerLimit
       throw new Error("Game full")
     else
-      @players.push(new Player(clientid))
-      @players.length
+      newPlayerIndex = @players.length
+      @players.push(new Player(newPlayerIndex))
+      @playerSocketIds.push(clientid)
+      return newPlayerIndex
 
   isFull: () -> @players.length == @playerLimit
   getNumPlayers: () -> return @players.length
