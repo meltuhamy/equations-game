@@ -25,7 +25,7 @@ everyone.now.addClient = () -> #called by client when connected
 
     
  
- everyone.now.receiveGoal = (goalArray) -> #recieves the goal array from client
+everyone.now.receiveGoal = (goalArray) -> #recieves the goal array from client
   #need to validate goal array at some point
   try
     game.setGoal(goalArray)
@@ -33,7 +33,17 @@ everyone.now.addClient = () -> #called by client when connected
     this.now.badGoal("Bad goal:" + e)
   
 
+everyone.now.moveToRequired = (resource) ->
+  game.moveToRequired(resource)
+  everyone.now.receiveState(game.state)
 
+everyone.now.moveToOptional = (resource) ->
+  game.moveToOptional(resource)
+  everyone.now.receiveState(game.state)
+
+everyone.now.moveToForbidden = (resource) ->
+  game.moveToForbidden(resource)
+  everyone.now.receiveState(game.state)
   
 
 everyone.now.logStuff = (message) ->
