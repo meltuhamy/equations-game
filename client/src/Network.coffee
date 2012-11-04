@@ -54,12 +54,12 @@ sendGoal = (goalArray) ->
 now.badGoal = (message) ->
   console.log message
 
-moveToRequired = (resource) ->
-  now.moveToRequired(resource)
+moveToRequired = (index) ->
+  now.moveToRequired(index)
 
-moveToOptional = (resource) ->
-  now.moveToOptional(resource)
+moveToOptional = (index) ->
+  now.moveToOptional(index)
 
-moveToForbidden = (resource) ->
-  now.moveToForbidden(resource)
+moveToForbidden = (index) ->
+  now.moveToForbidden(index)
 
