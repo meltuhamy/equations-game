@@ -6,7 +6,7 @@ DICEFACESYMBOLS = DICEFACES.symbols
 class Game
   goalTree: undefined
   players: [] #private Player[] the players who have joined the game
-  playerLimit: 3
+  playerLimit: 2
   state: {
     unallocated: []
     required: []
@@ -18,7 +18,7 @@ class Game
   constructor: (players) ->
     @players = players
     @allocate()
-    console.log @state.unallocated
+    #console.log @state.unallocated # Stop committing useless console logging please ~ moh
 
   allocate: ->
     @state.unallocated = []

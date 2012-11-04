@@ -9,8 +9,9 @@ game = undefined
  * Called by the server once a player is accepted
  * @param  {String} id The client id returned from the server
 ###
-now.acceptPlayer = (id) ->
+now.acceptPlayer = (id, diceface) ->
   game.myPlayerId = id
+  game.dicefaces = diceface
 
 
 now.receiveState = (s) ->
@@ -22,8 +23,7 @@ now.receiveState = (s) ->
  * @param  {Player[]} players                 An array of player object
  * @param  {Number} firstTurnPlayerIndex      The index to this.players that specifies the goal setter
 ###
-now.receiveStartGame = (diceJson, players, firstTurnPlayerIndex) ->
-  game.diceJson = diceJson
+now.receiveStartGame = (players, firstTurnPlayerIndex) ->
   game.players = players
   game.goingFirst = firstTurnPlayerIndex
 

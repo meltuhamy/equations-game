@@ -1,5 +1,5 @@
 class Game
-  diceJson: undefined
+  dicefaces: undefined
   players: undefined
   firstTurnPlayerIndex: undefined
   myPlayerId: undefined

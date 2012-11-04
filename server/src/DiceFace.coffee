@@ -19,7 +19,7 @@ class DICEFACES
       eight       : 8
       nine        : 9
   numOps      : 4
-  getString = (face) ->
+  getString: (face) ->
     if 0 <= face <=0
       "#{face}"
     else
@@ -33,4 +33,7 @@ class DICEFACES
         when @plus     then "+"
         when @minus    then "-"
 
-module.exports.DICEFACES = new DICEFACES()
+
+
+dicefaces = new DICEFACES()
+module.exports.DICEFACES = dicefaces
