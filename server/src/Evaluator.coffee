@@ -1,15 +1,15 @@
 {DICEFACES} = require './DiceFace.js'
-DICEFACES = DICEFACES.symbols
+DICEFACESYMBOLS = DICEFACES.symbols
 
 class Evaluator
   constructor: ->
   getFuncFromOp: (type, op) ->
     if(type == 'binop')
       switch op
-        when DICEFACES.plus     then (lhs, rhs) => @evaluate(lhs) + @evaluate(rhs)
-        when DICEFACES.minus    then (lhs, rhs) => @evaluate(lhs) - @evaluate(rhs)
-        when DICEFACES.multiply then (lhs, rhs) => @evaluate(lhs) * @evaluate(rhs)
-        when DICEFACES.divide   then (lhs, rhs) => @evaluate(lhs) / @evaluate(rhs)
+        when DICEFACESYMBOLS.plus     then (lhs, rhs) => @evaluate(lhs) + @evaluate(rhs)
+        when DICEFACESYMBOLS.minus    then (lhs, rhs) => @evaluate(lhs) - @evaluate(rhs)
+        when DICEFACESYMBOLS.multiply then (lhs, rhs) => @evaluate(lhs) * @evaluate(rhs)
+        when DICEFACESYMBOLS.divide   then (lhs, rhs) => @evaluate(lhs) / @evaluate(rhs)
     else if(type == 'unaryop')
       (rhs) => - @evaluate(rhs)
   evaluate: (node) ->

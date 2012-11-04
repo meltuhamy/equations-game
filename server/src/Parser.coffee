@@ -1,5 +1,5 @@
 {DICEFACES} = require './DiceFace.js'
-DICEFACES = DICEFACES.symbols
+DICEFACESYMBOLS = DICEFACES.symbols
 
 class Node
   type: undefined     # 'number'/'binop'/'unaryop'
@@ -23,7 +23,7 @@ class ExpressionParser
     child1 = @handleMultiplyDivide()
     node = child1
     c = @expr[@idx]
-    while c == DICEFACES.plus or c == DICEFACES.minus
+    while c == DICEFACESYMBOLS.plus or c == DICEFACESYMBOLS.minus
       ++@idx
       child2 = @handleMultiplyDivide()
       node = new Node(type: "binop", token: [c], children: [child1, child2])
@@ -35,7 +35,7 @@ class ExpressionParser
     child1 = @handleUnaryOps()
     node = child1
     c = @expr[@idx]
-    while c == DICEFACES.multiply or c == DICEFACES.divide
+    while c == DICEFACESYMBOLS.multiply or c == DICEFACESYMBOLS.divide
       ++@idx
       child2 = @handleUnaryOps()
       node = new Node(type : "binop", token: [c], children: [ child1, child2 ]);
@@ -45,7 +45,7 @@ class ExpressionParser
   handleUnaryOps: () ->
     c = @expr[@idx]
     node = {}
-    if c == DICEFACES.minus or c == DICEFACES.plus
+    if c == DICEFACESYMBOLS.minus or c == DICEFACESYMBOLS.plus
       ++@idx
       node = new Node(type: "unaryop", token: [c], children: [@handleUnaryOps()])
     else
@@ -53,10 +53,10 @@ class ExpressionParser
     node
   handleParen: () ->
     c = @expr[@idx]
-    if c == DICEFACES.bracketL
+    if c == DICEFACESYMBOLS.bracketL
       ++@idx
       node = @handleAddMinus()
-      if @expr[@idx] != DICEFACES.bracketR then throw new Error("Error Unbalanced Parenthesis")
+      if @expr[@idx] != DICEFACESYMBOLS.bracketR then throw new Error("Error Unbalanced Parenthesis")
       ++@idx # move past the '('
     else
       node = @atom()
@@ -70,7 +70,7 @@ class ExpressionParser
       throw new Error("UNEXPECTED TOKEN: #{c}")
     return node
 
-  isNumber : (c) -> c >= DICEFACES.zero
+  isNumber : (c) -> c >= DICEFACESYMBOLS.zero
   matchNumber:()-> this.match(this.isNumber)
   
   atEnd: () -> @idx == @expr.length
