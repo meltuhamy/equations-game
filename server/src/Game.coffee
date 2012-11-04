@@ -53,6 +53,10 @@ class Game
   getNumPlayers: () -> return @players.length
   getFirstTurnPlayer: () -> 0 # return the index of the player who will set the goal
 
+  nextTurn: () ->
+    @state.currentPlayer = (@state.currentPlayer + 1) % @players.length
+    console.log @state.currentPlayer
+
   resourceExists: (resource) ->
     index = @state.unallocated.indexOf resource
     if (index) == -1
@@ -62,33 +66,29 @@ class Game
 
   moveToRequired: (resource) ->
     try
-      index = resourceExists(resource)
+      index = @resourceExists(resource)
       @state.unallocated.splice(index, 1)
       @state.required.push(resource)
+      @nextTurn()
     catch e
       console.warn e
 
   moveToOptional: (resource) ->
     try
-      index = resourceExists(resource)
+      index = @resourceExists(resource)
       @state.unallocated.splice(index, 1)
-      @state.required.push(resource)
+      @state.optional.push(resource)
+      @nextTurn()
     catch e
       console.warn e
 
   moveToForbidden: (resource) ->
     try
-      index = resourceExists(resource)
+      index = @resourceExists(resource)
       @state.unallocated.splice(index, 1)
       @state.forbidden.push(resource)
+      @nextTurn()
     catch e
       console.warn e
 
-  moveToGoal: (resource) ->
-    try
-      index = resourceExists(resource)
-      @state.unallocated.splice(index, 1)
-      @state.goalResources.push(resource)
-    catch e
-      console.warn e
 module.exports.Game = Game
