@@ -1,6 +1,7 @@
 {DICEFACES} = require './DiceFace.js'
 DICEFACESYMBOLS = DICEFACES.symbols
 
+{ExpressionParser, Node} = require './Parser.js'
 {Player} = require './Player.js'
 
 class Game
@@ -22,6 +23,8 @@ class Game
     @players = players
     @allocate()
 
+  goalHasBeenSet: () ->
+    @goalTree? #returns false if goalTree undefined, true otherwise
 
   allocate: ->
     @state.unallocated = []
@@ -38,14 +41,12 @@ class Game
       @allocate()  #do the allocation again
 
   setGoal: (dice) ->  #the function that calls this (everyone.now.receiveGoal() in server.coffee) handles any thrown exceptions
-    p = new Parser()
-    try
-      @goalTree = p.parse(dice)
-      @goalArray = dice
-      console.log "parsed successfully"
-      @start()
-    catch e
-      console.warn e
+    if @goalHasBeenSet() #if goal already set
+      throw "Goal already set"
+    p = new ExpressionParser()
+    @goalTree = p.parse(dice)
+    @goalArray = dice
+    @start()
     #e = new Evaluator()
     #val = e.evaluate(@goalTree)
     #console.log "Goal parsed and evaluates to #{val}"
@@ -71,7 +72,7 @@ class Game
     (socketId == @playerSocketIds[@state.currentPlayer])
 
   start: ->
-    @state.currentPlayer = (goalSetter + 1) % @players.length
+    @state.currentPlayer = (@goalSetter + 1) % @players.length
 
   nextTurn: () ->
     @state.currentPlayer = (@state.currentPlayer + 1) % @players.length
@@ -84,6 +85,8 @@ class Game
       index
 
   moveToRequired: (index, clientId) ->
+    if !@goalHasBeenSet()
+      throw "Can't move yet, goal has not been set"
     if !@authenticateMove(clientId)
       throw "Unauthenticated move rejected"
     else if index < 0 || index >= @state.unallocated.length
@@ -94,6 +97,8 @@ class Game
       @nextTurn()
 
   moveToOptional: (index, clientId) ->
+    if !@goalHasBeenSet()
+      throw "Can't move yet, goal has not been set"
     if !@authenticateMove(clientId)
       throw "Unauthenticated move rejected"
     else if index < 0 || index >= @state.unallocated.length
@@ -104,6 +109,8 @@ class Game
       @nextTurn()
 
   moveToForbidden: (index, clientId) ->
+    if !@goalHasBeenSet()
+      throw "Can't move yet, goal has not been set"
     if !@authenticateMove(clientId)
       throw "Unauthenticated move rejected"
     else if index < 0 || index >= @state.unallocated.length

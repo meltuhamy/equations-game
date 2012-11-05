@@ -30,7 +30,7 @@ everyone.now.receiveGoal = (goalArray) -> #recieves the goal array from client
   try
     game.setGoal(goalArray)
   catch e #catches when parser returns error for goal
-    this.now.badGoal(e)
+    this.now.badGoal(e.message)
   
 
 everyone.now.moveToRequired = (index) ->

@@ -51,14 +51,13 @@ now.ready ->
 sendGoal = (goalArray) -> 
   try
     now.receiveGoal(goalArray) #calls the server function receiveGoal, which parses it and stores it in the server-side game object
-    console.log "goal successfully sent"
   catch e #Catches when wrong client tries to send goal
-    console.log "something wrong with goal"
     console.warn e
   
 
 now.badGoal = (parserMessage) ->
   #do something here to show which part of the goal is malformed
+  console.log "Bad goal:"
   console.warn parserMessage
 
 moveToRequired = (index) ->
