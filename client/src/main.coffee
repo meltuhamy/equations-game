@@ -1,12 +1,9 @@
 $(document).ready(->
-  screensystem = new ScreenSystem("#container")
-  homeScreenId = screensystem.addScreen(new HomeScreen())
-  goalScreenId = screensystem.addScreen(new GoalScreen())
-  console.log goalScreenId
-  console.log homeScreenId
-  screensystem.loadAllScreens(->screensystem.renderScreen(goalScreenId))
-
+  Game.initialise()
+  ScreenSystem.loadAllScreens(->Network.initialise())
 )
+
+
 ###
   $('#unallocated ul li').click(->
     $(this).toggleClass('glow')

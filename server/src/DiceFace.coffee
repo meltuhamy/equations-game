@@ -1,5 +1,5 @@
-class DICEFACES
-  symbols: 
+class DiceFace
+  @symbols: 
       bracketL    : -8
       bracketR    : -7
       sqrt        : -6
@@ -18,8 +18,8 @@ class DICEFACES
       seven       : 7
       eight       : 8
       nine        : 9
-  numOps      : 4
-  getString: (face) ->
+  @numOps      : 4
+  @getString: (face) ->
     if 0 <= face <=0
       "#{face}"
     else
@@ -33,7 +33,4 @@ class DICEFACES
         when @plus     then "+"
         when @minus    then "-"
 
-
-
-dicefaces = new DICEFACES()
-module.exports.DICEFACES = dicefaces
+module.exports.DiceFace = DiceFace

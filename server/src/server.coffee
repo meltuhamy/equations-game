@@ -1,7 +1,7 @@
 {app, server, nowjs} = require './ServerListener.js'
 
-{DICEFACES}  = require './DiceFace.js'
-DICEFACESYMBOLS = DICEFACES.symbols
+{DiceFace}  = require './DiceFace.js'
+DICEFACESYMBOLS = DiceFace.symbols
 
 {Game} = require './Game.js'
 {Player} = require './Player.js'

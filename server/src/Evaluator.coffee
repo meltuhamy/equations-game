@@ -1,5 +1,5 @@
-{DICEFACES} = require './DiceFace.js'
-DICEFACESYMBOLS = DICEFACES.symbols
+{DiceFace} = require './DiceFace.js'
+DICEFACESYMBOLS = DiceFace.symbols
 
 class Evaluator
   constructor: ->

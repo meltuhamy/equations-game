@@ -1,5 +1,5 @@
-{DICEFACES} = require '../DiceFace.js'
-DICEFACESYMBOLS = DICEFACES.symbols
+{DiceFace} = require '../DiceFace.js'
+DICEFACESYMBOLS = DiceFace.symbols
 {Evaluator} = require '../Evaluator.js'
 
 {ExpressionParser, Node} = require '../Parser.js'

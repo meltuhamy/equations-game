@@ -1,5 +1,5 @@
-{DICEFACES} = require './DiceFace.js'
-DICEFACESYMBOLS = DICEFACES.symbols
+{DiceFace} = require './DiceFace.js'
+DICEFACESYMBOLS = DiceFace.symbols
 
 {ExpressionParser, Node} = require './Parser.js'
 {Player} = require './Player.js'
@@ -34,7 +34,7 @@ class Game
       if rand < 2/3  #first we decide if the roll yields an operator or a digit
         rand = Math.floor(Math.random() * 10)  #2/3 of the time we get a digit, decided by a new random number
       else  #1/3 of the time we get an operator, again we generate a new random number to decide which operator to use
-        rand = Math.floor(Math.random() * - DICEFACES.numOps)
+        rand = Math.floor(Math.random() * - DiceFace.numOps)
         ops++ #we keep track of the number of operators generated so that later we can check if there are enough
       @state.unallocated.push(rand)  #here we add the die to the unallocated resources array
     if (ops < 2) || (ops > 21)  #if there are too few or too many operators, we must roll again
