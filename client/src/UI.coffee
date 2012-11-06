@@ -33,4 +33,11 @@ class UI
     alert("WE TETRISED")
     $("#inside-goal").html(@diceFacesToHtml(unallocated))
 
+  setGoalFromUI: ->
+    $(document).ready ->
+
+  moveToGoal: (index) ->
+    $('#outisde-goal').append($("#inside-goal li:nth-child(#{index})"))
+    $('#inside-goal').remove("li:nth-child(#{index})")
+
 ui = new UI()

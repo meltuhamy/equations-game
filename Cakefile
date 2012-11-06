@@ -17,46 +17,52 @@ server = (callback) ->
   coffee.stdout.on 'data', (data) ->
     print data.toString()
   coffee.on 'exit', (code) ->
-    callback?() if code is 0
-
+    callback?()
 
 
 client = (callback) ->
-  dostylus()
-  clientFileNames = ['Game','UI','Network','main']
-  options = [].concat(['-b', '--join', 'client/build/game.js', '--compile'], (clientFileNames.map (filename) -> 'client/src/' + filename + '.coffee'))
-  coffee = spawn myCoffee, options
-  coffee.stderr.on 'data', (data) ->
-    process.stderr.write data.toString()
-  coffee.stdout.on 'data', (data) ->
-    print data.toString()
-  coffee.on 'exit', (code) ->
-    callback?() if code is 0
+  dostylus(false, ->
+    clientFileNames = ['Game','UI', 'Network', 'Screen', 'Screen/GoalScreen', 'Screen/HomeScreen', 'ScreenSystem', 'main']
+    options = [].concat(['-b', '--join', 'client/build/game.js', '--compile'], (clientFileNames.map (filename) -> 'client/src/' + filename + '.coffee'))
+    coffee = spawn myCoffee, options
+    coffee.stderr.on 'data', (data) ->
+      process.stderr.write data.toString()
+    coffee.stdout.on 'data', (data) ->
+      print data.toString()
+    coffee.on 'exit', (code) ->
+      callback?() if code is 0
+  )
+
 
 build = (callback) ->
   server(client)
 
 run = ->
-  server(client(->
-    newNode = spawn 'node', ['server.js']
-    newNode.stderr.on 'data', (data) ->
-      process.stderr.write data.toString()
-    newNode.stdout.on 'data', (data) ->
-      print data.toString()
-  ))
+  server( ->
+    client(->
+      newNode = spawn 'node', ['server.js']
+      newNode.stderr.on 'data', (data) ->
+        process.stderr.write data.toString()
+      newNode.stdout.on 'data', (data) ->
+        print data.toString()
+    )
+  )
 
 debug = ->
-  server(client(->
+  server( ->
+    client(->
     newNode = spawn 'node', ['--debug-brk','server.js']
     newNode.stderr.on 'data', (data) ->
       process.stderr.write data.toString()
     newNode.stdout.on 'data', (data) ->
       print data.toString()
-  ))
+    )
+  )
 
 
 tests = (callback) ->
-  server(client(->
+  server( -> 
+    client(->
     jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
     jnode.stderr.on 'data', (data) ->
       process.stderr.write data.toString()
@@ -64,12 +70,13 @@ tests = (callback) ->
       print data.toString()
     jnode.on 'exit', (code) ->
       callback?() if code is 0
-  ))
+    )
+  )
 
 
 
 
-dostylus = (watch) ->
+dostylus = (watch, callback) ->
   if watch? && watch
     stylus = spawn myStylus, ['-u', 'nib', '-w','-o', 'client/css/', 'client/css/stylus']
   else
@@ -78,6 +85,8 @@ dostylus = (watch) ->
     process.stderr.write data.toString()
   stylus.stdout.on 'data', (data) ->
     print data.toString()
+  stylus.on 'exit', (code) ->
+    callback?() if code is 0
 
 
 
