@@ -1,5 +1,19 @@
 class GoalScreen extends Screen
+  
+  # {String} The filename of the html file to load the screen.
   file: 'goal.html'
+
+  # {Number[]} An array of indices to the resources array.
+  goalArray: []
+
+  # {Number[]} An array of dicefaces. The resources used to form goal.
+  resources: []
+
+
+  inGoalBitmap: []
+  resourceDomElements: []
+  goalDomElements: []
+
   constructor: () ->
 
   ###*
@@ -9,20 +23,33 @@ class GoalScreen extends Screen
    *               {resources: Number[] the diceface numbers that can be chosen to be the goal}
   ###
   init: (json) ->
-    @showResources(json.resources)
-    lis = $('#inside-goal li')
+
+    @resources = json.resources
+    @showResources()
+
+    @inGoalBitmap = (0 for num in @resources)
+    @resourceDomElements = $('#outside-goal li')
+    @goalDomElements = $('#inside-goal li')
+
+    $("#inside-goal li").hide()
+
     thisReference = this
-    lis.bind 'click', (event) ->
-      console.log "inside-goal HELLO!!!"
+    resourceList = $('#inside-goal li')
+    
+    resourceList.bind 'click', (event) ->
       thisReference.addToGoal($('#inside-goal li').index(this));
+
+    $('#sendgoal').bind 'click', (event) ->
+      Network.sendGoal(goalArray)
+
  
   ###*
    * We reveived the array of dice that we will use to form the goal.
    * This method takes in the array of dice numbers to displays them in the dom. 
-   * @param  {Number[]} resources  The resources array of dicefaces
   ###
-  showResources: (resources)->
-    $("#inside-goal").html(DiceFace.listToHtml(resources))
+  showResources: () ->
+    $("#inside-goal").html(DiceFace.listToHtml(@resources))
+    $("#outside-goal").html(DiceFace.listToHtml(@resources))
 
 
   ###*
@@ -30,6 +57,7 @@ class GoalScreen extends Screen
    * @param {Number} index The (zero based) index of the resources array to move.
   ###
   addToGoal: (index) ->
-    console.log index
-    $('#outside-goal').append($("#inside-goal li:nth-child(#{index+1})")) # nth-child is *not* zero-indexed
-    $('#inside-goal').remove("li:nth-child(#{index+1})")
+    @inGoalBitmap[index] = 1
+    @resourceDomElements.get(index).hide()
+    @goalDomElements.get(index).show()
+

@@ -6,6 +6,15 @@ class Network
       console.log "hello"
       now.addClient()
 
+  ###*
+   * Sends the goal array to the server
+   * @param  {Number[]} goalArray An array of indices to the resources array.
+  ###
+  @sendGoal: (goalArray) ->
+    now.receiveGoal(goalArray)
+
+
+  
 
 
 ### Handle events fired by the server ###
