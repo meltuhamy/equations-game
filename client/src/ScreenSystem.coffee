@@ -22,13 +22,17 @@ class ScreenSystem
 
   ###*
    * Tell the ScreenSystem to load in a screen. Can only be done after loadAllScreens()
+   * @param  {Json} json A json that is passed to the screen. So when we render the screen, this json contains
+   *                     parameters to use for the screen's initialisation for eg, the actual content.
    * @param  {Number} screenId The index to the array of screens of the screen to show.
   ###
-  @renderScreen: (screenId) ->
+  @renderScreen: (screenId, json) ->
+    # if the screen has loaded, change the current screen var, 
+    # load-in the html & call the screen's init function. If not loaded, throw an exception
     if(@getScreen(screenId).hasLoaded)
       @updateCurrentScreen(screenId)
       @container.html(@currentScreen.content)
-      @currentScreen.init()
+      @currentScreen.init(json)
     else 
       throw "SCREEN HASNT LOADED"
 

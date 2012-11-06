@@ -1,6 +1,6 @@
 class GoalScreen extends Screen
   file: 'goal.html'
-  constructor: () -> @file = @file
+  constructor: () ->
 
   ###*
    * Load the Goal Screen. This screen lets the player chosen as goal-setter 
@@ -9,13 +9,14 @@ class GoalScreen extends Screen
    *               {resources: Number[] the diceface numbers that can be chosen to be the goal}
   ###
   init: (json) ->
+    @showResources(json.resources)
     $('li').bind 'click', (event) =>
       console.log "inside-goal HELLO!!!"
  
   ###*
    * We reveived the array of dice that we will use to form the goal.
    * This method takes in the array of dice numbers to displays them in the dom. 
-   * @param  {Number[]} unallocated  The unallocated array of dicefaces
+   * @param  {Number[]} resources  The resources array of dicefaces
   ###
-  showResources: (unallocated)->
-    $("#inside-goal").html(@diceFacesToHtml(unallocated))
+  showResources: (resources)->
+    $("#inside-goal").html(DiceFace.listToHtml(resources))

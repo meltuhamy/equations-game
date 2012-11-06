@@ -27,18 +27,20 @@ now.receiveState = (s) ->
 ###*
  * Called by the server once sufficient players have joined the game, to start the game.
  * @param  {Player[]} players                 An array of player object
- * @param  {Number[]} unallocated             Array of dicefaces reperesenting the unallocated dicefaces
+ * @param  {Number[]} resources             Array of dicefaces reperesenting the resources dicefaces
  * @param  {Number} firstTurnPlayerIndex      The index to this.players that specifies the goal setter
 ###
-now.receiveStartGame = (players, unallocated, firstTurnPlayerIndex) ->
+now.receiveStartGame = (players, resources, firstTurnPlayerIndex) ->
   Game.players = players
-  Game.state.unallocated = unallocated
+  Game.firstTurnPlayerIndex = firstTurnPlayerIndex
   Game.state.currentplayer = firstTurnPlayerIndex
-  if (Game.myPlayerId == firstTurnPlayerIndex) #is this a potential security threat? ie - should we store and compare socketIds instead?
+
+  if (Game.myPlayerId == firstTurnPlayerIndex) 
+    # is this a potential security threat? ie - should we store and compare socketIds instead?
     #  the server sends the id of the first player, and its the same as our id, so we're first
     #  time to set the goal. We need to show the goal settings screen and let the player set the goal
     # show screen
-    ScreenSystem.renderScreen(Game.goalScreenId, )
+    ScreenSystem.renderScreen(Game.goalScreenId, {resources: resources})
 
   Game.goingFirst = firstTurnPlayerIndex
 

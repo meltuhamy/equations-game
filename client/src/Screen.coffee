@@ -10,7 +10,7 @@ class Screen
   content: undefined 
 
   # @abstract {String} The name of the html file that contains the screen
-  constructor: (@file) ->
+  constructor: (@file) -> @file = @file
 
   ###*
    * This function is called by ScreenSystem once the page has loaded
