@@ -20,9 +20,16 @@ now.acceptPlayer = (id, dicefaceSymbols) -> #id is the index
   DiceFace.symbols = dicefaceSymbols
 
 
-# this is when the server is telling the client to update his version of the state
+###*
+ * This is when the server is telling the client to update his version of the state
+ * @param  {Json} s A json containing varaibles holding the state of the game.
+ *                  Is of the format: {unallocated: [], required: [], 
+ *                                     optional: [], forbidden: [], currentPlayer: Integer}
+###
 now.receiveState = (s) ->
   Game.updateState(s) 
+
+
 
 ###*
  * Called by the server once sufficient players have joined the game, to start the game.

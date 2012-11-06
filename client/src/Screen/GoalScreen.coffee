@@ -10,8 +10,11 @@ class GoalScreen extends Screen
   ###
   init: (json) ->
     @showResources(json.resources)
-    $('li').bind 'click', (event) =>
+    lis = $('#inside-goal li')
+    thisReference = this
+    lis.bind 'click', (event) ->
       console.log "inside-goal HELLO!!!"
+      thisReference.addToGoal($('#inside-goal li').index(this));
  
   ###*
    * We reveived the array of dice that we will use to form the goal.
@@ -20,3 +23,13 @@ class GoalScreen extends Screen
   ###
   showResources: (resources)->
     $("#inside-goal").html(DiceFace.listToHtml(resources))
+
+
+  ###*
+   * Move a dice from resources to the goal. 
+   * @param {Number} index The (zero based) index of the resources array to move.
+  ###
+  addToGoal: (index) ->
+    console.log index
+    $('#outside-goal').append($("#inside-goal li:nth-child(#{index+1})")) # nth-child is *not* zero-indexed
+    $('#inside-goal').remove("li:nth-child(#{index+1})")
