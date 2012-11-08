@@ -11,10 +11,12 @@ class Network
    * @param  {Number[]} goalArray An array of indices to the resources array.
   ###
   @sendGoal: (goalArray) ->
-    now.receiveGoal(goalArray)
+    try
+      console.log goalArray
+      now.receiveGoal(goalArray) #calls the server function receiveGoal, which parses it and stores it in the server-side game object
+    catch e #Catches when wrong client tries to send goal
+      console.warn e
 
-
-  
 
 
 ### Handle events fired by the server ###
@@ -78,16 +80,7 @@ now.receiveStartGame = (players, resources, firstTurnPlayerIndex) ->
 
 ### Fire these events on server ###
 
-###*
- * When client clicks send goal on the gui, call this function
- * @param  {Number[]}  goalArray An array of diceface symbols that specifies the goal
-###
 
-sendGoal = (goalArray) -> 
-  try
-    now.receiveGoal(goalArray) #calls the server function receiveGoal, which parses it and stores it in the server-side game object
-  catch e #Catches when wrong client tries to send goal
-    console.warn e
   
 
 now.badGoal = (parserMessage) ->
@@ -95,6 +88,11 @@ now.badGoal = (parserMessage) ->
   console.log "Bad goal:"
   console.warn parserMessage
 
+
+###*
+ * Tell the server that we want to move a dice from unallocated to required
+ * @param  {Integer} The index of the diceface within the unallocated array
+###
 moveToRequired = (index) ->
   now.moveToRequired(index)
 

@@ -3,16 +3,15 @@ class GoalScreen extends Screen
   # {String} The filename of the html file to load the screen.
   file: 'goal.html'
 
-  # {Number[]} An array of indices to the resources array.
-  goalArray: []
 
   # {Number[]} An array of dicefaces. The resources used to form goal.
   resources: []
 
-
+  numberInGoal: 0
   inGoalBitmap: []
   resourceDomElements: []
   goalDomElements: []
+  goalArray: []
 
   constructor: () ->
 
@@ -23,24 +22,23 @@ class GoalScreen extends Screen
    *               {resources: Number[] the diceface numbers that can be chosen to be the goal}
   ###
   init: (json) ->
-
     @resources = json.resources
-    @showResources()
+    @showResources() # add the dice to the dom
 
-    @inGoalBitmap = (0 for num in @resources)
-    @resourceDomElements = $('#outside-goal li')
-    @goalDomElements = $('#inside-goal li')
+    @inGoalBitmap = (0 for num in @resources) # make an bitmap of 
+    @outsideGoalElements = $('#outside-goal li')
+    @insideGoalElements = $('#inside-goal li')
 
     $("#inside-goal li").hide()
 
     thisReference = this
-    resourceList = $('#inside-goal li')
+    resourceList = $('#outside-goal li')
     
     resourceList.bind 'click', (event) ->
-      thisReference.addToGoal($('#inside-goal li').index(this));
+      thisReference.addToGoal($(resourceList).index(this));
 
     $('#sendgoal').bind 'click', (event) ->
-      Network.sendGoal(goalArray)
+      Network.sendGoal(thisReference.goalArray)
 
  
   ###*
@@ -57,7 +55,13 @@ class GoalScreen extends Screen
    * @param {Number} index The (zero based) index of the resources array to move.
   ###
   addToGoal: (index) ->
-    @inGoalBitmap[index] = 1
-    @resourceDomElements.get(index).hide()
-    @goalDomElements.get(index).show()
+    @goalArray.push(index)
+    if(@numberInGoal < 6)
+      @numberInGoal++
+      @inGoalBitmap[index] = 1
+      $(@outsideGoalElements.get(index)).hide()
+      $(@insideGoalElements.get(index)).show()
+
+ 
+  
 

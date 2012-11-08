@@ -18,7 +18,6 @@ class Game
     forbidden: []
     currentPlayer: 0 #this tells us the index of the player who's turn it is, and is automatically incremented after each resource move
   
-
   constructor: (players) ->
     @players = players
     @allocate()
@@ -49,7 +48,7 @@ class Game
     if @goalHasBeenSet() #if goal already set
       throw "Goal already set"
     
-    @checkGoal()
+    @checkGoal(dice)
     @start()
     #e = new Evaluator()
     #val = e.evaluate(@goalTree)
@@ -68,10 +67,9 @@ class Game
     diceValues = []
     for i in [0 ... dice.length]
       for j in [i+1 ... dice.length]
-        console.log dice[i]
         if(dice[i] < 0  || dice[i] > 23) then throw "Goal has out of bounds array index"
         if (dice[i] == dice[j] && i!=j) then throw "Goal uses duplicates dice"
-      diceValues.push(@state.unallocated[i])    
+      diceValues.push(@state.unallocated[dice[i]])    
     # Finally, check that the expression in the dice parses as an expression.
     p = new ExpressionParser()
     @goalTree = p.parse(diceValues)

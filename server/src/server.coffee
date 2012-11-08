@@ -21,8 +21,6 @@ everyone.now.addClient = () -> #called by client when connected
   else
     # else the game is already full, so tell him - tough luck
 
-    
- 
 everyone.now.receiveGoal = (goalArray) -> #recieves the goal array from client
   #need to validate goal array at some point
   if !(this.user.clientId == game.playerSocketIds[game.goalSetter])
