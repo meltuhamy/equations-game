@@ -8,7 +8,7 @@ DICEFACESYMBOLS = DiceFace.symbols
 
 everyone = nowjs.initialize(server)
 
-
+rooms = []
 game = new Game([])
 
 everyone.now.addClient = () -> #called by client when connected
