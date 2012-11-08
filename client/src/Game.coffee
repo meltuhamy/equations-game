@@ -36,7 +36,7 @@ class Game
 
   ###*
    * Set the goal locally. The server has told us the goal-setter has set the goal.
-   * @param {Number[]} goal The array of dicefaces for the goal.
+   * @param {Number[]} goal The array of indices to the resources array for the goal.
   ###
   @setGoal: (goal) ->
     @goal = goal
@@ -47,3 +47,13 @@ class Game
   ###
   @updateState: (newState) ->
     state = newState
+
+  ###*
+   * Get the diceface values for the goal. 
+   * @return {Number} This returns the actual values rather than indices in an array.
+  ###
+  @getGoalValues: () ->
+    diceValues = []
+    
+    diceValues.push (@state.unallocated[g]) for g in @goal
+    return diceValues

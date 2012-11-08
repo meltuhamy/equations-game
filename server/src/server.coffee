@@ -15,21 +15,31 @@ everyone.now.addClient = () -> #called by client when connected
   if(!game.isFull())
     # add the player, tell him he was accepted and give him his playerId (i.e. index) for the game
     this.now.acceptPlayer(game.addClient(this.user.clientId), DICEFACESYMBOLS)
-    #now see if the game is full after adding him (i.e see if is the last player)
+    # Now see if the game is full after adding him (i.e see if is the last player)
+    # If it is, then tell everyone that its the goal setting turn. 
     if(game.isFull())
-      everyone.now.receiveStartGame(game.players, game.state.unallocated, game.getFirstTurnPlayer())
+      everyone.now.receiveGoalTurn(game.players, game.state.unallocated, game.getFirstTurnPlayer())
   else
     # else the game is already full, so tell him - tough luck
 
-everyone.now.receiveGoal = (goalArray) -> #recieves the goal array from client
-  #need to validate goal array at some point
+
+
+###*
+ * Recieves the goal array from client
+ * This is when the goal setter sends his goal. We tell everyone what the goal is.
+ * @param  {[type]} goalArray [description]
+ * @return {[type]}           [description]
+###
+everyone.now.receiveGoal = (goalArray) -> #
   if !(this.user.clientId == game.playerSocketIds[game.goalSetter])
     throw "Unauthorised goal setter"
   try
     game.setGoal(goalArray)
+    everyone.now.receiveGoalTurnEnd(goalArray)
   catch e #catches when parser returns error for goal
     this.now.badGoal(e.message)
-  
+
+
 
 everyone.now.moveToRequired = (index) ->
   try
@@ -58,20 +68,3 @@ everyone.now.logStuff = (message) ->
 
 everyone.now.testFunc = () ->
   console.log(this.user.addClient)
-
-###
-flatten = (node) ->
-  str = ""
-  if node.children then str += "["
-  str+= " "
-  str += DICEFACES.getString node.token
-  if node.children
-    str+=" "
-    str += flatten(child) for child in node.children
-  str+= " "
-  if node.children then str +="]"
-  str
-
-prettyPrint = (node) -> console.log flatten(node)
-module.exports.prettyPrint = prettyPrint
-###

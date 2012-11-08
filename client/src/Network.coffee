@@ -31,14 +31,7 @@ now.acceptPlayer = (id, dicefaceSymbols) -> #id is the index
   DiceFace.symbols = dicefaceSymbols
 
 
-###*
- * This is when the server is telling the client to update his version of the state
- * @param  {Json} s A json containing varaibles holding the state of the game.
- *                  Is of the format: {unallocated: [], required: [], 
- *                                     optional: [], forbidden: [], currentPlayer: Integer}
-###
-now.receiveState = (s) ->
-  Game.updateState(s) 
+
 
 
 
@@ -48,10 +41,11 @@ now.receiveState = (s) ->
  * @param  {Number[]} resources             Array of dicefaces reperesenting the resources dicefaces
  * @param  {Number} firstTurnPlayerIndex      The index to this.players that specifies the goal setter
 ###
-now.receiveStartGame = (players, resources, firstTurnPlayerIndex) ->
+now.receiveGoalTurn = (players, resources, firstTurnPlayerIndex) ->
   Game.players = players
   Game.firstTurnPlayerIndex = firstTurnPlayerIndex
   Game.state.currentplayer = firstTurnPlayerIndex
+  Game.state.unallocated = resources
 
   if (Game.myPlayerId == firstTurnPlayerIndex) 
     # is this a potential security threat? ie - should we store and compare socketIds instead?
@@ -60,9 +54,36 @@ now.receiveStartGame = (players, resources, firstTurnPlayerIndex) ->
     # show screen
     ScreenSystem.renderScreen(Game.goalScreenId, {resources: resources})
   else
-    ScreenSystem.renderScreen(Game.homeScreenId, {resources: resources})
+    #ScreenSystem.renderScreen(waitingScreen)
 
   Game.goingFirst = firstTurnPlayerIndex
+
+
+###*
+ * This is when the server is telling the client to update his goal because the goal setter set the goal.
+ * @param  {goalArray}
+###
+now.receiveGoalTurnEnd = (goalArray) ->
+  Game.setGoal(goalArray)
+  console.log goalArray
+  ScreenSystem.renderScreen(Game.homeScreenId, {goal: goalArray})
+
+
+
+###*
+ * This is when the server is telling the client to update his version of the state when a turn ends.
+ * @param  {Json} state A json containing varaibles holding the state of the game.
+ *                  Is of the format: {unallocated: [], required: [], 
+ *                                     optional: [], forbidden: [], currentPlayer: Integer}
+###
+now.receiveState = (state) ->
+  Game.updateState(state)
+
+
+
+
+
+
 
 
 ###*
@@ -71,6 +92,21 @@ now.receiveStartGame = (players, resources, firstTurnPlayerIndex) ->
 
 
 
+
+
+
+###*
+ * Tell the server that we want to move a dice from unallocated to required
+ * @param  {Integer} The index of the diceface within the unallocated array
+###
+moveToRequired = (index) ->
+  now.moveToRequired(index)
+
+moveToOptional = (index) ->
+  now.moveToOptional(index)
+
+moveToForbidden = (index) ->
+  now.moveToForbidden(index)
 
 
 
@@ -88,17 +124,4 @@ now.badGoal = (parserMessage) ->
   console.log "Bad goal:"
   console.warn parserMessage
 
-
-###*
- * Tell the server that we want to move a dice from unallocated to required
- * @param  {Integer} The index of the diceface within the unallocated array
-###
-moveToRequired = (index) ->
-  now.moveToRequired(index)
-
-moveToOptional = (index) ->
-  now.moveToOptional(index)
-
-moveToForbidden = (index) ->
-  now.moveToForbidden(index)
 

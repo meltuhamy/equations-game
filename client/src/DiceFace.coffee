@@ -21,7 +21,7 @@ class DiceFace
 
   ###*
    * Turns an array of dicefaces into li's
-   * @param  {Number[]} list The array of dicefaces
+   * @param  {Number[]} list The array of dicefaces values
    * @return {String}         A string with the html containing li's
   ###
   @listToHtml: (list) ->

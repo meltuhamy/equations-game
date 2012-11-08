@@ -42,7 +42,7 @@ class GoalScreen extends Screen
 
  
   ###*
-   * We reveived the array of dice that we will use to form the goal.
+   * We received the array of dice that we will use to form the goal.
    * This method takes in the array of dice numbers to displays them in the dom. 
   ###
   showResources: () ->
