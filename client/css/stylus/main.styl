@@ -320,3 +320,68 @@ ul#main-columns li
 
 #optional.glow
   box-shadow(0px 0px 8px 2px rgba(255, 0, 0, .75));
+
+
+
+$bubbleTipSize = 8px
+
+#move-allocation-menu
+  position: absolute
+  margin-top: $bubbleTipSize
+  display: block
+  width: 100px;
+  height: 20px;
+  line-height: 20px;
+  padding: 10px;
+  font-size: 14px;
+  text-align: center;
+  color: rgb(113, 157, 171);
+  background: rgb(255, 255, 255);
+  border-radius: 5px;
+  text-shadow: rgba(0, 0, 0, 0.0976563) 1px 1px 1px;
+  box-shadow: rgba(0, 0, 0, 0.0976563) 1px 1px 2px 0px;
+  margin-left: -1 * (@width / 2)
+
+#move-allocation-menu:after
+  content: ""
+  display: block
+  position: absolute
+  width: 0 
+  height: 0
+  border: $bubbleTipSize  transparent solid
+  border-bottom-color: #EEEEEE
+  bottom: -1 * $bubbleTipSize 
+  left: 50%
+  top: -2*$bubbleTipSize
+  margin-left: -1 * $bubbleTipSize
+
+
+
+/*
+
+#move-allocation-menu
+  position: absolute
+  width: 100px;
+  height: 20px;
+  line-height: 20px;
+  padding: 10px;
+  font-size: 14px;
+  text-align: center;
+  color: rgb(113, 157, 171);
+  background: rgb(255, 255, 255);
+  border-radius: 5px;
+  text-shadow: rgba(0, 0, 0, 0.0976563) 1px 1px 1px;
+  box-shadow: rgba(0, 0, 0, 0.0976563) 1px 1px 2px 0px;
+
+#move-allocation-menu:after
+  content: ""
+  display: block
+  position: absolute
+  width: 0 
+  height: 0
+  border: $bubbleTipSize = 8px transparent solid
+  border-top-color: #EEEEEE
+  top: -$bubbleTipSize 
+  left: 50%
+  bottom: -2*$bubbleTipSize
+  margin-left: -$bubbleTipSize*/
