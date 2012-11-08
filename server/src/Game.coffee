@@ -48,7 +48,7 @@ class Game
   setGoal: (dice) ->  #the function that calls this (everyone.now.receiveGoal() in server.coffee) handles any thrown exceptions
     if @goalHasBeenSet() #if goal already set
       throw "Goal already set"
-    p = new ExpressionParser()
+    
     @checkGoal()
     @start()
     #e = new Evaluator()
@@ -61,13 +61,21 @@ class Game
    * @return {Boolean} True when the goal is valid.
   ###
   checkGoal: (dice) ->
+    # First check there are not too many dice in the goal
     if(dice.length > 6) then throw "Goal uses more than six dice"
+    # Now check that there are not duplicates. We can't use the same dice twice.
+    # Also, we check that the indices are in bounds. We can use dice that don't exist.
+    diceValues = []
     for i in [0 ... dice.length]
-      for j in [i ... dice.length]
-        if(not 0 <= dice[i] <= 23) then throw "Goal has out of bounds array index"
+      for j in [i+1 ... dice.length]
+        console.log dice[i]
+        if(dice[i] < 0  || dice[i] > 23) then throw "Goal has out of bounds array index"
         if (dice[i] == dice[j] && i!=j) then throw "Goal uses duplicates dice"
-    @goalTree = p.parse(dice)
-    @goalArray = dice
+      diceValues.push(@state.unallocated[i])    
+    # Finally, check that the expression in the dice parses as an expression.
+    p = new ExpressionParser()
+    @goalTree = p.parse(diceValues)
+    @goalArray = diceValues
     return true
   
   ###*
