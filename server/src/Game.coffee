@@ -40,18 +40,40 @@ class Game
     if (ops < 2) || (ops > 21)  #if there are too few or too many operators, we must roll again
       @allocate()  #do the allocation again
 
+
+  ###*
+   * [setGoal description]
+   * @param {Integer} dice [description]
+  ###
   setGoal: (dice) ->  #the function that calls this (everyone.now.receiveGoal() in server.coffee) handles any thrown exceptions
     if @goalHasBeenSet() #if goal already set
       throw "Goal already set"
     p = new ExpressionParser()
-    @goalTree = p.parse(dice)
-    @goalArray = dice
+    @checkGoal()
     @start()
     #e = new Evaluator()
     #val = e.evaluate(@goalTree)
     #console.log "Goal parsed and evaluates to #{val}"
 
+  ###*
+   * This checks whether a goal is a subset of the resources dice and can be parsed.
+   * @param  {Integer[]} dice An array of indices to the resource
+   * @return {Boolean} True when the goal is valid.
+  ###
+  checkGoal: (dice) ->
+    if(dice.length > 6) then throw "Goal uses more than six dice"
+    for i in [0 ... dice.length]
+      for j in [i ... dice.length]
+        if(not 0 <= dice[i] <= 23) then throw "Goal has out of bounds array index"
+        if (dice[i] == dice[j] && i!=j) then throw "Goal uses duplicates dice"
+    @goalTree = p.parse(dice)
+    @goalArray = dice
+    return true
   
+  ###*
+   * Adds a client to the game.
+   * @param {Integer} clientid The id of the client given by server
+  ###
   addClient: (clientid) ->
     if @players.length == @playerLimit
       throw new Error("Game full")

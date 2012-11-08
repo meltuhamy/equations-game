@@ -57,6 +57,8 @@ now.receiveStartGame = (players, resources, firstTurnPlayerIndex) ->
     #  time to set the goal. We need to show the goal settings screen and let the player set the goal
     # show screen
     ScreenSystem.renderScreen(Game.goalScreenId, {resources: resources})
+  else
+    ScreenSystem.renderScreen(Game.homeScreenId, {resources: resources})
 
   Game.goingFirst = firstTurnPlayerIndex
 
