@@ -17,6 +17,21 @@ class Network
     catch e #Catches when wrong client tries to send goal
       console.warn e
 
+  ###*
+   * Tell the server that we want to move a dice from unallocated to required
+   * @param  {Integer} The index of the diceface within the unallocated array
+  ###
+  @moveToRequired : (index) ->
+    now.moveToRequired(index)
+
+  @moveToOptional : (index) ->
+    now.moveToOptional(index)
+
+  @moveToForbidden : (index) ->
+    now.moveToForbidden(index)
+
+
+
 
 
 ### Handle events fired by the server ###
@@ -94,20 +109,6 @@ now.receiveState = (state) ->
 
 
 
-
-
-###*
- * Tell the server that we want to move a dice from unallocated to required
- * @param  {Integer} The index of the diceface within the unallocated array
-###
-moveToRequired = (index) ->
-  now.moveToRequired(index)
-
-moveToOptional = (index) ->
-  now.moveToOptional(index)
-
-moveToForbidden = (index) ->
-  now.moveToForbidden(index)
 
 
 
