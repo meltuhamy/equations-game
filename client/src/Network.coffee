@@ -78,6 +78,7 @@ now.receiveGoalTurnEnd = (goalArray) ->
 ###
 now.receiveState = (state) ->
   Game.updateState(state)
+  ScreenSystem.getScreen(Game.homeScreenId).drawDiceAllocations()
 
 
 

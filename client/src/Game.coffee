@@ -41,12 +41,6 @@ class Game
   @setGoal: (goal) ->
     @goal = goal
 
-  ###*
-   * Update the game state locally. The server has told us a turn has been made.
-   * @param {Json} newState The json of the new state of the game - given by server.
-  ###
-  @updateState: (newState) ->
-    state = newState
 
   ###*
    * Get the diceface values for the goal. 
@@ -54,6 +48,18 @@ class Game
   ###
   @getGoalValues: () ->
     diceValues = []
-    
     diceValues.push (@state.unallocated[g]) for g in @goal
     return diceValues
+
+
+  # Return the game state Json
+  @getState: () -> 
+    return @state
+
+
+  ###*
+   * Update the game state locally. The server has told us a turn has been made.
+   * @param {Json} newState The json of the new state of the game - given by server.
+  ###
+  @updateState: (newState) ->
+    @state = newState
