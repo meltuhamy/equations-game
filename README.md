@@ -16,6 +16,7 @@ Steps to set up:
   - npm install jasmine-node
   - npm install node-inspector
   - npm install nib
+  - npm install soda
 
 2. cp config.js.sample config.js
 
@@ -29,6 +30,8 @@ Steps to set up:
 
 6. Add node-inspector to your alias / path. (you did this for cake, coffee, and stylus. Now do it for node-inspector)
 
+7. Make sure you have an alias for selenium server "seleniumrc"
+   e.g. alias seleniumrc "java -jar ~/selenium-server-standalone-2.25.0.jar"
 
 For more info, type 'cake'. This will show you available commands.
 

@@ -5,6 +5,7 @@ myCoffee = config.COFFEE
 myStylus = config.STYLUS
 myJnode  = config.JASMINE
 
+
 fs = require 'fs'
 
 {print} = require 'sys'
@@ -62,14 +63,29 @@ debug = ->
 
 tests = (callback) ->
   server( -> 
-    client(->
-    jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
-    jnode.stderr.on 'data', (data) ->
-      process.stderr.write data.toString()
-    jnode.stdout.on 'data', (data) ->
-      print data.toString()
-    jnode.on 'exit', (code) ->
-      callback?() if code is 0
+    client(-> 
+      newNode = spawn 'node', ['server.js']
+      newNode.stderr.on 'data', (data) ->
+        process.stderr.write "\nSERVER: " + data.toString()
+      newNode.stdout.on 'data', (data) ->
+        print "\nSERVER: " + data.toString()
+      javaselenium = spawn 'java', ['-jar', config.SELENIUM]
+      javaselenium.stderr.on 'data', (data) ->
+        process.stderr.write "\nSELENIUM: "+ data.toString()
+      javaselenium.stdout.on 'data', (data) ->
+        #print data.toString()
+      console.log "Selenium running.\n Starting jasmine tests in 5 seconds"
+      setTimeout( -> 
+        jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
+        jnode.stderr.on 'data', (data) ->
+          process.stderr.write "\nJASMINE: " +  data.toString()
+        jnode.stdout.on 'data', (data) ->
+          print "JASMINE: " + data.toString()
+        jnode.on 'exit', (code) ->
+          newNode.kill('SIGTERM')
+          javaselenium.kill('SIGTERM')
+          callback?() if code is 0
+      , 5000)
     )
   )
 
