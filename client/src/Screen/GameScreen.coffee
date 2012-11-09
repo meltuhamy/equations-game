@@ -18,6 +18,7 @@ class HomeScreen extends Screen
     $("#optional").html(DiceFace.listToHtml(Game.getState().optional))
     $("#unallocated").html(DiceFace.listToHtml(Game.getState().unallocated))
     @addClickListeners()
+    @removeAllocationMoveMenu #Get rid of the allocation menu because it probably doesn't match dice anymore!
 
 
   addClickListeners: () ->
@@ -26,25 +27,35 @@ class HomeScreen extends Screen
     resourceList.bind 'click', (event) ->
       thisReference.drawAllocationMoveMenu(this);
 
-
+  ###*
+   * Draws the bubble-menu for letting the user choose where to move the dice they clickedOn
+   * @param  {HMTLLiEntity} clickedOn The html li element (diceface) they clicked on
+  ###
   drawAllocationMoveMenuButtons: (clickedOn) ->
-    @removeAllocationMoveMenu()
+    @removeAllocationMoveMenu() # Need to remove the menu to create a new one.
+
+    #Create the new allocation menu
     $('#container').append('<div id="move-allocation-menu">
       <span id="mamenu-required-btn">Required</span>
       <span id="mamenu-optional-btn">Optional</span>
       <span id="mamenu-forbidden-btn">Forbidden</span>
       </div>')
+
+
+    #In general, remove the allocation menu one someone clicks any of the buttons
+    $("#move-allocation-menu span").click(=>
+      @removeAllocationMoveMenu()
+    )
+
+    #Add event listener for each of the "required" "optional" and "forbidden" buttons inside the menu
     $("#mamenu-required-btn").click(=>
       Network.moveToRequired($('#unallocated li').index($(clickedOn)))
-      @removeAllocationMoveMenu()
     )
     $("#mamenu-optional-btn").click(=>
       Network.moveToOptional($('#unallocated li').index($(clickedOn)))
-      @removeAllocationMoveMenu()
     )
     $("#mamenu-forbidden-btn").click(=>
       Network.moveToForbidden($('#unallocated li').index($(clickedOn)))
-      @removeAllocationMoveMenu()
     )
 
   drawAllocationMoveMenu: (clickedOn) ->
@@ -55,9 +66,11 @@ class HomeScreen extends Screen
       top: $(clickedOn).position().top + $(clickedOn).height() + borderOffset
     )
 
+  ###*
+   * Deletes the bubble-tip menu if it exists
+  ###
   removeAllocationMoveMenu: ()->
     allocMenu = $('#move-allocation-menu')
-    console.log allocMenu
     $('#move-allocation-menu').remove() if allocMenu.length > 0
 
 
