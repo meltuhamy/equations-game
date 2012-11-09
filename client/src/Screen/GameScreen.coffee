@@ -1,6 +1,5 @@
 class HomeScreen extends Screen
   file: 'game.html'
-  open: false
   constructor: () -> 
 
   ###*
@@ -29,8 +28,7 @@ class HomeScreen extends Screen
 
 
   drawAllocationMoveMenuButtons: (clickedOn) ->
-    if (@open == false) then @removeAllocationMoveMenu()
-
+    @removeAllocationMoveMenu()
     $('#container').append('<div id="move-allocation-menu">
       <span id="mamenu-required-btn">Required</span>
       <span id="mamenu-optional-btn">Optional</span>
@@ -58,8 +56,9 @@ class HomeScreen extends Screen
     )
 
   removeAllocationMoveMenu: ()->
-    $('#move-allocation-menu').delete()
-    @open = true
+    allocMenu = $('#move-allocation-menu')
+    console.log allocMenu
+    $('#move-allocation-menu').remove() if allocMenu.length > 0
 
 
   ###*
