@@ -64,28 +64,36 @@ debug = ->
 tests = (callback) ->
   server( -> 
     client(-> 
-      javaselenium = spawn 'java', ['-jar', config.SELENIUM]
+      SeleniumRunning = false
+      checkedListeningOnce = false
+      javaselenium = spawn 'lsof', [config.SELENIUM]
       javaselenium.stderr.on 'data', (data) ->
-        process.stderr.write "\nSELENIUM: "+ data.toString()
+        console.log data.toString
       javaselenium.stdout.on 'data', (data) ->
-        #print data.toString()
-      newNode = spawn 'node', ['server.js']
-      newNode.stderr.on 'data', (data) ->
-        process.stderr.write "\nSERVER: " + data.toString()
-      newNode.stdout.on 'data', (data) ->
-        print "\nSERVER: " + data.toString()
-      console.log "Selenium running.\n Starting jasmine tests in 6 seconds"
-      setTimeout( -> 
-        jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
-        jnode.stderr.on 'data', (data) ->
-          process.stderr.write "JASMINE: " +  data.toString()
-        jnode.stdout.on 'data', (data) ->
-          print "JASMINE: " + data.toString()
-        jnode.on 'exit', (code) ->
-          newNode.kill('SIGTERM')
-          javaselenium.kill('SIGTERM')
-          callback?() if code is 0
-      , 6000)
+        console.log "Selenium appears to be running."
+        SeleniumRunning = true
+        newNode = spawn 'node', ['server.js']
+        newNode.stderr.on 'data', (data) ->
+          process.stderr.write "\nSERVER: " + data.toString()
+        newNode.stdout.on 'data', (data) ->
+          print "\nSERVER: " + data.toString()
+          if(!checkedListeningOnce && data.toString()=="Listening\n")
+            checkedListeningOnce = true
+            console.log "Starting Jasmine Tests"
+            setTimeout( -> 
+              jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
+              jnode.stderr.on 'data', (data) ->
+                process.stderr.write data.toString()
+              jnode.stdout.on 'data', (data) ->
+                print data.toString()
+              jnode.on 'exit', (code) ->
+                newNode.kill('SIGTERM')
+                callback?() if code is 0
+            , 2000)
+      javaselenium.on 'exit', (code) ->
+        if(SeleniumRunning is false)
+          console.error "\n\nSelenium is not running. You need to run it in a *new* terminal window. You need only do this once.\nOpen a new terminal window and run the command below:"
+          console.error "java -jar #{config.SELENIUM}\n"
     )
   )
 
