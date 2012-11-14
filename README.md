@@ -19,6 +19,7 @@ Steps to set up:
 3. Add aliases for cake and coffeescript. gedit ~/.cshrc
 
     alias coffee "~/node_modules/coffee-script/bin/coffee"
+    
     alias cake "~/node_modules/coffee-script/bin/cake"
 
 4. Restart terminal and execute the command: cake setup
