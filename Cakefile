@@ -64,34 +64,34 @@ debug = ->
 tests = (callback) ->
   server( -> 
     client(-> 
-      SeleniumRunning = false
       checkedListeningOnce = false
       javaselenium = spawn 'lsof', [config.SELENIUM]
       javaselenium.stderr.on 'data', (data) ->
-        console.log data.toString
+        console.log data.toString()
       javaselenium.stdout.on 'data', (data) ->
-        console.log "Selenium appears to be running."
-        SeleniumRunning = true
-        newNode = spawn 'node', ['server.js']
-        newNode.stderr.on 'data', (data) ->
-          process.stderr.write "\nSERVER: " + data.toString()
-        newNode.stdout.on 'data', (data) ->
-          print "\nSERVER: " + data.toString()
-          if(!checkedListeningOnce && data.toString()=="Listening\n")
-            checkedListeningOnce = true
-            console.log "Starting Jasmine Tests"
-            setTimeout( -> 
-              jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
-              jnode.stderr.on 'data', (data) ->
-                process.stderr.write data.toString()
-              jnode.stdout.on 'data', (data) ->
-                print data.toString()
-              jnode.on 'exit', (code) ->
-                newNode.kill('SIGTERM')
-                callback?() if code is 0
-            , 2000)
+        console.log ""
       javaselenium.on 'exit', (code) ->
-        if(SeleniumRunning is false)
+        if(code is 0)
+          console.log "Selenium appears to be running."
+          newNode = spawn 'node', ['server.js']
+          newNode.stderr.on 'data', (data) ->
+            process.stderr.write "\nSERVER: " + data.toString()
+          newNode.stdout.on 'data', (data) ->
+            print "\nSERVER: " + data.toString()
+            if(!checkedListeningOnce && data.toString()=="Listening\n")
+              checkedListeningOnce = true
+              console.log "Starting Jasmine Tests"
+              setTimeout( -> 
+                jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
+                jnode.stderr.on 'data', (data) ->
+                  process.stderr.write data.toString()
+                jnode.stdout.on 'data', (data) ->
+                  print data.toString()
+                jnode.on 'exit', (code) ->
+                  newNode.kill('SIGTERM')
+                  callback?() if code is 0
+              , 2000)
+        else
           console.error "\n\nSelenium is not running. You need to run it in a *new* terminal window. You need only do this once.\nOpen a new terminal window and run the command below:"
           console.error "java -jar #{config.SELENIUM}\n"
     )
@@ -112,8 +112,25 @@ dostylus = (watch, callback) ->
   stylus.on 'exit', (code) ->
     callback?() if code is 0
 
+setupNpmDependencies = (callback) ->
+  dependencies = ['install', 'coffee-script', 'express', 'socket.io', 'now', 'stylus', 'jasmine-node', 'node-inspector', 'nib', 'soda']
+  npmInstaller = spawn 'npm', dependencies
+  npmInstaller.stderr.on 'data', (data) ->
+    process.stderr.write data.toString()
+  npmInstaller.stdout.on 'data', (data) ->
+    print data.toString()
+  npmInstaller.on 'exit', (code) ->
+    callback?() if code is 0
 
 
+task 'setup', 'Set up dependencies', ->
+  setupNpmDependencies(->
+    console.log "\n-> Node.js dependencies are now set up."
+    console.log "-> Make sure you have copied and configured your own config.js: "
+    console.log "    cp config.js.sample config.js; #Then modify config.js to work with your machine."
+    console.log "\n-> Make sure you have downloaded selenium server and have placed it's path in config.js"
+    console.log "    Go to http://goo.gl/NYxbW\n"
+  )
 
 task 'build', 'Compile everything', ->
   build()
