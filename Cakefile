@@ -125,11 +125,18 @@ setupNpmDependencies = (callback) ->
 
 task 'setup', 'Set up dependencies', ->
   setupNpmDependencies(->
-    console.log "\n-> Node.js dependencies are now set up."
+    console.log "\n**********************\n-> Node.js dependencies are now set up."
     console.log "-> Make sure you have copied and configured your own config.js: "
-    console.log "    cp config.js.sample config.js; #Then modify config.js to work with your machine."
-    console.log "\n-> Make sure you have downloaded selenium server and have placed it's path in config.js"
+    console.log "    cp config.js.sample config.js"
+    console.log "-> Modify config.js to work with your machine and user."
+    console.log "\n-> Downloaded selenium modify its location in config.js"
     console.log "    Go to http://goo.gl/NYxbW\n"
+    console.log "-> If in labs, edit your .cshrc file. Add the following aliases"
+    console.log '    alias coffee "~/node_modules/coffee-script/bin/coffee"'
+    console.log '    alias cake "~/node_modules/coffee-script/bin/cake"'
+    console.log '    alias node-inspector "~/node_modules/node-inspector/bin/inspector.js --web-port=8081"'
+    console.log "\n-> To test that everything is working, run the tests"
+    console.log "    cake test"
   )
 
 task 'build', 'Compile everything', ->
