@@ -17,14 +17,16 @@ Steps to set up:
 1. Install node (http://nodejs.org/)
 2. npm install coffee-script
 3. Add aliases for cake and coffeescript. gedit ~/.cshrc
+
     alias coffee "~/node_modules/coffee-script/bin/coffee"
     alias cake "~/node_modules/coffee-script/bin/cake"
+
 4. Restart terminal and execute the command: cake setup
 5. **Follow instructions** after dependencies have finished installing.
 
 Debugging
 ---------
-1. Make sure you have all the requirements (see steps above). Cqhrome is required (or Safari). Note node-inspector must be in your path/aliases.
+1. Make sure you have all the requirements (see steps above). Chrome is required (or Safari). Note node-inspector must be in your path/aliases.
 
 2. Open two terminal windows, navigate to the project directory.
   - On terminal window 1, type: 'cake debug'. This will compile everything and start the server for debugging.
