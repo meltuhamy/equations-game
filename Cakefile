@@ -64,7 +64,7 @@ debug = ->
 tests = (callback) ->
   server( -> 
     client(-> 
-      checkedListeningOnce = false
+
       javaselenium = spawn 'lsof', [config.SELENIUM]
       javaselenium.stderr.on 'data', (data) ->
         console.log data.toString()

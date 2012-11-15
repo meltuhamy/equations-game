@@ -22,6 +22,13 @@ startServer = (callback) ->
 killServer = (nodeProcess) ->
   nodeProcess.kill('SIGTERM')
 
+#Define what URL will be in each browser etc.
+browserSettings = 
+  host: "localhost"
+  port: 4444
+  url: "http://localhost:8080"
+  browser: "firefox"
+
 describe "networkInteractions", ->
   it "should give each player a unique id", ->
 
@@ -49,20 +56,11 @@ describe "networkInteractions", ->
     # These are the ids we are going to get from the browser windows
     id1 = undefined
     id2 = undefined
-    
-    runs( ->
-      #Define what URL will be in each browser etc.
-      browserSettings = 
-        host: "localhost"
-        port: 4444
-        url: "http://localhost:8080"
-        browser: "firefox"
 
+    runs( ->
       # Define two browser windows.
       browser1 = soda.createClient(browserSettings)
       browser2 = soda.createClient(browserSettings)
-
-
 
       # Open browser 1
       browser1.session (err) ->
@@ -94,8 +92,6 @@ describe "networkInteractions", ->
                               browsersClosed = true
     )
 
-
-
     # Busy wait until the browsers close. Uses browsersClosed to test this.
     waitsFor(->
       return browsersClosed == true
@@ -105,6 +101,62 @@ describe "networkInteractions", ->
     runs(->
       # Finally, do the unit test (this is normal jasmine stuff)
       expect(id1).not.toEqual(id2)
+
+      #Important: Exit the server!
+      killServer(server)
+    )
+
+
+
+
+
+  it "Only one player should be the goal setter.", ->
+    #Start the server
+    serverReady = false
+    server = startServer(-> serverReady = true)
+
+    #Wait for server to be ready
+    waitsFor(->
+      return serverReady == true
+    , "Server never became ready", 20000);
+
+    # A busy-wait lock that gets released when browsers close
+    browsersClosed = false
+
+    # Boolean values to indicate if the goalmake div exists in each browser
+    goalmake1 = false
+    goalmake2 = false
+    
+    runs( ->
+      browser1 = soda.createClient(browserSettings)
+      browser2 = soda.createClient(browserSettings)
+
+      browser1.session (err) ->
+        browser1.open "/", (err, body) ->
+          browser1.waitForPageToLoad 5000, (err, body) ->
+            browser1.waitForCondition "typeof window.Game.myPlayerId !== 'undefined'", 20000, (err, body) ->
+              browser2.session (err) ->
+                browser2.open "/", (err, body) ->
+                  browser2.waitForPageToLoad 5000, (err, body) ->
+                    browser2.waitForCondition "typeof window.Game.myPlayerId !== 'undefined'", 20000, (err, body) ->
+                      browser1.getEval 'storedVars["evalResult"] = window.document.getElementById("goalmake") !== null', (err, body) ->
+                        goalmake1 = body
+                        browser2.getEval 'storedVars["evalResult"] = window.document.getElementById("goalmake") !== null', (err,body) ->
+                          goalmake2 = body
+                          browser2.testComplete (err, body) ->
+                            browser1.testComplete (err, body) ->
+                              browsersClosed = true
+    )
+
+
+    waitsFor(->
+      return browsersClosed == true
+    , "Browser test never completed", 100000);
+
+    # We need a 'runs' here to say "only run the runs code AFTER the waiting is done"
+    runs(->
+      # Finally, do the unit test (this is normal jasmine stuff)
+      expect(goalmake1).not.toEqual(goalmake2)
 
       #Important: Exit the server!
       killServer(server)
