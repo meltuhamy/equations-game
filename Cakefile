@@ -73,24 +73,13 @@ tests = (callback) ->
       javaselenium.on 'exit', (code) ->
         if(code is 0)
           console.log "Selenium appears to be running."
-          newNode = spawn 'node', ['server.js']
-          newNode.stderr.on 'data', (data) ->
-            process.stderr.write "\nSERVER: " + data.toString()
-          newNode.stdout.on 'data', (data) ->
-            print "\nSERVER: " + data.toString()
-            if(!checkedListeningOnce && data.toString()=="Listening\n")
-              checkedListeningOnce = true
-              console.log "Starting Jasmine Tests"
-              setTimeout( -> 
-                jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
-                jnode.stderr.on 'data', (data) ->
-                  process.stderr.write data.toString()
-                jnode.stdout.on 'data', (data) ->
-                  print data.toString()
-                jnode.on 'exit', (code) ->
-                  newNode.kill('SIGTERM')
-                  callback?() if code is 0
-              , 2000)
+          jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
+          jnode.stderr.on 'data', (data) ->
+            process.stderr.write data.toString()
+          jnode.stdout.on 'data', (data) ->
+            print data.toString()
+          jnode.on 'exit', (code) ->
+            callback?() if code is 0
         else
           console.error "\n\nSelenium is not running. You need to run it in a *new* terminal window. You need only do this once.\nOpen a new terminal window and run the command below:"
           console.error "java -jar #{config.SELENIUM}\n"
