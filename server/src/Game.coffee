@@ -10,7 +10,15 @@ class Game
   players: [] #private Player[] the players who have joined the game
   playerSocketIds: [] # Matching indices with players
   playerLimit: 2
+
   goalSetter: undefined
+
+  # {String} The string id for the nowjs group/room used for players in this game
+  nowJsGroupName: ''
+
+  # {Boolean} True when the game has started (is full)
+  started: false
+
   state:
     unallocated: []
     required: []
@@ -92,11 +100,12 @@ class Game
       @playerSocketIds.push(clientid)
       return newPlayerIndex
 
+
   isFull: () -> @players.length == @playerLimit
   getNumPlayers: () -> return @players.length
   getFirstTurnPlayer: () -> # return the index of the player who will set the goal
     if !@goalSetter?
-      @goalSetter = Math.floor(Math.random() * @players.length) #set a random goalSetter
+      @goalSetter = if DEBUG then 0 else Math.floor(Math.random() * @players.length) #set a random goalSetter
     @goalSetter
 
   authenticateMove: (socketId) -> #returns a boolean indicating whether or not the player is authorised to move

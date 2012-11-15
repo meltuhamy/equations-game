@@ -16,6 +16,7 @@ class Game
   # {Number} The id of the goal screen given by the ScreenManager
   @homeScreenId: undefined
   @goalScreenId: undefined
+  @lobbyScreenId: undefined
  
   # {Json} The json of the current state of the game and what type each dice is.
   # unallocated, required, optional, forbidden are arrays of dicefaces.
@@ -33,6 +34,7 @@ class Game
   @initialise: () ->
     @homeScreenId = ScreenSystem.addScreen(new HomeScreen())
     @goalScreenId = ScreenSystem.addScreen(new GoalScreen())
+    @lobbyScreenId = ScreenSystem.addScreen(new LobbyScreen())
 
   ###*
    * Set the goal locally. The server has told us the goal-setter has set the goal.

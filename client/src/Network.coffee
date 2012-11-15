@@ -3,8 +3,8 @@
 class Network
   @initialise: ->
     now.ready ->
-      console.log "hello"
-      now.addClient()
+      now.getGames()
+      #now.addClient()
 
   ###*
    * Sends the goal array to the server
@@ -46,6 +46,16 @@ now.acceptPlayer = (id, dicefaceSymbols) -> #id is the index
   DiceFace.symbols = dicefaceSymbols
 
 
+
+
+
+###*
+ * Receive list of the games that the server has
+ * @param  {Json} gameListJson A json with 
+                  nowjsname, roomNumber, playerCount, playerLimit, started
+###
+now.receiveGameList = (gameListJson) ->
+  ScreenSystem.renderScreen(Game.lobbyScreenId, {gameListJson: gameListJson})
 
 
 

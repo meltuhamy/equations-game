@@ -29,17 +29,17 @@ browserSettings =
   url: "http://localhost:8080"
   browser: "firefox"
 
+### BROKEN DUE TO LOBBY CODE
 describe "networkInteractions", ->
   it "should give each player a unique id", ->
 
-    ###
-    HOW THIS WORKS
-    1. Define the browser settings and set them up
-    2. Do the stuff we want to do using the browsers
-    3. In the mean time, wait until the browsers are finished doing what we want
-    4. Use the stuff we got from the browsers to do the actual jasmine test.
-
-    ###
+    #
+    #HOW THIS WORKS
+    #1. Define the browser settings and set them up
+    #2. Do the stuff we want to do using the browsers
+    #3. In the mean time, wait until the browsers are finished doing what we want
+    #4. Use the stuff we got from the browsers to do the actual jasmine test.
+    #
 
     #Start the server
     serverReady = false
@@ -153,11 +153,8 @@ describe "networkInteractions", ->
       return browsersClosed == true
     , "Browser test never completed", 100000);
 
-    # We need a 'runs' here to say "only run the runs code AFTER the waiting is done"
     runs(->
-      # Finally, do the unit test (this is normal jasmine stuff)
       expect(goalmake1).not.toEqual(goalmake2)
-
-      #Important: Exit the server!
       killServer(server)
     )
+###
