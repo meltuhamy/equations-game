@@ -10,6 +10,13 @@ This is done in trello.
 1. Go to https://trello.com/equationsgroupproject
 2. Create an account and tell me to add you.
 
+(NEW!) Using iMacros to speed up testing
+----------------------------------------
+1. Make sure you're using Google Chrome
+2. Install the iMacros chrome extension http://goo.gl/BR3KC
+3. Right click on the iMacros icon (beside address bar). Click 'Options'
+4. Change the "Macros directory path" to the path in your project folder (there is now an iMacros folder in the project directory. Use that.)
+5. Click the iMacros icon and double click on a macro to run it. (OnePlusTwoStart expects a new window with 1 tab to work properly)
 
 Steps to set up:
 ================
