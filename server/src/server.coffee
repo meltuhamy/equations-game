@@ -9,7 +9,7 @@ DICEFACESYMBOLS = DiceFace.symbols
 everyone = nowjs.initialize(server)
 
 
-game = new Game([])
+game = new Game([], 50)
 games = [game]
 
 ###
@@ -18,8 +18,10 @@ everyone.now.createGame = (jsonParams) ->
   this.now.addClient(games.length-1)
 ###
 
-
-everyone.now.addClient = (index) -> #called by client when connected
+###
+FIIIIIIIIIIIIIIX THIS NOW
+###
+everyone.now.addClient = (gameNumber) -> #called by client when connected
   if(!game.isFull())
     # add the player, tell him he was accepted and give him his playerId (i.e. index) for the game
     this.now.acceptPlayer(game.addClient(this.user.clientId), DICEFACESYMBOLS)
@@ -40,7 +42,7 @@ everyone.now.getGames = ->
       # the string of the room used by nowjs for unique identification
       nowjsname: g.nowJsGroupName,
       # index to the games array
-      roomNumber: g.roomNumber,
+      gameNumber: g.gameNumber,
       playerCount: g.getNumPlayers(),
       playerLimit: g.playerLimit,
       started: g.started

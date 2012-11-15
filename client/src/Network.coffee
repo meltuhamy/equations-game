@@ -4,7 +4,10 @@ class Network
   @initialise: ->
     now.ready ->
       now.getGames()
-      #now.addClient()
+
+
+  @sendJoinGameRequest: (gameNumber) ->
+    now.addClient(gameNumber)
 
   ###*
    * Sends the goal array to the server

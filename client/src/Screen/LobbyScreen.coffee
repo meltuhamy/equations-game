@@ -11,16 +11,19 @@ class LobbyScreen extends Screen
   init: (json) ->
     @games = json.gameListJson
     @renderRoomList()
+    @addClickListeners()
 
-  loadRooms: (jsons) ->
-    # @addEventListeners
+  addClickListeners: () ->
+    thisReference = this
+    gamesList = $('#gameslist tr')
+    gamesList.bind 'click', (event) ->
+      gameNumber = $(this).data('gamenumber')
+      Network.sendJoinGameRequest(gameNumber)
 
   renderRoomList: () ->
-    console.log "renderRoomList!"
-    console.log @games
     html = '<table id="gameslist">'
     for g in @games
-      html += '<tr data-room-number="' + g.roomNumber + '">'
+      html += '<tr data-gamenumber="' + g.gameNumber + '">'
       html += "<td ><a href='#'>#{g.nowjsname}</a></td>"
       html += "<td>#{g.playerCount} / #{g.playerLimit} </td>"
       html += "<td>Currently playing: #{g.started}</td>"

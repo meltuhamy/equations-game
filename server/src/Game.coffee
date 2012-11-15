@@ -16,6 +16,9 @@ class Game
   # {String} The string id for the nowjs group/room used for players in this game
   nowJsGroupName: ''
 
+  # {Number} The index to the games array
+  gameNumber: 0
+
   # {Boolean} True when the game has started (is full)
   started: false
 
@@ -26,8 +29,9 @@ class Game
     forbidden: []
     currentPlayer: 0 #this tells us the index of the player who's turn it is, and is automatically incremented after each resource move
   
-  constructor: (players) ->
+  constructor: (players, gameNumber) ->
     @players = players
+    @gameNumber = gameNumber
     @allocate()
 
   goalHasBeenSet: () ->
