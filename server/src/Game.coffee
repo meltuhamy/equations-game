@@ -32,6 +32,7 @@ class Game
   constructor: (players, gameNumber) ->
     @players = players
     @gameNumber = gameNumber
+    @nowJsGroupName = "game#{gameNumber}"
     @allocate()
 
   goalHasBeenSet: () ->

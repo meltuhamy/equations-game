@@ -5,12 +5,19 @@ DICEFACESYMBOLS = DiceFace.symbols
 
 {Game} = require './Game.js'
 {Player} = require './Player.js'
+{GamesManager} = require './GamesManager.js'
 
 everyone = nowjs.initialize(server)
 
+gamesManager = new GamesManager()
+gamesManager.newGame()
 
-game = new Game([], 50)
-games = [game]
+# Returns a pair {game,group} specifying the game and group for the given gameNumber
+getThisGameGroup = (gameNumber) =>
+  game = gamesManager.getGame(gameNumber)
+  group = nowjs.getGroup(game.nowJsGroupName)
+  return {game: game, group: group}
+    
 
 ###
 everyone.now.createGame = (jsonParams) ->
@@ -18,36 +25,30 @@ everyone.now.createGame = (jsonParams) ->
   this.now.addClient(games.length-1)
 ###
 
-###
-FIIIIIIIIIIIIIIX THIS NOW
-###
+
 everyone.now.addClient = (gameNumber) -> #called by client when connected
+  {game, group} = getThisGameGroup(gameNumber)
   if(!game.isFull())
-    # add the player, tell him he was accepted and give him his playerId (i.e. index) for the game
+    # add the player to the nowjs group
+    group.addUser(this.user.clientId)
+
+    # place the gameNumber in the client pocket
+    this.now.gameNumber = gameNumber
+
+    # add the player to the game, tell him he was accepted and give him his playerId (i.e. index) for the game
     this.now.acceptPlayer(game.addClient(this.user.clientId), DICEFACESYMBOLS)
+
     # Now see if the game is full after adding him (i.e see if is the last player)
-    # If it is, then tell everyone that its the goal setting turn. 
+    # If it is, then tell everyone in this game that its the goal setting turn. 
     if(game.isFull())
-      everyone.now.receiveGoalTurn(game.players, game.state.unallocated, game.getFirstTurnPlayer())
+      group.now.receiveGoalTurn(game.players, game.state.unallocated, game.getFirstTurnPlayer())
   else
     # else the game is already full, so tell him - tough luck
 
 
 
 everyone.now.getGames = ->
-  console.log "getGames!!!"
-  gamesList = []
-  for g in games
-    gameData = {
-      # the string of the room used by nowjs for unique identification
-      nowjsname: g.nowJsGroupName,
-      # index to the games array
-      gameNumber: g.gameNumber,
-      playerCount: g.getNumPlayers(),
-      playerLimit: g.playerLimit,
-      started: g.started
-    }
-    gamesList.push gameData
+  gamesList = gamesManager.getGamesListJson()
   this.now.receiveGameList(gamesList)
 
 
@@ -60,7 +61,9 @@ everyone.now.getGames = ->
  * @param  {[type]} goalArray [description]
  * @return {[type]}           [description]
 ###
-everyone.now.receiveGoal = (goalArray) -> #
+everyone.now.receiveGoal = (goalArray) ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
+
   if !(this.user.clientId == game.playerSocketIds[game.goalSetter])
     throw "Unauthorised goal setter"
   try
@@ -72,23 +75,26 @@ everyone.now.receiveGoal = (goalArray) -> #
 
 
 everyone.now.moveToRequired = (index) ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
   try
     game.moveToRequired(index, this.user.clientId)
-    everyone.now.receiveState(game.state)
+    group.now.receiveState(game.state)
   catch e
     console.warn e
 
 everyone.now.moveToOptional = (index) ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
   try
     game.moveToOptional(index, this.user.clientId)
-    everyone.now.receiveState(game.state)
+    group.now.receiveState(game.state)
   catch e
     console.warn e
 
 everyone.now.moveToForbidden = (index) ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
   try
     game.moveToForbidden(index, this.user.clientId)
-    everyone.now.receiveState(game.state)
+    group.now.receiveState(game.state)
   catch e
     console.warn e
   
