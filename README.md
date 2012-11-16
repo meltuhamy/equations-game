@@ -23,6 +23,7 @@ Steps to set up:
 
 1. Install node (http://nodejs.org/)
 2. npm install coffee-script
+2.5 Udara, yes you. Remember to install selenium
 3. Add aliases for cake and coffeescript. gedit ~/.cshrc
 
     alias coffee "~/node_modules/coffee-script/bin/coffee"

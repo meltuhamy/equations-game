@@ -26,7 +26,10 @@ class LobbyScreen extends Screen
       html += '<tr data-gamenumber="' + g.gameNumber + '">'
       html += "<td ><a href='#'>#{g.nowjsname}</a></td>"
       html += "<td>#{g.playerCount} / #{g.playerLimit} </td>"
-      html += "<td>Currently playing: #{g.started}</td>"
+      if(g.started)
+        html += "<td>Currently playing!</td>"
+      else
+        html += "<td>Waiting for players...</td>"
       html += '</tr>'  
     html += '</table>'
     $('#'+Settings.containerId).html(html)
