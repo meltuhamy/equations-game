@@ -29,7 +29,6 @@ browserSettings =
   url: "http://localhost:8080"
   browser: "firefox"
 
-### BROKEN DUE TO LOBBY CODE
 describe "networkInteractions", ->
   it "should give each player a unique id", ->
 
@@ -67,29 +66,36 @@ describe "networkInteractions", ->
         browser1.open "/", (err, body) ->
           # Wait for the page (dom) to load. If more than 5000 milliseconds pass and the page hasn't loaded, exit.
           browser1.waitForPageToLoad 5000, (err, body) ->
-            # Page is now loaded. Now, repeatedly check if Game.myPlayerId is defined. 20000 is the timeout
-            browser1.waitForCondition "typeof window.Game.myPlayerId !== 'undefined'", 20000, (err, body) ->
-              # Game.myPlayerId is finally defined. Now, get it's result and store it in body (the param call back)
-              browser1.getEval "storedVars['evalResult'] = window.Game.myPlayerId;", (err, body) ->
-                id1 = body
-                #OK, we're done with browser 1 but don't want to close it yet because we need to open
-                #a new browser window to check what tha player id for *it* is.
-                #Open a new browser
-                browser2.session (err) ->
-                  browser2.open "/", (err, body) ->
-                    # Wait for the page to load
-                    browser2.waitForPageToLoad 5000, (err, body) ->
-                      # Wait up to 20000 milliseconds ultil the myPlayerId is defined.
-                      browser2.waitForCondition "typeof window.Game.myPlayerId !== 'undefined'", 20000, (err, body) ->
-                        # Get Game.myPlayerId
-                        browser2.getEval "storedVars['evalResult'] = window.Game.myPlayerId;", (err, body) ->
-                          id2 = body
-                          #Great, we now have the player id of browser 1 and browser two. Close browser 2.
-                          browser2.testComplete (err, body) ->
-                            # Browser 2 is now closed. Now close browser 1.
-                            browser1.testComplete (err, body) ->
-                              #Browser 1 *and* browser 2 are now close. We can now release the lock.
-                              browsersClosed = true
+            # Page is now loaded. Wait for getting rooms to load
+            browser1.waitForElementPresent 'id=gameslist', (err, body) ->
+              # Click on first room
+              browser1.click 'css=tr[data-gamenumber=0]', (err, body) ->
+                # Now, repeatedly check if Game.myPlayerId is defined. 20000 is the timeout
+                browser1.waitForCondition "typeof window.Game.myPlayerId !== 'undefined'", 20000, (err, body) ->
+                  # Game.myPlayerId is finally defined. Now, get it's result and store it in body (the param call back)
+                  browser1.getEval "storedVars['evalResult'] = window.Game.myPlayerId;", (err, body) ->
+                    id1 = body
+                    #OK, we're done with browser 1 but don't want to close it yet because we need to open
+                    #a new browser window to check what tha player id for *it* is.
+                    #Open a new browser
+                    browser2.session (err) ->
+                      browser2.open "/", (err, body) ->
+                        # Wait for the page to load
+                        browser2.waitForPageToLoad 5000, (err, body) ->
+                          browser2.waitForElementPresent 'id=gameslist', (err, body) ->
+                            # Click on first room
+                            browser2.click 'css=tr[data-gamenumber=0]', (err, body) ->
+                              # Wait up to 20000 milliseconds ultil the myPlayerId is defined.
+                              browser2.waitForCondition "typeof window.Game.myPlayerId !== 'undefined'", 20000, (err, body) ->
+                                # Get Game.myPlayerId
+                                browser2.getEval "storedVars['evalResult'] = window.Game.myPlayerId;", (err, body) ->
+                                  id2 = body
+                                  #Great, we now have the player id of browser 1 and browser two. Close browser 2.
+                                  browser2.testComplete (err, body) ->
+                                    # Browser 2 is now closed. Now close browser 1.
+                                    browser1.testComplete (err, body) ->
+                                      #Browser 1 *and* browser 2 are now close. We can now release the lock.
+                                      browsersClosed = true
     )
 
     # Busy wait until the browsers close. Uses browsersClosed to test this.
@@ -134,18 +140,22 @@ describe "networkInteractions", ->
       browser1.session (err) ->
         browser1.open "/", (err, body) ->
           browser1.waitForPageToLoad 5000, (err, body) ->
-            browser1.waitForCondition "typeof window.Game.myPlayerId !== 'undefined'", 20000, (err, body) ->
-              browser2.session (err) ->
-                browser2.open "/", (err, body) ->
-                  browser2.waitForPageToLoad 5000, (err, body) ->
-                    browser2.waitForCondition "typeof window.Game.myPlayerId !== 'undefined'", 20000, (err, body) ->
-                      browser1.getEval 'storedVars["evalResult"] = window.document.getElementById("goalmake") !== null', (err, body) ->
-                        goalmake1 = body
-                        browser2.getEval 'storedVars["evalResult"] = window.document.getElementById("goalmake") !== null', (err,body) ->
-                          goalmake2 = body
-                          browser2.testComplete (err, body) ->
-                            browser1.testComplete (err, body) ->
-                              browsersClosed = true
+            browser1.waitForElementPresent 'id=gameslist', (err, body) ->
+              browser1.click 'css=tr[data-gamenumber=0]', (err, body) ->
+                browser1.waitForCondition "typeof window.Game.myPlayerId !== 'undefined'", 20000, (err, body) ->
+                  browser2.session (err) ->
+                    browser2.open "/", (err, body) ->
+                      browser2.waitForPageToLoad 5000, (err, body) ->
+                        browser2.waitForElementPresent 'id=gameslist', (err, body) ->
+                          browser2.click 'css=tr[data-gamenumber=0]', (err, body) ->
+                            browser2.waitForCondition "typeof window.Game.myPlayerId !== 'undefined'", 20000, (err, body) ->
+                              browser1.getEval 'storedVars["evalResult"] = window.document.getElementById("goalmake") !== null', (err, body) ->
+                                goalmake1 = body
+                                browser2.getEval 'storedVars["evalResult"] = window.document.getElementById("goalmake") !== null', (err,body) ->
+                                  goalmake2 = body
+                                  browser2.testComplete (err, body) ->
+                                    browser1.testComplete (err, body) ->
+                                      browsersClosed = true
     )
 
 
@@ -157,4 +167,3 @@ describe "networkInteractions", ->
       expect(goalmake1).not.toEqual(goalmake2)
       killServer(server)
     )
-###
