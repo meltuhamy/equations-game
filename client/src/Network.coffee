@@ -82,7 +82,7 @@ now.receiveGoalTurn = (players, resources, firstTurnPlayerIndex) ->
     # show screen
     ScreenSystem.renderScreen(Game.goalScreenId, {resources: resources})
   else
-    #ScreenSystem.renderScreen(waitingScreen)
+    ScreenSystem.renderScreen(Game.gameWaitScreenId)
 
   Game.goingFirst = firstTurnPlayerIndex
 

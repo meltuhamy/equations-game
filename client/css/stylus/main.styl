@@ -5,17 +5,19 @@
 *
   reset-box-model()
 
+$font-list = "Helvetica Neue","Hevletica","Arial","DejaVu Sans","Kozuka Gothic Pro R","Meiryo","MS Gothic","Osaka",sans-serif
+
 
 html, body
   height: 100%;
   overflow: hidden
+  font-family: $font-list
 
 
 body
   background:#2066a0
   background: linear-gradient(top, #2989d8 0%, #1a7fb2 58%, #2066a0 100%)
   min-height: 100%
-  font-family: $font-list
 
 div#container
   margin: 0 auto
@@ -69,8 +71,6 @@ vertical-text()
 /*********************    GOAL       *************************/
 /******* styles for the goal dice and challenge buttons ******/
 /*************************************************************/
-
-$font-list = "Helvetica Neue","Hevletica","Arial","DejaVu Sans","Kozuka Gothic Pro R","Meiryo","MS Gothic","Osaka",sans-serif
 
 
 div#top_container
@@ -260,6 +260,22 @@ table#gameslist
     text-decoration: none
     font-weight: bold
 
+div#goalmake
+  background: #005896
+  border-radius(5px)
+  margin-top: 20px
+  padding: 20px
+
+div#goalwait
+  background: #005896
+  border-radius(5px)
+  margin-top: 20px
+  padding: 20px
+  h2
+    color: #FFFFFF
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+  p
+    color: #002470
 
 
 
