@@ -77,15 +77,26 @@ class Game
   ###
   checkGoal: (dice) ->
     # First check there are not too many dice in the goal
-    if(dice.length > 6) then throw "Goal uses more than six dice"
+    #if(dice.length > 6) then throw "Goal uses more than six dice"
+    dices = 0
+    for i in [0..dice.length]
+      if (dice[i] < 24)
+        dices++
+      i++
+    if (dices > 6) then throw "Goal uses more than six dice"
     # Now check that there are not duplicates. We can't use the same dice twice.
     # Also, we check that the indices are in bounds. We can use dice that don't exist.
     diceValues = []
     for i in [0 ... dice.length]
       for j in [i+1 ... dice.length]
-        if(dice[i] < 0  || dice[i] > 23) then throw "Goal has out of bounds array index"
-        if (dice[i] == dice[j] && i!=j) then throw "Goal uses duplicates dice"
-      diceValues.push(@state.unallocated[dice[i]])    
+        if(dice[i] < 0  || dice[i] > 25) then throw "Goal has out of bounds array index"
+        if (dice[i] == dice[j] && i!=j && dice[i] < 24) then throw "Goal uses duplicates dice"
+      if dice[i] == 24
+        diceValues.push(DiceFace.bracketL)
+      else if dice[i] == 25
+        diceValues.push(DiceFace.bracketR)
+      else
+        diceValues.push(@state.unallocated[dice[i]]) 
     # Finally, check that the expression in the dice parses as an expression.
     p = new ExpressionParser()
     @goalTree = p.parse(diceValues)
