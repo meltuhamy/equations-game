@@ -16,6 +16,7 @@ class HomeScreen extends Screen
   drawDiceAllocations: () ->
     $("#required").html(DiceFace.listToHtml(Game.getState().required))
     $("#optional").html(DiceFace.listToHtml(Game.getState().optional))
+    $('#forbidden').html(DiceFace.listToHtml(Game.getState().forbidden))
     $("#unallocated").html(DiceFace.listToHtml(Game.getState().unallocated))
     @addClickListeners()
     @removeAllocationMoveMenu #Get rid of the allocation menu because it probably doesn't match dice anymore!

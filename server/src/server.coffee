@@ -11,8 +11,17 @@ everyone = nowjs.initialize(server)
 
 gamesManager = new GamesManager()
 gamesManager.newGame()
+gamesManager.newGame()
+gamesManager.newGame()
+gamesManager.newGame()
 
-# Returns a pair {game,group} specifying the game and group for the given gameNumber
+
+###*
+ * Returns a pair {game,group} specifying the game and group for the given gameNumber
+ * @param  {[type]} gameNumber [description]
+ * @return {Json} with game: {Game} the Game object for the game
+ *                     group: {String} the string id nowjs uses for nowjs groups
+###
 getThisGameGroup = (gameNumber) =>
   game = gamesManager.getGame(gameNumber)
   group = nowjs.getGroup(game.nowJsGroupName)
@@ -71,7 +80,7 @@ everyone.now.receiveGoal = (goalArray) ->
     throw "Unauthorised goal setter"
   try
     game.setGoal(goalArray)
-    everyone.now.receiveGoalTurnEnd(goalArray)
+    group.now.receiveGoalTurnEnd(goalArray)
   catch e #catches when parser returns error for goal
     this.now.badGoal(e.message)
 

@@ -13,8 +13,9 @@ html, body
 
 body
   background:#2066a0
-  background: linear-gradient(top, #2989d8 0%, #1a7fb2 58%, #2066a0 100%);
-  min-height: 100%;
+  background: linear-gradient(top, #2989d8 0%, #1a7fb2 58%, #2066a0 100%)
+  min-height: 100%
+  font-family: $font-list
 
 div#container
   margin: 0 auto
@@ -172,6 +173,7 @@ div#never-button:active
 
 
 
+
 div#allocation_container ul,
 ul#answers,
 ul#inside-goal,
@@ -192,7 +194,11 @@ ul#outside-goal
       font-size: 20px
       padding-top: 4px;
       line-height: $dicewidth;
-
+  li.lbracket
+    display: inline-block
+    font-size: 60px
+    line-height: 28px
+    padding-left: 10px
 
 
 div#allocation_container
@@ -217,12 +223,44 @@ div#allocation_container
     border-color:#007BD1
     background: #4FBA07
     border-width: 8px
+  ul#forbidden li.dice
+    color: #FFFFFF
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+    border-color:#007BD1
+    background: red
+    border-width: 8px
   ul#unallocated li.dice
     color: #FFFFFF
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
     border-color:#007BD1
     background: #777777
     border-width: 8px
+
+
+
+table#gameslist 
+  margin-top: 10px
+  display: block
+  width: 100%
+  background: #0066AD
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 10px
+  border-radius(5px)
+  font-family: $font-list
+  border: 1px solid #55A3D6
+  text-align: left
+  td
+    color: #FFFFFF
+    padding: 5px
+  tr:nth-child(2n+1)
+    background: #007DD5
+  a
+    color: #FF8F64
+    text-decoration: none
+    font-weight: bold
+
+
 
 
 #dice_container
@@ -339,8 +377,17 @@ $bubbleTipSize = 8px
   background: rgb(255, 255, 255);
   border-radius: 5px;
   text-shadow: rgba(0, 0, 0, 0.0976563) 1px 1px 1px;
-  box-shadow: rgba(0, 0, 0, 0.0976563) 1px 1px 2px 0px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 2px 1px;
   margin-left: -1 * (@width / 2)
+  span
+    font-family: $font-list
+    cursor: pointer
+  span#mamenu-required-btn
+    color: #FD4700
+  span#mamenu-optional-btn
+    color: #52A25B
+  span#mamenu-forbidden-btn
+    color: #FF0000
 
 #move-allocation-menu:after
   content: ""
@@ -349,7 +396,7 @@ $bubbleTipSize = 8px
   width: 0 
   height: 0
   border: $bubbleTipSize  transparent solid
-  border-bottom-color: #EEEEEE
+  border-bottom-color: #FFFFFF
   bottom: -1 * $bubbleTipSize 
   left: 50%
   top: -2*$bubbleTipSize
