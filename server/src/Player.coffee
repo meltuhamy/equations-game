@@ -1,4 +1,6 @@
 class Player
   name: ''
-  constructor: (@name) ->
+  index: undefined
+
+  constructor: (@index, @name) ->
 module.exports.Player = Player;

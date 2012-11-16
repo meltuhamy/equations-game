@@ -7,10 +7,17 @@ DEBUG = true
 class Game
   goalTree: undefined
   goalArray: []
-  players: [] #private Player[] the players who have joined the game
-  playerSocketIds: [] # Matching indices with players
+
+  # {Player[]} An array of players who have joined the game
+  players: []
+
+  # {Number} The nowjs sockets for players. These match up index-by-index with players array
+  playerSocketIds: []
+
+  # {Number} The maximum number of players allow in the game.
   playerLimit: 2
 
+  # {Number} An index to players array. Player who sets the goal (takes the goal setting turn)
   goalSetter: undefined
 
   # {String} The string id for the nowjs group/room used for players in this game
@@ -105,27 +112,40 @@ class Game
   
   ###*
    * Adds a client to the game.
-   * @param {Integer} clientid The id of the client given by server
+   * @param {Integer} clientid The nowjs unique id of the player
+   * @return {Integer} The index of the players array for the newly added player
   ###
   addClient: (clientid) ->
     if @players.length == @playerLimit
       throw new Error("Game full")
     else
       newPlayerIndex = @players.length
-      @players.push(new Player(newPlayerIndex))
+      @players.push(new Player(newPlayerIndex, 'James'))
       @playerSocketIds.push(clientid)
       return newPlayerIndex
 
 
   isFull: () -> @players.length == @playerLimit
   getNumPlayers: () -> return @players.length
-  getFirstTurnPlayer: () -> # return the index of the player who will set the goal
+
+  ###*
+   * Return the index of the player who will set the goal
+   * @return {[Integer} An index to the players array
+  ###
+  getFirstTurnPlayer: () -> 
     if !@goalSetter?
       @goalSetter = if DEBUG then 0 else Math.floor(Math.random() * @players.length) #set a random goalSetter
     @goalSetter
 
-  authenticateMove: (socketId) -> #returns a boolean indicating whether or not the player is authorised to move
+
+  ###*
+   * See if this player is allowed to make this move.
+   * @param  {[type]} socketId The nowjs socket id of the player.
+   * @return {[type]}          Return True if it is this player's turn to move 
+  ###
+  authenticateMove: (socketId) -> #returns a boolean 
     (socketId == @playerSocketIds[@state.currentPlayer])
+
 
   start: ->
     @state.currentPlayer = (@goalSetter + 1) % @players.length

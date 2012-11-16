@@ -24,7 +24,11 @@ body
 div#container
   margin: 0 auto
   width: 80%
-  min-height: 100%;
+  padding: 15px
+  margin-top: 20px
+  background: rgba(255, 255, 255, 0.2)
+  border: 1px solid rgba(255, 255, 255, 0.3)
+  border-radius(5px)
 
 
 // For screen widths 0 <= w <= 999
@@ -68,7 +72,6 @@ div#top-ctnr
   background: #0066AD
   padding: 10px 0px
   margin-bottom: 10px
-  margin-top: 10px
   border-radius(5px)
   clearfix()
   div#goal-ctnr
@@ -81,6 +84,7 @@ div#top-ctnr
     float:left
     ul#goal-dice-ctnr
       display: block
+      margin-bottom: 10px
       li.dice
         display: inline-block
         text-align: center
@@ -107,19 +111,21 @@ div#top-ctnr
     position: relative
     ul
       li
-        color: #005DC2
+        color: #9DC8FF
         background: transparent url('img/user-blue.png') no-repeat center center
         background-color: $notTurnCol = #0090F0
         display: inline-block
         padding: 4px 10px 5px 10px
         border-radius(5px)
+        font-size: 13px
+        font-weight: bold
         /*text-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px*/
         box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px;
       li.current-turn-player
-        color: white
-        background-color: $isTurnCol = #F09B05
+        color: #FFF4D0
+        background-color: $isTurnCol = #D88A00
         /*text-shadow: #FFD600 0px 1px 3px*/
-        box-shadow: #FFD600 0px 1px 1px
+        /*box-shadow: #FFD600 0px 1px 1px*/
 
   /* Add an arrow connecting player list to the commentary box */
   div#player-list:after 
@@ -147,12 +153,12 @@ div#top-ctnr
       color: #BEBEBE
       text-align: left
       font-size: 12px
-      padding: 1px 5px
+      padding: 0px 10px
       span
         color: #9FC6F1
     ul li.now-commentary
       color: #FFFFFF
-      background: #F09B05
+      background: #D88A00
       border-radius(5px 5px 0px 0px)
       span
         color: #F5FF00
@@ -258,7 +264,6 @@ div#allocation_container
   padding-bottom: 10px;
   margin-bottom: 10px
   border-radius(5px)
-  border: 1px solid #55A3D6
   text-align: left
   ul#required li.dice
     color: #FFFFFF
@@ -287,21 +292,15 @@ div#allocation_container
 
 div#lobby
   background: #0066AD
-  padding-top: 10px
-  padding-bottom: 10px
-  margin-bottom: 10px
   border-radius(5px)
-  width: 100%
   display: block
-  margin-top: 10px
+  padding: 10px
   h2
     color: #FFFFFF
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
     margin-bottom: 5px
-    padding-left: 5px
   table#gameslist 
     text-align: left
-    margin-left: 10px
     width: 100%
     td
       color: #FFFFFF
@@ -316,7 +315,6 @@ div#lobby
 div#goalmake
   background: #005896
   border-radius(5px)
-  margin-top: 20px
   padding: 20px
   h2
     color: #FFFFFF
@@ -326,7 +324,6 @@ div#goalmake
 div#goalwait
   background: #005896
   border-radius(5px)
-  margin-top: 20px
   padding: 20px
   h2
     color: #FFFFFF

@@ -13,7 +13,7 @@ class HomeScreen extends Screen
     @drawDiceAllocations()
 
   ###*
-   * We received the next turn in the game
+   * We received the next turn in the game so update the allocations of the dice.
   ###
   drawDiceAllocations: () ->
     $("#required").html(DiceFace.listToHtml(Game.getState().required))
@@ -21,7 +21,22 @@ class HomeScreen extends Screen
     $('#forbidden').html(DiceFace.listToHtml(Game.getState().forbidden))
     $("#unallocated").html(DiceFace.listToHtml(Game.getState().unallocated))
     @addClickListeners()
-    @removeAllocationMoveMenu #Get rid of the allocation menu because it probably doesn't match dice anymore!
+    @removeAllocationMoveMenu # Get rid of the allocation menu because it probably doesn't match dice anymore!
+    @drawPlayerList()
+
+  ###*
+   * When the turn has changed, update the player information.
+  ###
+  drawPlayerList: () ->
+    html = '<ul>'
+    for p in Game.players
+      # See whether we need to this player because its his turn
+      currentHtml = if(Game.state.currentPlayer is p.index) then " class='current-turn-player'" else ""
+      # See if we need to add a "(You)" to the persons name because this player *is* you!
+      nameHtml = if(Game.myPlayerId is p.index) then p.name + '(You)' else p.name
+      html += '<li' + currentHtml + '>' + nameHtml + '</li>'
+    html += '</ul>'
+    $('#player-list').html(html)
 
 
   addClickListeners: () ->

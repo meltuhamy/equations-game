@@ -6,7 +6,7 @@ class Game
   # {Number} The index of the player whose turn it is
   @firstTurnPlayerIndex: undefined
 
-  # {Number} The unique id of our client player used to communicated with server
+  # {Number} The index to the players array 
   @myPlayerId: undefined
 
   # {Number[]} The array of dicefaces for the goal when it was set at start of game
