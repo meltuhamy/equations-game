@@ -37,7 +37,11 @@ everyone.now.createGame = (jsonParams) ->
 
 everyone.now.addClient = (gameNumber) -> #called by client when connected
   {game, group} = getThisGameGroup(gameNumber)
-  if(!game.isFull())
+  
+  # Check that the person isn't already in a group
+  notInRoom = !this.now.gameNumber?
+
+  if(notInRoom && !game.isFull())
     # add the player to the nowjs group
     group.addUser(this.user.clientId)
 
