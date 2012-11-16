@@ -3,15 +3,11 @@ class GoalScreen extends Screen
   # {String} The filename of the html file to load the screen.
   file: 'goal.html'
 
-
   # {Number[]} An array of dicefaces. The resources used to form goal.
   resources: []
 
+  # {Number} How many dice has the user currently put in the added-to-goal area
   numberInGoal: 0
-  inGoalBitmap: []
-  resourceDomElements: []
-  goalDomElements: []
-  goalArray: []
 
   constructor: () ->
 
@@ -23,31 +19,26 @@ class GoalScreen extends Screen
   ###
   init: (json) ->
     @resources = json.resources
-    @showResources() # add the dice to the dom
-
-    @inGoalBitmap = (0 for num in @resources) # make an bitmap of 
-    @outsideGoalElements = $('#outside-goal li')
-    @insideGoalElements = $('#inside-goal li')
-
-    $("#inside-goal li").hide()
-
+    # We received the array of dice that we will use to form the goal.
+    # This method takes in the array of dice numbers to displays them in the dom. 
+    $("#notadded-goal").html(DiceFace.listToHtml(@resources, true))
     thisReference = this
-    resourceList = $('#outside-goal li')
-    
+    resourceList = $('#notadded-goal li')
     resourceList.bind 'click', (event) ->
-      thisReference.addToGoal($(resourceList).index(this));
-
+      thisReference.addToGoal($(this).data('index'));
     $('#sendgoal').bind 'click', (event) ->
-      Network.sendGoal(thisReference.goalArray)
+      Network.sendGoal(thisReference.createGoalArray())
 
- 
+
   ###*
-   * We received the array of dice that we will use to form the goal.
-   * This method takes in the array of dice numbers to displays them in the dom. 
+   * Return the goal array from the dice in the added-to-goal area
+   * @return {Integer} Each element is an index to the original resources array
   ###
-  showResources: () ->
-    $("#inside-goal").html(DiceFace.listToHtml(@resources))
-    $("#outside-goal").html(DiceFace.listToHtml(@resources))
+  createGoalArray: () ->
+    goalArray = []
+    for d in $('#added-goal li[data-index]')
+      goalArray.push ($(d).data('index')) 
+    return goalArray
 
 
   ###*
@@ -55,12 +46,29 @@ class GoalScreen extends Screen
    * @param {Number} index The (zero based) index of the resources array to move.
   ###
   addToGoal: (index) ->
-    @goalArray.push(index)
-    if(@numberInGoal < 6)
+    # Add the diceface to the dom and add a click listener that removes it when its clicked
+    if(@numberInGoal < 6) # There is a maximum of six dice allowed
       @numberInGoal++
-      @inGoalBitmap[index] = 1
-      $(@outsideGoalElements.get(index)).hide()
-      $(@insideGoalElements.get(index)).show()
+      diceFace = DiceFace.toHtml(@resources[index])
+      html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
+      thisReference = this
+      $('#notadded-goal li[data-index='+index+']').remove()
+      $(html).appendTo("#added-goal").bind 'click', (event) ->
+        thisReference.removeFromGoal($(this).data('index'));
+
+  ###*
+   * Remove a dice from the goal and put it back to resources. 
+   * @param  {Number} index The (zero based) index in the adding to goal list of dice to remove
+  ###
+  removeFromGoal: (index) ->
+    # Remove the diceface to the dom and add a click listener that adds it when its clicked
+    @numberInGoal--
+    diceFace = DiceFace.toHtml(@resources[index])
+    html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
+    thisReference = this
+    $('#added-goal li[data-index='+index+']').remove()
+    $(html).appendTo("#notadded-goal").bind 'click', (event) ->
+      thisReference.addToGoal($(this).data('index'));
 
  
   

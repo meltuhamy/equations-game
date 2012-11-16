@@ -1,22 +1,38 @@
 
-<div id="top_container">
-    <ul id="goal">
-        <li><span>7</span></li>
-        <li><span>1</span></li>
-        <li><span>+</span></li>
-        <li><span>3</span></li>
-    </ul>
-
-    <div id="now-never-text">
+<div id="top-ctnr">
+    <div id="goal-ctnr">
+        <ul id="goal-dice-ctnr">
+        </ul>
         <span id="now-button">Now</span>
         <span id="now-button">Never</span>
     </div>
+
+    <div id="player-list">
+        <ul>
+            <li class="current-turn-player">Player 1</li>
+            <li>Player 2</li>
+        </ul>
+    </div>
+
+    <div id="commentary_ctnr">
+        <ul>
+            <li class="now-commentary">
+                <span>Now</span> It's Player 1's turn to move a dice from unallocated
+            </li>
+            <li><span>2 seconds ago</span> Player 1 moved + from unallocated to forbidden</li>
+            <li><span>3 seconds ago</span> Player 1 moved * from unallocated to optional</li>
+            <li><span>7 seconds ago</span> Player 1 moved 2 from unallocated to forbidden</li>
+            <li><span>7 seconds ago</span> Player 1 moved 2 from unallocated to forbidden</li>
+        </ul>
+    </div>
+
+
+
 </div>
 
 
 <div id="allocation_container">
     <div id="dice_container">
-        
         <ul id="required">
         </ul>
 
@@ -28,8 +44,6 @@
 
         <ul id="forbidden">
         </ul>
-
-
     </div>
 </div>
 
@@ -40,18 +54,7 @@
         <div id="answer-area">
             <div id="answer-dice">
                 <ul id="answers">
-                    <li class="dice"><span>1</span></li>
-                    <li class="dice"><span>+</span></li>
-                    <li class="dice"><span>3</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>1</span></li>
-                    <li class="dice"><span>+</span></li>
-                    <li class="dice"><span>3</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>5</span></li>
-                    <li class="dice"><span>1</span></li>
-                    <li class="dice"><span>+</span></li>
+                    <li>Answer Area</li>
                 </ul>
             </div>
 
@@ -96,12 +99,3 @@
     </li>
 
 </div>
-            
-            <!--
-            <div id="player-list">
-                <ul>
-                    <li>Player 1 - 2 points</li>
-                    <li>Player 2 - 2 points</li>
-                    <li>Player 3 - 2 points</li>
-                </ul>
-            </div>-->

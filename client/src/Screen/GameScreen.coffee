@@ -1,4 +1,6 @@
 class HomeScreen extends Screen
+  
+  # {String} The filename of the html file to load the screen.
   file: 'game.html'
   constructor: () -> 
 
@@ -80,4 +82,4 @@ class HomeScreen extends Screen
    * to displays them in the dom. 
   ###
   drawGoal: () ->
-    $("#goal").html(DiceFace.listToHtml(Game.getGoalValues()))
+    $("#goal-dice-ctnr").html(DiceFace.listToHtml(Game.getGoalValues()))

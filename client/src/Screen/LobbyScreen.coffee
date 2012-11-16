@@ -1,5 +1,8 @@
 class LobbyScreen extends Screen
+  
+  # {String} The filename of the html file to load the screen.
   file: 'lobby.html'
+
   # {Json[]} An array with json objects describing the games
   games: []
   constructor: () -> 
@@ -13,6 +16,9 @@ class LobbyScreen extends Screen
     @renderRoomList()
     @addClickListeners()
 
+  ###*
+   * Add event listeners to the rows so when you click to join a game, a event fires; calling Network
+  ###
   addClickListeners: () ->
     thisReference = this
     gamesList = $('#gameslist tr')
@@ -20,6 +26,10 @@ class LobbyScreen extends Screen
       gameNumber = $(this).data('gamenumber')
       Network.sendJoinGameRequest(gameNumber)
 
+  ###*
+   * Render the list of rooms inside the rooms container
+   * @return {String} The html container the table for the list of rooms
+  ###
   renderRoomList: () ->
     html = '<table id="gameslist">'
     for g in @games
@@ -32,4 +42,4 @@ class LobbyScreen extends Screen
         html += "<td>Waiting for players...</td>"
       html += '</tr>'  
     html += '</table>'
-    $('#'+Settings.containerId).html(html)
+    $('#gameslistcontainer').html(html)

@@ -1,5 +1,6 @@
 class DiceFace
   
+  # {Json} A json that maps names to DiceFace majic numbers
   @symbols: undefined
 
   ###*
@@ -22,10 +23,15 @@ class DiceFace
   ###*
    * Turns an array of dicefaces into li's
    * @param  {Number[]} list The array of dicefaces values
+   * @param  {Boolean} showIndexData Whether to add the attribute data-index to each li
    * @return {String}         A string with the html containing li's
   ###
-  @listToHtml: (list) ->
+  @listToHtml: (list, showIndexData) ->
     html = '';
-    html+= "<li class='dice'><span>#{@toHtml(d)}<span></li>" for d in list
+    indexCounter = 0
+    for d in list
+      dataIndex = if (showIndexData) then " data-index='#{indexCounter}'" else ""
+      html+= "<li class='dice'" + dataIndex + "><span>#{@toHtml(d)}<span></li>" 
+      indexCounter++
     return html
 
