@@ -57,6 +57,7 @@ everyone.now.addClient = (gameNumber) -> #called by client when connected
     # Now see if the game is full after adding him (i.e see if is the last player)
     # If it is, then tell everyone in this game that its the goal setting turn. 
     if(game.isFull())
+      game.started = true
       group.now.receiveGoalTurn(game.players, game.state.unallocated, game.getFirstTurnPlayer())
   else
     # else the game is already full, so tell him - tough luck
