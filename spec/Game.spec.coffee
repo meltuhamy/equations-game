@@ -45,3 +45,20 @@ describe "game", ->
     test = -> game.checkGoal([0,0,2,2])
     expect(test).toThrow("Goal uses duplicates dice")
 
+###  it "should not allow unbalanced brackets when setting the goal", ->
+    game = new Game
+    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.three]
+    test = -> game.checkGoal([25,1,2,3])
+    expect(test).toThrow("Error Unbalanced Parenthesis")
+
+  it "should not count brackets as dice", ->
+    game = new Game
+    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.two,DICEFACESYMBOLS.three]
+    testPassed = game.checkGoal([1,2,3,24,4,5,6,25])
+    expect(testPassed).toEqual(true)
+
+  it "should work for nested brackets", ->
+    game = new Game
+    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.two,DICEFACESYMBOLS.three]
+    testPassed = game.checkGoal([1,24,2,3,24,4,25,5,6,25])
+    expect(testPassed).toEqual(true)###
