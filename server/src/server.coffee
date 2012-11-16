@@ -38,6 +38,9 @@ everyone.now.addClient = (gameNumber) -> #called by client when connected
     # add the player to the game, tell him he was accepted and give him his playerId (i.e. index) for the game
     this.now.acceptPlayer(game.addClient(this.user.clientId), DICEFACESYMBOLS)
 
+    # tell everyone about the new gamesList state
+    everyone.now.getGames()
+
     # Now see if the game is full after adding him (i.e see if is the last player)
     # If it is, then tell everyone in this game that its the goal setting turn. 
     if(game.isFull())

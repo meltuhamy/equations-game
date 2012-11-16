@@ -29,4 +29,4 @@ class LobbyScreen extends Screen
       html += "<td>Currently playing: #{g.started}</td>"
       html += '</tr>'  
     html += '</table>'
-    $('#'+Settings.containerId).append(html)
+    $('#'+Settings.containerId).html(html)
