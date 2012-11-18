@@ -164,7 +164,7 @@ class Game
     if !@goalHasBeenSet()
       throw "Can't move yet, goal has not been set"
     if !@authenticateMove(clientId)
-      throw "Unauthenticated move rejected"
+      throw "Not your turn"
     else if index < 0 || index >= @state.unallocated.length
       throw "Index for move out of bounds"
     else
@@ -176,7 +176,7 @@ class Game
     if !@goalHasBeenSet()
       throw "Can't move yet, goal has not been set"
     if !@authenticateMove(clientId)
-      throw "Unauthenticated move rejected"
+      throw "Not your turn"
     else if index < 0 || index >= @state.unallocated.length
       throw "Index for move out of bounds"
     else
@@ -188,7 +188,7 @@ class Game
     if !@goalHasBeenSet()
       throw "Can't move yet, goal has not been set"
     if !@authenticateMove(clientId)
-      throw "Unauthenticated move rejected"
+      throw "Not your turn"
     else if index < 0 || index >= @state.unallocated.length
       throw "Index for move out of bounds"
     else

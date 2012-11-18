@@ -25,13 +25,22 @@ class Network
    * @param  {Integer} The index of the diceface within the unallocated array
   ###
   @moveToRequired : (index) ->
-    now.moveToRequired(index)
+    try
+      now.moveToRequired(index)
+    catch e
+      console.log("not your turn")
 
   @moveToOptional : (index) ->
-    now.moveToOptional(index)
+    try
+      now.moveToOptional(index)
+    catch e
+      console.log("not your turn")
 
   @moveToForbidden : (index) ->
-    now.moveToForbidden(index)
+    try
+      now.moveToForbidden(index)
+    catch e
+      console.log("not your turn")
 
 
 
@@ -132,7 +141,8 @@ now.receiveState = (state) ->
 ### Fire these events on server ###
 
 
-  
+now.badMove = (serverMessage) ->
+  alert(serverMessage)
 
 now.badGoal = (parserMessage) ->
   #do something here to show which part of the goal is malformed
