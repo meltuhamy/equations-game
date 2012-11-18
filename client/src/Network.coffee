@@ -25,22 +25,21 @@ class Network
    * @param  {Integer} The index of the diceface within the unallocated array
   ###
   @moveToRequired : (index) ->
-    try
-      now.moveToRequired(index)
-    catch e
-      console.log("not your turn")
+    now.moveToRequired(index)
 
   @moveToOptional : (index) ->
-    try
-      now.moveToOptional(index)
-    catch e
-      console.log("not your turn")
+    now.moveToOptional(index)
 
   @moveToForbidden : (index) ->
+    now.moveToForbidden(index)
+
+###
+  @nowChallenge : () ->
     try
-      now.moveToForbidden(index)
+      now.nowChallenge()
     catch e
-      console.log("not your turn")
+      alert e
+    ###
 
 
 

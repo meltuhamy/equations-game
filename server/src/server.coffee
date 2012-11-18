@@ -115,6 +115,8 @@ everyone.now.moveToForbidden = (index) ->
   catch e
     this.now.badMove(e)
   
+#everyone.now.nowChallenge = () ->
+
 
 everyone.now.logStuff = (message) ->
   console.log message

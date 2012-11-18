@@ -32,10 +32,21 @@ class ExpressionParser
     node
   
   handleMultiplyDivide: () ->
-    child1 = @handleUnaryOps()
+    child1 = @handlePower()
     node = child1
     c = @expr[@idx]
     while c == DICEFACESYMBOLS.multiply or c == DICEFACESYMBOLS.divide
+      ++@idx
+      child2 = @handlePower()
+      node = new Node(type : "binop", token: [c], children: [ child1, child2 ]);
+      c = @expr[@idx]
+      child1 = node
+    node
+  handlePower: () ->
+    child1 = @handleUnaryOps()
+    node = child1
+    c = @expr[@idx]
+    while c == DICEFACESYMBOLS.power
       ++@idx
       child2 = @handleUnaryOps()
       node = new Node(type : "binop", token: [c], children: [ child1, child2 ]);
@@ -45,7 +56,7 @@ class ExpressionParser
   handleUnaryOps: () ->
     c = @expr[@idx]
     node = {}
-    if c == DICEFACESYMBOLS.minus or c == DICEFACESYMBOLS.plus
+    if c == DICEFACESYMBOLS.minus or c == DICEFACESYMBOLS.plus or c == DICEFACESYMBOLS.sqrt
       ++@idx
       node = new Node(type: "unaryop", token: [c], children: [@handleUnaryOps()])
     else
@@ -70,7 +81,7 @@ class ExpressionParser
       throw new Error("UNEXPECTED TOKEN: #{c}")
     return node
 
-  isNumber : (c) -> c >= DICEFACESYMBOLS.zero
+  isNumber : (c) -> c >= DICEFACESYMBOLS.zero 
   matchNumber:()-> this.match(this.isNumber)
   
   atEnd: () -> @idx == @expr.length

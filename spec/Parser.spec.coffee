@@ -79,12 +79,7 @@ describe "parser", ->
     expect(secondChild.token).toEqual [DICEFACESYMBOLS.two]
     expect(secondChild.children).toEqual []
 
-  it "should evaluate a number", ->
-    p = new ExpressionParser
-    tree = p.parse [DICEFACESYMBOLS.minus, DICEFACESYMBOLS.one, DICEFACESYMBOLS.two]
 
-    e = new Evaluator
-    #expect(val).toEqual(3)
 
   #it "should parse combinations of binary and unary operators", ->
    # console.log "Need to implement this!"
