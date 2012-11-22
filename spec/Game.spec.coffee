@@ -52,9 +52,35 @@ describe "game", ->
     l = game.players.length
     expect(l).toEqual(2)
 
-  
+  it "should add two players to game and one submit a right answer", ->
+    game = new Game([],2)
+    e = new Evaluator
+    p = new ExpressionParser 
+    game.challengeMode = true
+    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three]
+    game.addClient(31)
+    game.addClient(32)
+    game.setGoal([0,1,2])
+    game.submitPossible(32)
+    game.submitSolution(32, [DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three])
+    expect(e.evaluate(game.goalTree)).toEqual(e.evaluate(p.parse(game.submittedSolutions[game.playerSocketIds.indexOf(32)])))
 
-
+  it "should add two players to game anone submit a right answer while the other submits a wrong answer", ->
+    game = new Game([],2)
+    e = new Evaluator
+    p = new ExpressionParser 
+    game.challengeMode = true
+    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three]
+    game.addClient(31)
+    game.addClient(32)
+    game.setGoal([0,1,2])
+    game.submitPossible(31)
+    game.submitSolution(31, [DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.two])
+    game.submitSolution(32, [DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three])
+    #!expect(e.evaluate(game.goalTree)).toEqual(e.evaluate(p.parse(game.submittedSolutions[game.playerSocketIds.indexOf(31)])))
+    expect(e.evaluate(game.goalTree)).toEqual(e.evaluate(p.parse(game.submittedSolutions[game.playerSocketIds.indexOf(32)])))
+    expect(game.rightAnswers[game.playerSocketIds.indexOf(31)]==false)
+    expect(game.rightAnswers[game.playerSocketIds.indexOf(32)]==true)
 
 
 ###  it "should not allow unbalanced brackets when setting the goal", ->

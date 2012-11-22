@@ -3,6 +3,7 @@ DICEFACESYMBOLS = DiceFace.symbols
 
 {ExpressionParser, Node} = require './Parser.js'
 {Player} = require './Player.js'
+{Evaluator} = require './Evaluator.js'
 DEBUG = true
 class Game
   goalTree: undefined
@@ -37,6 +38,10 @@ class Game
   possiblePlayers: []
 
   impossiblePlayers: []
+
+  submittedSolutions: []
+
+  rightAnswers: []
 
   state:
     unallocated: []
@@ -225,8 +230,25 @@ class Game
       throw "Already stated your opinion"
     @impossiblePlayers.push(clientId)
 
- # submitSolution: (clientId, solutionArray) ->
+  submitSolution: (clientId, solutionArray) ->
+    if !@challengeMode
+      throw "Not in challenge mode"
+    if !(clientId in @possiblePlayers)
+      throw "Client not in 'possible' list"
+    @submittedSolutions[@playerSocketIds.indexOf(clientId)] = solutionArray
+    if @submittedSolutions.length == @possiblePlayers.length
+      @evaluateSolutions()
+      #@challengeMode = false
 
-
+  evaluateSolutions: () ->
+    e = new Evaluator
+    p = new ExpressionParser
+    goalValue = e.evaluate(@goalTree)
+    for i in [0...@submittedSolutions.length]
+      submissionValue = e.evaluate(p.parse(@submittedSolutions[i]))
+      if goalValue == submissionValue
+        @rightAnswers[i]=true
+      else
+        @rightAnswers[i]=false
 
 module.exports.Game = Game
