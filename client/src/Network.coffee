@@ -33,6 +33,14 @@ class Network
   @moveToForbidden : (index) ->
     now.moveToForbidden(index)
 
+###
+  @nowChallenge : () ->
+    try
+      now.nowChallenge()
+    catch e
+      alert e
+    ###
+
 
 
 
@@ -128,7 +136,8 @@ now.receiveState = (state) ->
 ### Fire these events on server ###
 
 
-  
+now.badMove = (serverMessage) ->
+  alert(serverMessage)
 
 now.badGoal = (parserMessage) ->
   #do something here to show which part of the goal is malformed

@@ -98,7 +98,7 @@ everyone.now.moveToRequired = (index) ->
     game.moveToRequired(index, this.user.clientId)
     group.now.receiveState(game.state)
   catch e
-    console.warn e
+    this.now.badMove(e)
 
 everyone.now.moveToOptional = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
@@ -106,7 +106,7 @@ everyone.now.moveToOptional = (index) ->
     game.moveToOptional(index, this.user.clientId)
     group.now.receiveState(game.state)
   catch e
-    console.warn e
+    this.now.badMove(e)
 
 everyone.now.moveToForbidden = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
@@ -114,8 +114,10 @@ everyone.now.moveToForbidden = (index) ->
     game.moveToForbidden(index, this.user.clientId)
     group.now.receiveState(game.state)
   catch e
-    console.warn e
+    this.now.badMove(e)
   
+#everyone.now.nowChallenge = () ->
+
 
 everyone.now.logStuff = (message) ->
   console.log message

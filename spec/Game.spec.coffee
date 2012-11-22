@@ -45,6 +45,18 @@ describe "game", ->
     test = -> game.checkGoal([0,0,2,2])
     expect(test).toThrow("Goal uses duplicates dice")
 
+  it "should add two players to game", ->
+    game = new Game([],2)
+    game.addClient(31)
+    game.addClient(32)
+    l = game.players.length
+    expect(l).toEqual(2)
+
+  
+
+
+
+
 ###  it "should not allow unbalanced brackets when setting the goal", ->
     game = new Game
     game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.three]

@@ -1,3 +1,4 @@
+###
 soda = require("soda")
 fs = require 'fs'
 {print} = require 'sys'
@@ -167,3 +168,4 @@ describe "networkInteractions", ->
       expect(goalmake1).not.toEqual(goalmake2)
       killServer(server)
     )
+###

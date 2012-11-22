@@ -29,6 +29,15 @@ class Game
   # {Boolean} True when the game has started (is full)
   started: false
 
+  challengeMode: false
+
+  #the index of the player array for the challenger
+  challenger: undefined
+
+  possiblePlayers: []
+
+  impossiblePlayers: []
+
   state:
     unallocated: []
     required: []
@@ -146,6 +155,8 @@ class Game
   authenticateMove: (socketId) -> #returns a boolean 
     (socketId == @playerSocketIds[@state.currentPlayer])
 
+  validateChallenge: (socketId) ->
+    (socketId != @playerSocketIds[((@state.currentPlayer -1) + @players.length) % @players.length])
 
   start: ->
     @state.currentPlayer = (@goalSetter + 1) % @players.length
@@ -164,7 +175,7 @@ class Game
     if !@goalHasBeenSet()
       throw "Can't move yet, goal has not been set"
     if !@authenticateMove(clientId)
-      throw "Unauthenticated move rejected"
+      throw "Not your turn"
     else if index < 0 || index >= @state.unallocated.length
       throw "Index for move out of bounds"
     else
@@ -176,7 +187,7 @@ class Game
     if !@goalHasBeenSet()
       throw "Can't move yet, goal has not been set"
     if !@authenticateMove(clientId)
-      throw "Unauthenticated move rejected"
+      throw "Not your turn"
     else if index < 0 || index >= @state.unallocated.length
       throw "Index for move out of bounds"
     else
@@ -188,12 +199,34 @@ class Game
     if !@goalHasBeenSet()
       throw "Can't move yet, goal has not been set"
     if !@authenticateMove(clientId)
-      throw "Unauthenticated move rejected"
+      throw "Not your turn"
     else if index < 0 || index >= @state.unallocated.length
       throw "Index for move out of bounds"
     else
       @state.forbidden.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
       @nextTurn()
+
+  nowChallenge: (clientId) ->
+    if !validateChallenge(clientId)
+      throw "Can't make challenge, you've just moved"
+    @challengeMode = true
+    @challenger = clientId
+
+  submitPossible: (clientId) ->
+    if !@challengeMode
+      throw "Can't submit opinion, not currently challenge mode"
+    if (clientId in @possiblePlayers) || (clientId in @impossiblePlayers) || (clientId == @challenger)
+      throw "Already stated your opinion"
+    @possiblePlayers.push(clientId)
+
+  submitImpossible: (clientId) ->
+    if (clientId in @possiblePlayers) || (clientId in @impossiblePlayers) || (clientId == @challenger)
+      throw "Already stated your opinion"
+    @impossiblePlayers.push(clientId)
+
+ # submitSolution: (clientId, solutionArray) ->
+
+
 
 module.exports.Game = Game
