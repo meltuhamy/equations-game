@@ -76,10 +76,6 @@ now.receiveGoalTurn = (players, resources, firstTurnPlayerIndex) ->
   Game.state.unallocated = resources
 
   if (Game.myPlayerId == firstTurnPlayerIndex) 
-    # is this a potential security threat? ie - should we store and compare socketIds instead?
-    #  the server sends the id of the first player, and its the same as our id, so we're first
-    #  time to set the goal. We need to show the goal settings screen and let the player set the goal
-    # show screen
     ScreenSystem.renderScreen(Game.goalScreenId, {resources: resources})
   else
     ScreenSystem.renderScreen(Game.gameWaitScreenId)
@@ -94,7 +90,7 @@ now.receiveGoalTurn = (players, resources, firstTurnPlayerIndex) ->
 now.receiveGoalTurnEnd = (goalArray) ->
   Game.setGoal(goalArray)
   console.log goalArray
-  ScreenSystem.renderScreen(Game.homeScreenId, {goal: goalArray})
+  ScreenSystem.renderScreen(Game.gameScreenId, {goal: goalArray})
 
 
 
@@ -106,7 +102,7 @@ now.receiveGoalTurnEnd = (goalArray) ->
 ###
 now.receiveState = (state) ->
   Game.updateState(state)
-  ScreenSystem.getScreen(Game.homeScreenId).drawDiceAllocations()
+  ScreenSystem.getScreen(Game.gameScreenId).drawDiceAllocations()
 
 
 
