@@ -12,9 +12,8 @@ class Game
   # {Number[]} The array of dicefaces for the goal when it was set at start of game
   @goal: undefined
 
-  # {Number} The id of the home screen given by the ScreenManager
-  # {Number} The id of the goal screen given by the ScreenManager
-  @homeScreenId: undefined
+  # {Number} The id of screens given by the ScreenManager and used for the ScreenManager
+  @gameScreenId: undefined
   @goalScreenId: undefined
   @lobbyScreenId: undefined
   @gameWaitScreenId : undefined
@@ -34,7 +33,7 @@ class Game
    * Initialise the game. Add screens.
   ###
   @initialise: () ->
-    @homeScreenId = ScreenSystem.addScreen(new HomeScreen())
+    @gameScreenId = ScreenSystem.addScreen(new GameScreen())
     @goalScreenId = ScreenSystem.addScreen(new GoalScreen())
     @lobbyScreenId = ScreenSystem.addScreen(new LobbyScreen())
     @gameWaitScreenId = ScreenSystem.addScreen(new GoalWaitScreen())

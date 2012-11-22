@@ -1,7 +1,11 @@
-class HomeScreen extends Screen
+class GameScreen extends Screen
   
   # {String} The filename of the html file to load the screen.
   file: 'game.html'
+
+  # {Json[]} An of json for commentary information
+  commentary: []
+
   constructor: () -> 
 
   ###*
@@ -33,10 +37,23 @@ class HomeScreen extends Screen
       # See whether we need to this player because its his turn
       currentHtml = if(Game.state.currentPlayer is p.index) then " class='current-turn-player'" else ""
       # See if we need to add a "(You)" to the persons name because this player *is* you!
-      nameHtml = if(Game.myPlayerId is p.index) then p.name + '(You)' else p.name
+      nameHtml = if(Game.myPlayerId is p.index) then p.name + ' (You)' else p.name
       html += '<li' + currentHtml + '>' + nameHtml + '</li>'
     html += '</ul>'
     $('#player-list').html(html)
+
+
+  ###*
+   * Redraw all of the messages in the commentary box (including the now msg)
+  ###
+  ###drawCommentery: () ->
+    now = Game.getNowCommentary
+    nowHtml = '<li class="now-commentary">' + now + '</li>'
+    old = Game.getOldCommentary
+    oldHtml = ''
+    for c in old
+      oldHtml += '<li><span>' + c + '</li>'
+  ###
 
 
   addClickListeners: () ->
