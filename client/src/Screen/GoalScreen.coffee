@@ -60,7 +60,7 @@ class GoalScreen extends Screen
     thisReference = this
     if(@bracketClicks == 0)
       @leftBracketIndex = $(element).index('li.dot')
-      if(@leftBracketIndex < @numberDots)
+      if(@leftBracketIndex < @numberDots-1)
         $(element).attr('data-bracket','left')
         @bracketClicks = (@bracketClicks+1)%2
         if(@leftBracketIndex == 0 && @numberInGoal > 1)
@@ -132,8 +132,11 @@ class GoalScreen extends Screen
     nextDot     = $('li.dice[data-index='+index+']').next()
     if($(previousDot).data('bracket') is 'left' and $(nextDot).data('bracket') is 'right')
       $(previousDot).attr('data-bracket', 'none')
+      $(previousDot).remove()
+      @numberDots--
     else
       $(previousDot).attr('data-bracket', nextDot.data('bracket'))
+
     $(nextDot).remove()
     # Remove the dice from the goal
     $('#added-goal li.dice[data-index='+index+']').remove()
