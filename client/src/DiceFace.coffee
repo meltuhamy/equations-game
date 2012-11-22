@@ -24,14 +24,19 @@ class DiceFace
    * Turns an array of dicefaces into li's
    * @param  {Number[]} list The array of dicefaces values
    * @param  {Boolean} showIndexData Whether to add the attribute data-index to each li
+   * @param  {Boolean} dots Whether to add dots li between each dice li
    * @return {String}         A string with the html containing li's
   ###
-  @listToHtml: (list, showIndexData) ->
+  @listToHtml: (list, showIndexData, dots) ->
     html = '';
     indexCounter = 0
+    if(dots) then html += "<li class='dot' data-index='" + indexCounter + "''>.</li>"
     for d in list
       dataIndex = if (showIndexData) then " data-index='#{indexCounter}'" else ""
       html+= "<li class='dice'" + dataIndex + "><span>#{@toHtml(d)}<span></li>" 
+      if(dots) then html += "<li class='dot' data-index='" + indexCounter + "''>.</li>" 
       indexCounter++
     return html
+
+
 
