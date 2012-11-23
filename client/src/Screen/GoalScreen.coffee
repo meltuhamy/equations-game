@@ -35,7 +35,7 @@ class GoalScreen extends Screen
     thisReference = this
     resourceList = $('#notadded-goal li.dice')
     resourceList.bind 'click', (event) ->
-      thisReference.addToGoal($(this).data('index'));
+      thisReference.addDiceToGoal($(this).data('index'));
     $('#sendgoal').bind 'click', (event) ->
       Network.sendGoal(thisReference.createGoalArray())
 
@@ -89,11 +89,14 @@ class GoalScreen extends Screen
 
 
 
+
+
+
   ###*
    * Move a dice from resources to the goal. 
    * @param {Number} index The (zero based) index of the resources array to move.
   ###
-  addToGoal: (index) ->
+  addDiceToGoal: (index) ->
     # Add the diceface to the dom and add a click listener that removes it when its clicked
     if(@numberInGoal < 6) # There is a maximum of six dice allowed
       thisReference = this
@@ -104,14 +107,22 @@ class GoalScreen extends Screen
         html = "<li class='dot' data-bracket='none'><span></span></li>"
         $(html).appendTo("#added-goal").bind 'click', (event) ->
           thisReference.dotListener(this)
-        
-      # Now add a dot to the right of the newly added dice
+
       @numberInGoal++
       @numberDots++
       diceFace = DiceFace.toHtml(@resources[index])
       html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
       html2 = "<li class='dot' data-bracket='none'><span></span></li>"
       $('#notadded-goal li.dice[data-index='+index+']').remove()
+      @cleanUpBrackets()
+
+
+      if($('li.dot:nth-last-child(2)').attr('data-bracket') is 'right')
+        @numberDots--
+        $('li.dot:last-child').remove()
+
+
+
       $(html).appendTo("#added-goal").bind 'click', (event) ->
         thisReference.removeFromGoal($(this).data('index'));
       $(html2).appendTo("#added-goal").bind 'click', (event) ->
@@ -130,7 +141,7 @@ class GoalScreen extends Screen
     $('#added-goal li.dice[data-index='+index+']').remove()
     @cleanUpBrackets()
     $(html).appendTo("#notadded-goal").bind 'click', (event) ->
-      thisReference.addToGoal($(this).data('index'));
+      thisReference.addDiceToGoal($(this).data('index'));
 
 
   cleanUpBrackets: () ->
