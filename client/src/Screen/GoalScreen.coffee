@@ -46,14 +46,15 @@ class GoalScreen extends Screen
   ###
   createGoalArray: () ->
     goalArray = []
-    for d in $('#added-goal li.dice[data-index]')
+    for d in $('#added-goal li')
       if($(d).hasClass('dice'))
         goalArray.push ($(d).data('index')) 
       else if($(d).hasClass('dot'))
-        if($(d).attr('bracket') is 'left')
-          goalArray.push (24)
-        else if($(d).attr('bracket') is 'right')
-          goalArray.push (25)
+        console.log "this is a dot"
+        if($(d).attr('data-bracket') is 'left')
+          goalArray.push (-1)
+        else if($(d).attr('data-bracket') is 'right')
+          goalArray.push (-2)
     return goalArray
 
 

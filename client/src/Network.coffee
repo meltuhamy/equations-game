@@ -96,8 +96,7 @@ now.receiveGoalTurn = (players, resources, firstTurnPlayerIndex) ->
 ###
 now.receiveGoalTurnEnd = (goalArray) ->
   Game.setGoal(goalArray)
-  console.log goalArray
-  ScreenSystem.renderScreen(Game.gameScreenId, {goal: goalArray})
+  ScreenSystem.renderScreen(Game.gameScreenId)
 
 
 

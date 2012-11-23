@@ -35,7 +35,10 @@ class Game
   #the index of the player array for the challenger
   challenger: undefined
 
+
+
   possiblePlayers: []
+
 
   impossiblePlayers: []
 
@@ -59,6 +62,10 @@ class Game
 
   goalHasBeenSet: () ->
     @goalTree? #returns false if goalTree undefined, true otherwise
+
+
+  setUnallocated: (array) ->
+
 
   allocate: ->
     if DEBUG
@@ -102,24 +109,28 @@ class Game
     #if(dice.length > 6) then throw "Goal uses more than six dice"
     dices = 0
     for i in [0..dice.length]
-      if (dice[i] < 24)
+      if (dice[i] >= 0)
         dices++
       i++
     if (dices > 6) then throw "Goal uses more than six dice"
     # Now check that there are not duplicates. We can't use the same dice twice.
     # Also, we check that the indices are in bounds. We can use dice that don't exist.
+    unallocatedMax = @state.unallocated.length
+
     diceValues = []
     for i in [0 ... dice.length]
       for j in [i+1 ... dice.length]
-        if(dice[i] < 0  || dice[i] > 25) then throw "Goal has out of bounds array index"
-        if (dice[i] == dice[j] && i!=j && dice[i] < 24) then throw "Goal uses duplicates dice"
-      if dice[i] == 24
-        diceValues.push(DiceFace.bracketL)
-      else if dice[i] == 25
-        diceValues.push(DiceFace.bracketR)
+        if (dice[i] < -2  || dice[i] >= unallocatedMax) then throw "Goal has out of bounds array index"
+        if (dice[i] == dice[j] && i!=j && dice[i] < unallocatedMax) then throw "Goal uses duplicates dice"
+      if dice[i] == -1
+        diceValues.push(DICEFACESYMBOLS.bracketL)
+      else if dice[i] == -2
+        diceValues.push(DICEFACESYMBOLS.bracketR)
       else
-        diceValues.push(@state.unallocated[dice[i]]) 
+        diceValues.push(@state.unallocated[dice[i]])
+
     # Finally, check that the expression in the dice parses as an expression.
+    console.log diceValues
     p = new ExpressionParser()
     @goalTree = p.parse(diceValues)
     @goalArray = diceValues

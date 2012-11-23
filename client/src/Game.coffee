@@ -52,7 +52,12 @@ class Game
   ###
   @getGoalValues: () ->
     diceValues = []
-    diceValues.push (@state.unallocated[g]) for g in @goal
+    for g in @goal
+      console.log DiceFace
+      if(g == -1) then diceValues.push (DiceFace.symbols.bracketL) 
+      else if(g == -2) then diceValues.push (DiceFace.symbols.bracketR) 
+      else diceValues.push (@state.unallocated[g]) 
+    console.log diceValues
     return diceValues
 
 
