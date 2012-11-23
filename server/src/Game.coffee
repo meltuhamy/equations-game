@@ -50,9 +50,10 @@ class Game
     forbidden: []
     currentPlayer: 0 #this tells us the index of the player who's turn it is, and is automatically incremented after each resource move
   
-  constructor: (players, gameNumber) ->
+  constructor: (players, gameNumber, gameSize) ->
     @players = players
     @gameNumber = gameNumber
+    if gameSize? then @playerLimit = gameSize
     @nowJsGroupName = "game#{gameNumber}"
     @allocate()
 
@@ -177,6 +178,8 @@ class Game
       index
 
   moveToRequired: (index, clientId) ->
+    if @challengeMode
+      throw "Can't move during challenge mode"
     if !@goalHasBeenSet()
       throw "Can't move yet, goal has not been set"
     if !@authenticateMove(clientId)
@@ -189,6 +192,8 @@ class Game
       @nextTurn()
 
   moveToOptional: (index, clientId) ->
+    if @challengeMode
+      throw "Can't move during challenge mode"
     if !@goalHasBeenSet()
       throw "Can't move yet, goal has not been set"
     if !@authenticateMove(clientId)
@@ -201,6 +206,8 @@ class Game
       @nextTurn()
 
   moveToForbidden: (index, clientId) ->
+    if @challengeMode
+      throw "Can't move during challenge mode"
     if !@goalHasBeenSet()
       throw "Can't move yet, goal has not been set"
     if !@authenticateMove(clientId)
@@ -213,6 +220,8 @@ class Game
       @nextTurn()
 
   nowChallenge: (clientId) ->
+    if @challengeMode
+      throw "Can't challenge during challenge mode"
     if !validateChallenge(clientId)
       throw "Can't make challenge, you've just moved"
     @challengeMode = true
@@ -226,6 +235,8 @@ class Game
     @possiblePlayers.push(clientId)
 
   submitImpossible: (clientId) ->
+    if !@challengeMode
+      throw "Can't submit opinion, not currently challenge mode"
     if (clientId in @possiblePlayers) || (clientId in @impossiblePlayers) || (clientId == @challenger)
       throw "Already stated your opinion"
     @impossiblePlayers.push(clientId)
