@@ -47,7 +47,13 @@ class GoalScreen extends Screen
   createGoalArray: () ->
     goalArray = []
     for d in $('#added-goal li.dice[data-index]')
-      goalArray.push ($(d).data('index')) 
+      if($(d).hasClass('dice'))
+        goalArray.push ($(d).data('index')) 
+      else if($(d).hasClass('dot'))
+        if($(d).attr('bracket') is 'left')
+          goalArray.push (24)
+        else if($(d).attr('bracket') is 'right')
+          goalArray.push (25)
     return goalArray
 
 
@@ -116,12 +122,9 @@ class GoalScreen extends Screen
       $('#notadded-goal li.dice[data-index='+index+']').remove()
       @cleanUpBrackets()
 
-
       if($('li.dot:nth-last-child(2)').attr('data-bracket') is 'right')
         @numberDots--
         $('li.dot:last-child').remove()
-
-
 
       $(html).appendTo("#added-goal").bind 'click', (event) ->
         thisReference.removeFromGoal($(this).data('index'));
@@ -150,11 +153,14 @@ class GoalScreen extends Screen
       twoDotsCase = ($(d).prev().attr('data-bracket') is 'none') and ($(d).attr('data-bracket') is 'none')
       leftBrkDotCase = (($(d).prev().attr('data-bracket') is 'left') and ($(d).attr('data-bracket') is 'none'))
       dotRightBrkCase = (($(d).prev().attr('data-bracket') is 'none') and ($(d).attr('data-bracket') is 'right'))
-      leftBkrRightBrkCase = (($(d).prev().attr('data-bracket') is 'left') and ($(d).attr('data-bracket') is 'right'))
+      leftBkrRightBrkCase1 = (($(d).prev().attr('data-bracket') is 'left') and ($(d).attr('data-bracket') is 'right'))
+      leftBkrRightBrkCase2 = (($(d).prev().attr('data-bracket') is 'right') and ($(d).attr('data-bracket') is 'left'))
 
-      if (twoDotsCase || leftBrkDotCase || dotRightBrkCase || leftBkrRightBrkCase)
+      if (twoDotsCase || leftBrkDotCase || dotRightBrkCase || leftBkrRightBrkCase1 || leftBkrRightBrkCase2)
         # Adjust the left dot accordingly (since we always delete the right ... see below)
-        if(leftBkrRightBrkCase)
+        if(leftBkrRightBrkCase1)
+          $(d).prev().attr('data-bracket', 'none')
+        else if(leftBkrRightBrkCase2)
           $(d).prev().attr('data-bracket', 'none')
         else if(leftBrkDotCase)
           $(d).prev().attr('data-bracket', 'left')
