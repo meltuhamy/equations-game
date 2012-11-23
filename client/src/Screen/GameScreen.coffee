@@ -52,9 +52,8 @@ class GameScreen extends Screen
     old = Game.getOldCommentary
     oldHtml = ''
     for c in old
-      oldHtml += '<li><span>' + c + '</li>'
+      oldHtml += '<li>' + c + '</li>'
   ###
-
 
   addClickListeners: () ->
     thisReference = this

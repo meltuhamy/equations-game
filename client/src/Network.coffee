@@ -70,7 +70,6 @@ now.receiveGameList = (gameListJson) ->
 
 
 
-
 ###*
  * Called by the server once sufficient players have joined the game, to start the game.
  * @param  {Player[]} players                 An array of player object
