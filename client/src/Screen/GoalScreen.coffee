@@ -66,6 +66,7 @@ class GoalScreen extends Screen
         if(@leftBracketIndex == 0 && @numberInGoal > 1)
           html = "<li class='dot' data-bracket='none'><span></span></li>"
           @numberDots++
+          @leftBracketIndex++
           $(html).prependTo("#added-goal").bind 'click', (event) ->
             thisReference.dotListener(this)
     else if(@bracketClicks == 1)
@@ -100,7 +101,7 @@ class GoalScreen extends Screen
       # If it's the first dice we just added, then we need to add the leftmost brackets dot
       if(@numberInGoal == 0) 
         @numberDots++
-        html = "<li class='dot first' data-bracket='none'><span></span></li>"
+        html = "<li class='dot' data-bracket='none'><span></span></li>"
         $(html).appendTo("#added-goal").bind 'click', (event) ->
           thisReference.dotListener(this)
         
@@ -123,31 +124,59 @@ class GoalScreen extends Screen
   removeFromGoal: (index) ->
     # Remove the diceface to the dom and add a click listener that adds it when its clicked
     @numberInGoal--
-    @numberDots--
     diceFace = DiceFace.toHtml(@resources[index])
     html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
     thisReference = this
+    $('#added-goal li.dice[data-index='+index+']').remove()
+    @cleanUpBrackets()
+    $(html).appendTo("#notadded-goal").bind 'click', (event) ->
+      thisReference.addToGoal($(this).data('index'));
 
-    previousDot = $('li.dice[data-index='+index+']').prev()
+
+  cleanUpBrackets: () ->
+    thisReference = this
+    for d in $('#added-goal li')
+      twoDotsCase = ($(d).prev().attr('data-bracket') is 'none') and ($(d).attr('data-bracket') is 'none')
+      leftBrkDotCase = (($(d).prev().attr('data-bracket') is 'left') and ($(d).attr('data-bracket') is 'none'))
+      dotRightBrkCase = (($(d).prev().attr('data-bracket') is 'none') and ($(d).attr('data-bracket') is 'right'))
+      leftBkrRightBrkCase = (($(d).prev().attr('data-bracket') is 'left') and ($(d).attr('data-bracket') is 'right'))
+
+      if (twoDotsCase || leftBrkDotCase || dotRightBrkCase || leftBkrRightBrkCase)
+        # Adjust the left dot accordingly (since we always delete the right ... see below)
+        if(leftBkrRightBrkCase)
+          $(d).prev().attr('data-bracket', 'none')
+        else if(leftBrkDotCase)
+          $(d).prev().attr('data-bracket', 'left')
+        else if(dotRightBrkCase)
+          $(d).prev().attr('data-bracket', 'right')
+
+        # Special case for when there is just one dot left
+        if(@numberDots == 2)
+          $(d).prev().remove()
+          @numberDots--
+
+        # Always remove the right dot/bracket
+        @numberDots--
+        $(d).remove()
+
+        # Now try and clean up again
+        @cleanUpBrackets()
+          
+          
+
+
+    ### previousDot = $('li.dice[data-index='+index+']').prev()
     nextDot     = $('li.dice[data-index='+index+']').next()
-    if($(previousDot).data('bracket') is 'left' and $(nextDot).data('bracket') is 'right')
+    $(nextDot).remove()###
+    # Remove the dice from the goal
+    ###if($(previousDot).data('bracket') is 'left' and $(nextDot).data('bracket') is 'right')
       $(previousDot).attr('data-bracket', 'none')
       $(previousDot).remove()
       @numberDots--
     else
-      $(previousDot).attr('data-bracket', nextDot.data('bracket'))
-
-    $(nextDot).remove()
-    # Remove the dice from the goal
-    $('#added-goal li.dice[data-index='+index+']').remove()
-
-    if(@numberInGoal == 0)
+      $(previousDot).attr('data-bracket', nextDot.data('bracket'))###
+    ###if(@numberInGoal == 0)
       $('#added-goal li.dot.first').remove()
-      @numberDots--
-
-    $(html).appendTo("#notadded-goal").bind 'click', (event) ->
-      thisReference.addToGoal($(this).data('index'));
-
- 
+      @numberDots--###
   
 
