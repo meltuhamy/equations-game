@@ -12,11 +12,25 @@ class GoalScreen extends Screen
   # {Number} How many dice has the user currently put in the added-to-goal area
   numberInGoal: 0
 
+  # {Number} How many dots/brackets are there
   numberDots: 0
+
+  # sea blue, green, yellow, red, teal, magenta, orange, grey, toxic green, black, white
+  #bracketColors: ['#0CF0CF', '#2EA700', '#C2DD00', '#C94800', '#00C9C9', '#C900A9', '#E4B625', '#8F8F8F', '#00FF14', '#000000', '#FFFFFF']
+
+
+  # 
+  #bracketColors: ['#4F9172', '#3E7A5E', '#69B391', '#59B88C', '#238E68']
+
+
+
+
 
   # {Number} Tells us whether we are in the middle of adding brackets. 0 = No, 
   # 1 = We have already clicked to add a left bracket
   bracketClicks: 0
+
+
   leftBracketIndex: 0
 
 
@@ -67,6 +81,15 @@ class GoalScreen extends Screen
     if($(element).attr('data-bracket') is 'none') then @addBracket(element) else @removeBracket(element)
   
 
+
+  getNextBracketColor: (bracketsCounter) ->
+    brightnessPercent = 70-((bracketsCounter*2)/@numberDots)*20
+    return "hsl(120, 50%, #{brightnessPercent}%)"
+
+    
+    
+
+
   ###*
    * Add brackets. We have clicked on a dot and so change it to a bracket.
    * @param  {DomElement} element The bracket element we clicked on 
@@ -74,26 +97,78 @@ class GoalScreen extends Screen
   addBracket: (element) ->
     thisReference = this
     if(@bracketClicks == 0)
+      # When we are clicking to add the left bracket
       @leftBracketIndex = $(element).index('li.dot')
       if(@leftBracketIndex < @numberDots-1)
+        # Change the dot to a left bracket
         $(element).attr('data-bracket','left')
+
+        # Give the newly added left bracket a color 
+        #$(element).css('color', '#FFFFFF')
+
+        # Now say that the next click will be for adding a left bracket
         @bracketClicks = (@bracketClicks+1)%2
+
+        # Now we may need to add an extra dot at the very start, if left bracket we add is at the start
         if(@leftBracketIndex == 0 && @numberInGoal > 1)
           html = "<li class='dot' data-bracket='none'><span></span></li>"
           @numberDots++
           @leftBracketIndex++
           $(html).prependTo("#added-goal").bind 'click', (event) ->
             thisReference.dotListener(this)
+
     else if(@bracketClicks == 1)
+      # When we are clicking to add the right bracket
       rightBracketIndex = $(element).index('li.dot')
       if(@leftBracketIndex < rightBracketIndex)
+        # Change the dot to a right bracket
         $(element).attr('data-bracket','right')
+
+        # Now say that the next click will be for adding a right bracket
         @bracketClicks = (@bracketClicks+1)%2
+
+
+        @pairUpBrackets()
+
+        # Now we may need to add an extra dot at the end, when we add a right bracket at the very end
         if(rightBracketIndex == @numberDots-1 && @numberInGoal > 1)
           html = "<li class='dot' data-bracket='none'><span></span></li>"
           @numberDots++
           $(html).appendTo("#added-goal").bind 'click', (event) ->
             thisReference.dotListener(this)
+
+  ###*
+   * [pairUpBrackets description]
+  ###
+  pairUpBrackets: () ->
+    ref = this
+    bracketsCounter = 0
+    $('li.dot').each (index, element) ->
+      if($(element).attr('data-bracket') is 'left')
+        counter = 1
+        matchingRightBracket = undefined
+        $(element).nextAll('li.dot').each (index, dot) ->
+          if($(dot).attr('data-bracket') is 'left') then counter++
+          if($(dot).attr('data-bracket') is 'right') then counter--
+          if(counter == 0)
+            matchingRightBracket = dot
+            return false
+
+        # For the given pair, give them the game color
+        leftBracketColor = ref.getNextBracketColor(bracketsCounter)
+        $(element).css('color', leftBracketColor)
+        $(matchingRightBracket).css('color', leftBracketColor)
+
+        # For the given pair, assign them a pairing identiefer using data-bracketid attribute
+        $(element).attr('data-bracketid', ref.bracketsCounter)
+        $(matchingRightBracket).attr('data-bracketid', ref.bracketsCounter)
+        bracketsCounter += 1
+      
+
+
+
+
+
 
   ###*
    * Remove brackets. We have clicked on a dot and so change 
@@ -170,7 +245,6 @@ class GoalScreen extends Screen
       if($('li.dot:nth-last-child(2)').attr('data-bracket') is 'right')
         @numberDots--
         $('li.dot:last-child').remove()
-
       $(html).appendTo("#added-goal").bind 'click', (event) ->
         thisReference.removeDiceFromGoal($(this).data('index'));
       $(html2).appendTo("#added-goal").bind 'click', (event) ->
@@ -194,6 +268,10 @@ class GoalScreen extends Screen
 
 
   cleanUpBrackets: () ->
+    @cleanUpRedundantDots()
+    #@pairUpBrackets()
+
+  cleanUpRedundantDots: () ->
     thisReference = this
     for d in $('#added-goal li')
       twoDotsCase = ($(d).prev().attr('data-bracket') is 'none') and ($(d).attr('data-bracket') is 'none')
@@ -224,6 +302,8 @@ class GoalScreen extends Screen
 
         # Now try and clean up again
         @cleanUpBrackets()
+
+    
           
           
 
