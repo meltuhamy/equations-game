@@ -206,10 +206,6 @@ class GoalScreen extends Screen
 
  
 
-
-
-
-
   ###*
    * Move a dice from resources to the goal.
    * Add the diceface to the dom and add a click listener that removes it when its clicked 

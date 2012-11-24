@@ -112,6 +112,7 @@ class Game
       if (dice[i] >= 0)
         dices++
       i++
+    console.log "num dices #{dices}"
     if (dices > 6) then throw "Goal uses more than six dice"
     # Now check that there are not duplicates. We can't use the same dice twice.
     # Also, we check that the indices are in bounds. We can use dice that don't exist.
@@ -121,7 +122,7 @@ class Game
     for i in [0 ... dice.length]
       for j in [i+1 ... dice.length]
         if (dice[i] < -2  || dice[i] >= unallocatedMax) then throw "Goal has out of bounds array index"
-        if (dice[i] == dice[j] && i!=j && dice[i] < unallocatedMax) then throw "Goal uses duplicates dice"
+        if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then throw "Goal uses duplicates dice"
       if dice[i] == -1
         diceValues.push(DICEFACESYMBOLS.bracketL)
       else if dice[i] == -2

@@ -88,6 +88,7 @@ everyone.now.receiveGoal = (goalArray) ->
     group.now.receiveGoalTurnEnd(goalArray)
     group.now.receiveState(game.state)
   catch e #catches when parser returns error for goal
+    console.log e.message
     this.now.badGoal(e.message)
 
 

@@ -79,6 +79,11 @@ describe "parser", ->
     expect(secondChild.token).toEqual [DICEFACESYMBOLS.two]
     expect(secondChild.children).toEqual []
 
+  it "should parse complex bracketed expressions", ->
+    p = new ExpressionParser
+    tree = p.parse [DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.bracketR]
+
+
 
 
   #it "should parse combinations of binary and unary operators", ->
