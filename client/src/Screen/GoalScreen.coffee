@@ -254,7 +254,7 @@ class GoalScreen extends Screen
 
   cleanUpBrackets: () ->
     thisReference = this
-    for d in $('#added-goal li')
+    $('#added-goal li').each (index, d) ->
       leftBracketType = $(d).prev().attr('data-bracket')
       rightBracketType = $(d).attr('data-bracket')
 
@@ -278,14 +278,14 @@ class GoalScreen extends Screen
           $(d).prev().attr('data-bracket', 'right')
 
         # Special case for when there is just one dot left
-        if(@numberDots == 2)
+        if(thisReference.numberDots == 2)
           $(d).prev().remove()
-          @numberDots--
+          thisReference.numberDots--
 
         # Always remove the right dot/bracket
-        @numberDots--
+        thisReference.numberDots--
         $(d).remove()
         # Now try and clean up again
-        @cleanUpBrackets()
+        thisReference.cleanUpBrackets()
 
 
