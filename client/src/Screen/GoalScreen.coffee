@@ -59,10 +59,17 @@ class GoalScreen extends Screen
     return goalArray
 
 
+  ###*
+   * [dotListener description]
+   * @return {[type]} [description]
+  ###
+  dotListener: (element) ->
+    if($(element).attr('data-bracket') is 'none') then @addBracket(element) else @removeBracket(element)
   
 
   ###*
-   * Add brackets to
+   * Add brackets. We have clicked on a dot and so change it to a bracket.
+   * @param  {DomElement} element The bracket element we clicked on 
   ###
   addBracket: (element) ->
     thisReference = this
@@ -89,12 +96,45 @@ class GoalScreen extends Screen
             thisReference.dotListener(this)
 
   ###*
-   * [dotListener description]
-   * @return {[type]} [description]
+   * Remove brackets. We have clicked on a dot and so change 
+   * @param  {DomElement} element The bracket element we clicked on
   ###
-  dotListener: (element) ->
-    if($(element).attr('data-bracket') is 'none') then @addBracket(element) else console.log "Remove bracket"
+  removeBracket: (element) ->
+    thisReference = this
+    if(@bracketClicks == 0)
+      # If we clicked on a left bracket
+      if($(element).attr('data-bracket') is 'left')
+        nextDots = $(element).nextAll('li.dot')
+        counter = 1
+        matchingRightBracket = undefined
+        for dot in nextDots
+          if($(dot).attr('data-bracket') is 'left') then counter++
+          if($(dot).attr('data-bracket') is 'right') then counter--
+          if(counter == 0)
+            matchingRightBracket = dot
+            console.log "Malfoy"
+            break
+        # Remove the left bracket 
+        $(element).attr('data-bracket','none')
+        $(matchingRightBracket).attr('data-bracket','none')
+        @cleanUpBrackets()
+      # If we clicked on a right bracket
+      else if($(element).attr('data-bracket') is 'right') 
+        prevDots = $(element).prevAll('li.dot')
+        counter = 1
+        matchingLeftBracket = undefined
+        for dot in prevDots
+          if($(dot).attr('data-bracket') is 'left') then counter--
+          if($(dot).attr('data-bracket') is 'right') then counter++
+          if(counter == 0)
+            matchingLeftBracket = dot
+            break
+        # Remove the left bracket 
+        $(element).attr('data-bracket','none')
+        $(matchingLeftBracket).attr('data-bracket','none')
+        @cleanUpBrackets()
 
+ 
 
 
 
