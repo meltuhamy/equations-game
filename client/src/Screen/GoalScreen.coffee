@@ -14,7 +14,8 @@ class GoalScreen extends Screen
 
   numberDots: 0
 
-
+  # {Number} Tells us whether we are in the middle of adding brackets. 0 = No, 
+  # 1 = We have already clicked to add a left bracket
   bracketClicks: 0
   leftBracketIndex: 0
 
@@ -100,12 +101,15 @@ class GoalScreen extends Screen
 
 
   ###*
-   * Move a dice from resources to the goal. 
+   * Move a dice from resources to the goal.
+   * Add the diceface to the dom and add a click listener that removes it when its clicked 
    * @param {Number} index The (zero based) index of the resources array to move.
   ###
   addDiceToGoal: (index) ->
-    # Add the diceface to the dom and add a click listener that removes it when its clicked
-    if(@numberInGoal < 6) # There is a maximum of six dice allowed
+    
+    # There is a maximum of six dice allowed
+    # Only allow dice to be added when we are not in the middle of adding brackets
+    if(@numberInGoal < 6 && @bracketClicks == 0) 
       thisReference = this
 
       # If it's the first dice we just added, then we need to add the leftmost brackets dot
@@ -128,24 +132,25 @@ class GoalScreen extends Screen
         $('li.dot:last-child').remove()
 
       $(html).appendTo("#added-goal").bind 'click', (event) ->
-        thisReference.removeFromGoal($(this).data('index'));
+        thisReference.removeDiceFromGoal($(this).data('index'));
       $(html2).appendTo("#added-goal").bind 'click', (event) ->
         thisReference.dotListener(this)
 
   ###*
    * Remove a dice from the goal and put it back to resources. 
+   * Remove the diceface to the dom and add a click listener that adds it when its clicked
    * @param  {Number} index The (zero based) index in the adding to goal list of dice to remove
   ###
-  removeFromGoal: (index) ->
-    # Remove the diceface to the dom and add a click listener that adds it when its clicked
-    @numberInGoal--
-    diceFace = DiceFace.toHtml(@resources[index])
-    html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
-    thisReference = this
-    $('#added-goal li.dice[data-index='+index+']').remove()
-    @cleanUpBrackets()
-    $(html).appendTo("#notadded-goal").bind 'click', (event) ->
-      thisReference.addDiceToGoal($(this).data('index'));
+  removeDiceFromGoal: (index) ->
+    if(@bracketClicks == 0)
+      @numberInGoal--
+      diceFace = DiceFace.toHtml(@resources[index])
+      html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
+      thisReference = this
+      $('#added-goal li.dice[data-index='+index+']').remove()
+      @cleanUpBrackets()
+      $(html).appendTo("#notadded-goal").bind 'click', (event) ->
+        thisReference.addDiceToGoal($(this).data('index'));
 
 
   cleanUpBrackets: () ->

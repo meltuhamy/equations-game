@@ -1,6 +1,6 @@
 class DiceFace
   
-  # {Json} A json that maps names to DiceFace majic numbers
+  # {Json} A json that maps names to DiceFace magic numbers
   @symbols: undefined
 
   ###*
