@@ -20,6 +20,22 @@ class GoalScreen extends Screen
 
   leftBracketIndex: 0
 
+  ###*
+   * Adds the html for a dot to element.
+   * Adds event listener.
+   * @param  {boolean} appendPrepend If true, appends to element. False prepends to element.
+   * @param  {String} element The selector of the element to append/prepend to.
+  ###
+  addDot: (appendPrepend, element) -> 
+    theHtml = "<li class='dot' data-bracket='none'><span></span></li>"
+    thisReference = this
+    if(appendPrepend)
+      $(theHtml).appendTo(element).bind 'click', (event) ->
+        thisReference.dotListener(this)
+    else
+      $(theHtml).prependTo(element).bind 'click', (event) ->
+        thisReference.dotListener(this)
+
 
   constructor: () ->
 
@@ -95,12 +111,10 @@ class GoalScreen extends Screen
         @bracketClicks = (@bracketClicks+1)%2
 
         # Now we may need to add an extra dot at the very start, if left bracket we add is at the start
-        if(@leftBracketIndex == 0 && @numberInGoal > 1)
-          html = "<li class='dot' data-bracket='none'><span></span></li>"
+        if(@leftBracketIndex == 0 )
           @numberDots++
           @leftBracketIndex++
-          $(html).prependTo("#added-goal").bind 'click', (event) ->
-            thisReference.dotListener(this)
+          @addDot(false, '#added-goal')
 
     else if(@bracketClicks == 1)
       # When we are clicking to add the right bracket
@@ -112,15 +126,12 @@ class GoalScreen extends Screen
         # Now say that the next click will be for adding a right bracket
         @bracketClicks = (@bracketClicks+1)%2
 
-
         @pairUpBrackets()
 
         # Now we may need to add an extra dot at the end, when we add a right bracket at the very end
-        if(rightBracketIndex == @numberDots-1 && @numberInGoal > 1)
-          html = "<li class='dot' data-bracket='none'><span></span></li>"
+        if(rightBracketIndex == @numberDots-1)
           @numberDots++
-          $(html).appendTo("#added-goal").bind 'click', (event) ->
-            thisReference.dotListener(this)
+          @addDot(true, '#added-goal')
 
   ###*
    * [pairUpBrackets description]
@@ -214,15 +225,12 @@ class GoalScreen extends Screen
       # If it's the first dice we just added, then we need to add the leftmost brackets dot
       if(@numberInGoal == 0) 
         @numberDots++
-        html = "<li class='dot' data-bracket='none'><span></span></li>"
-        $(html).appendTo("#added-goal").bind 'click', (event) ->
-          thisReference.dotListener(this)
+        @addDot(true, '#added-goal')
 
       @numberInGoal++
       @numberDots++
       diceFace = DiceFace.toHtml(@resources[index])
       html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
-      html2 = "<li class='dot' data-bracket='none'><span></span></li>"
       $('#notadded-goal li.dice[data-index='+index+']').remove()
       @cleanUpBrackets()
 
@@ -231,8 +239,7 @@ class GoalScreen extends Screen
         $('li.dot:last-child').remove()
       $(html).appendTo("#added-goal").bind 'click', (event) ->
         thisReference.removeDiceFromGoal($(this).data('index'));
-      $(html2).appendTo("#added-goal").bind 'click', (event) ->
-        thisReference.dotListener(this)
+      @addDot(true, '#added-goal')
 
   ###*
    * Remove a dice from the goal and put it back to resources. 
