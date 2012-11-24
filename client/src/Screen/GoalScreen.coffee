@@ -83,7 +83,7 @@ class GoalScreen extends Screen
 
 
   getNextBracketColor: (bracketsCounter) ->
-    brightnessPercent = 70-((bracketsCounter*2)/@numberDots)*20
+    brightnessPercent = 80-((bracketsCounter*2)/@numberDots)*50
     return "hsl(120, 50%, #{brightnessPercent}%)"
 
     
@@ -187,7 +187,6 @@ class GoalScreen extends Screen
           if($(dot).attr('data-bracket') is 'right') then counter--
           if(counter == 0)
             matchingRightBracket = dot
-            console.log "Malfoy"
             break
         # Remove the left bracket 
         $(element).attr('data-bracket','none')
@@ -263,15 +262,12 @@ class GoalScreen extends Screen
       thisReference = this
       $('#added-goal li.dice[data-index='+index+']').remove()
       @cleanUpBrackets()
+      @pairUpBrackets()
       $(html).appendTo("#notadded-goal").bind 'click', (event) ->
         thisReference.addDiceToGoal($(this).data('index'));
 
 
   cleanUpBrackets: () ->
-    @cleanUpRedundantDots()
-    #@pairUpBrackets()
-
-  cleanUpRedundantDots: () ->
     thisReference = this
     for d in $('#added-goal li')
       twoDotsCase = ($(d).prev().attr('data-bracket') is 'none') and ($(d).attr('data-bracket') is 'none')
@@ -279,6 +275,8 @@ class GoalScreen extends Screen
       dotRightBrkCase = (($(d).prev().attr('data-bracket') is 'none') and ($(d).attr('data-bracket') is 'right'))
       leftBkrRightBrkCase1 = (($(d).prev().attr('data-bracket') is 'left') and ($(d).attr('data-bracket') is 'right'))
       leftBkrRightBrkCase2 = (($(d).prev().attr('data-bracket') is 'right') and ($(d).attr('data-bracket') is 'left'))
+
+      if $(d).attr('data-bracket') is 'none' then $(d).css('color', '')
 
       if (twoDotsCase || leftBrkDotCase || dotRightBrkCase || leftBkrRightBrkCase1 || leftBkrRightBrkCase2)
         # Adjust the left dot accordingly (since we always delete the right ... see below)
@@ -303,23 +301,4 @@ class GoalScreen extends Screen
         # Now try and clean up again
         @cleanUpBrackets()
 
-    
-          
-          
-
-
-    ### previousDot = $('li.dice[data-index='+index+']').prev()
-    nextDot     = $('li.dice[data-index='+index+']').next()
-    $(nextDot).remove()###
-    # Remove the dice from the goal
-    ###if($(previousDot).data('bracket') is 'left' and $(nextDot).data('bracket') is 'right')
-      $(previousDot).attr('data-bracket', 'none')
-      $(previousDot).remove()
-      @numberDots--
-    else
-      $(previousDot).attr('data-bracket', nextDot.data('bracket'))###
-    ###if(@numberInGoal == 0)
-      $('#added-goal li.dot.first').remove()
-      @numberDots--###
-  
 
