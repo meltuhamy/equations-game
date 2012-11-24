@@ -1,5 +1,3 @@
-#getData = (element, key, value) -> $(element).attr("data-#{key}", value);
-
 
 class GoalScreen extends Screen
   
@@ -14,17 +12,6 @@ class GoalScreen extends Screen
 
   # {Number} How many dots/brackets are there
   numberDots: 0
-
-  # sea blue, green, yellow, red, teal, magenta, orange, grey, toxic green, black, white
-  #bracketColors: ['#0CF0CF', '#2EA700', '#C2DD00', '#C94800', '#00C9C9', '#C900A9', '#E4B625', '#8F8F8F', '#00FF14', '#000000', '#FFFFFF']
-
-
-  # 
-  #bracketColors: ['#4F9172', '#3E7A5E', '#69B391', '#59B88C', '#238E68']
-
-
-
-
 
   # {Number} Tells us whether we are in the middle of adding brackets. 0 = No, 
   # 1 = We have already clicked to add a left bracket
@@ -86,8 +73,6 @@ class GoalScreen extends Screen
     brightnessPercent = 80-((bracketsCounter*2)/@numberDots)*50
     return "hsl(120, 50%, #{brightnessPercent}%)"
 
-    
-    
 
 
   ###*
@@ -270,13 +255,16 @@ class GoalScreen extends Screen
   cleanUpBrackets: () ->
     thisReference = this
     for d in $('#added-goal li')
-      twoDotsCase = ($(d).prev().attr('data-bracket') is 'none') and ($(d).attr('data-bracket') is 'none')
-      leftBrkDotCase = (($(d).prev().attr('data-bracket') is 'left') and ($(d).attr('data-bracket') is 'none'))
-      dotRightBrkCase = (($(d).prev().attr('data-bracket') is 'none') and ($(d).attr('data-bracket') is 'right'))
-      leftBkrRightBrkCase1 = (($(d).prev().attr('data-bracket') is 'left') and ($(d).attr('data-bracket') is 'right'))
-      leftBkrRightBrkCase2 = (($(d).prev().attr('data-bracket') is 'right') and ($(d).attr('data-bracket') is 'left'))
+      leftBracketType = $(d).prev().attr('data-bracket')
+      rightBracketType = $(d).attr('data-bracket')
 
-      if $(d).attr('data-bracket') is 'none' then $(d).css('color', '')
+      twoDotsCase = (leftBracketType is 'none') and (rightBracketType is 'none')
+      leftBrkDotCase = (leftBracketType is 'left') and (rightBracketType is 'none')
+      dotRightBrkCase = (leftBracketType is 'none') and (rightBracketType is 'right')
+      leftBkrRightBrkCase1 = (leftBracketType is 'left') and (rightBracketType is 'right')
+      leftBkrRightBrkCase2 = (leftBracketType is 'right') and (rightBracketType is 'left')
+
+      if rightBracketType is 'none' then $(d).css('color', '')
 
       if (twoDotsCase || leftBrkDotCase || dotRightBrkCase || leftBkrRightBrkCase1 || leftBkrRightBrkCase2)
         # Adjust the left dot accordingly (since we always delete the right ... see below)
@@ -297,7 +285,6 @@ class GoalScreen extends Screen
         # Always remove the right dot/bracket
         @numberDots--
         $(d).remove()
-
         # Now try and clean up again
         @cleanUpBrackets()
 
