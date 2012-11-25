@@ -83,7 +83,20 @@ describe "parser", ->
     p = new ExpressionParser
     tree = p.parse [DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.bracketR]
 
+  it "should not parse", ->
+    p = new ExpressionParser
+    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.two]  
+    console.log tree
 
+  it "should parse", ->
+    p = new ExpressionParser
+    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.multiply, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR]  
+    console.log tree
+
+  it "should parse", ->
+    p = new ExpressionParser
+    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three]  
+    console.log tree
 
 
   #it "should parse combinations of binary and unary operators", ->

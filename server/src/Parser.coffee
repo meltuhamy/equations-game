@@ -66,6 +66,7 @@ class ExpressionParser
     c = @expr[@idx]
     if c == DICEFACESYMBOLS.bracketL
       ++@idx
+      if @expr[@idx] == DICEFACESYMBOLS.multiply || @expr[@idx] == DICEFACESYMBOLS.divide || @expr[@idx] == DICEFACESYMBOLS.power || @expr[@idx] == DICEFACESYMBOLS.bracketR then throw new Error("Invalid value after bracket")
       node = @handleAddMinus()
       if @expr[@idx] != DICEFACESYMBOLS.bracketR then throw new Error("Error Unbalanced Parenthesis")
       ++@idx # move past the '('
