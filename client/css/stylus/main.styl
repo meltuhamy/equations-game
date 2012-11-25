@@ -8,6 +8,7 @@
 $font-list = "Helvetica Neue","Hevletica","Arial","DejaVu Sans","Kozuka Gothic Pro R","Meiryo","MS Gothic","Osaka",sans-serif
 
 
+
 html, body
   height: 100%;
   font-family: $font-list
@@ -20,7 +21,8 @@ body
   background: linear-gradient(top, #2681CC 0%, #206FB0 100%)
   min-height: 100%
 
-div#container
+div#container,
+div#container[data-glow='off']
   margin: 0 auto
   width: 80%
   padding: 15px
@@ -28,6 +30,27 @@ div#container
   background: rgba(255, 255, 255, 0.2)
   border: 1px solid rgba(255, 255, 255, 0.3)
   border-radius(5px)
+
+
+div#container[data-glow='on']
+  background: rgba(255, 255, 255, 0.3)
+  border: 1px solid rgba(255, 255, 255, 0.8)
+  box-shadow: white 0px 0px 9px;
+
+
+@keyframes highlightkeyframes {
+  0% {box-shadow(white 0px 0px 2px 1px)}
+  33% {box-shadow(white 0px 0px 2px 1px)}
+  66% {box-shadow(white 0px 0px 14px 1px)}
+  100% {box-shadow(white 0px 0px 14px 1px)}
+}
+
+
+*[data-glow='highlight'] {
+    animation(highlightkeyframes 5s ease-in-out 0s infinite alternate)
+}
+
+
 
 
 // For screen widths 0 <= w <= 999
@@ -158,7 +181,7 @@ div#top-ctnr
         color: #9FC6F1
     ul li.now-commentary
       color: #FFFFFF
-      background: #D88A00
+      background: #00A3FF
       border-radius(5px 5px 0px 0px)
       span
         color: #F5FF00
@@ -251,12 +274,13 @@ ul#notadded-goal
       line-height: $dicewidth;
 
   li.dot
-    font-size: 40px
-    color: #FFA300
+    font-size: 35px
+    color: #F8C627
     font-weight: bold
     display: inline-block
-    width: $dicewidth = 30px
-    height: $dicewidth
+    text-shadow: rgba(0, 0, 0, 0.3) 0px 2px 0px
+    width: 15px
+    height: 30px
     line-height: 16px
     margin-left: 5px
     border: 8px solid transparent
@@ -286,7 +310,6 @@ ul#added-goal li.dice
   text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
   border-color:#007BD1
   background: #777777
-  border-width: 8px
   margin-bottom: 15px
 
 button#sendgoal

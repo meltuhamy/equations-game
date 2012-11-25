@@ -126,39 +126,14 @@ class GoalScreen extends Screen
         # Now say that the next click will be for adding a right bracket
         @bracketClicks = (@bracketClicks+1)%2
 
-        @pairUpBrackets()
+        @cleanUpBrackets()
 
         # Now we may need to add an extra dot at the end, when we add a right bracket at the very end
         if(rightBracketIndex == @numberDots-1)
           @numberDots++
           @addDot(true, '#added-goal')
 
-  ###*
-   * [pairUpBrackets description]
-  ###
-  pairUpBrackets: () ->
-    ref = this
-    bracketsCounter = 0
-    $('li.dot').each (index, element) ->
-      if($(element).attr('data-bracket') is 'left')
-        counter = 1
-        matchingRightBracket = undefined
-        $(element).nextAll('li.dot').each (index, dot) ->
-          if($(dot).attr('data-bracket') is 'left') then counter++
-          if($(dot).attr('data-bracket') is 'right') then counter--
-          if(counter == 0)
-            matchingRightBracket = dot
-            return false
-
-        # For the given pair, give them the game color
-        leftBracketColor = ref.getNextBracketColor(bracketsCounter)
-        $(element).css('color', leftBracketColor)
-        $(matchingRightBracket).css('color', leftBracketColor)
-
-        # For the given pair, assign them a pairing identiefer using data-bracketid attribute
-        $(element).attr('data-bracketid', ref.bracketsCounter)
-        $(matchingRightBracket).attr('data-bracketid', ref.bracketsCounter)
-        bracketsCounter += 1
+  
       
 
 
@@ -172,6 +147,7 @@ class GoalScreen extends Screen
   ###
   removeBracket: (element) ->
     thisReference = this
+    # if we are have balanded brackets everywhere...
     if(@bracketClicks == 0)
       # If we clicked on a left bracket
       if($(element).attr('data-bracket') is 'left')
@@ -203,6 +179,13 @@ class GoalScreen extends Screen
         $(element).attr('data-bracket','none')
         $(matchingLeftBracket).attr('data-bracket','none')
         @cleanUpBrackets()
+    else if(@bracketClicks == 1)
+      if(not $(element).is("[data-bracketid]"))
+        $(element).attr('data-bracket','none')
+        @bracketClicks = 0
+        @cleanUpBrackets()
+
+
 
  
 
@@ -250,9 +233,12 @@ class GoalScreen extends Screen
       thisReference = this
       $('#added-goal li.dice[data-index='+index+']').remove()
       @cleanUpBrackets()
-      @pairUpBrackets()
       $(html).appendTo("#notadded-goal").bind 'click', (event) ->
         thisReference.addDiceToGoal($(this).data('index'));
+
+
+
+  
 
 
   cleanUpBrackets: () ->
@@ -290,5 +276,31 @@ class GoalScreen extends Screen
         $(d).remove()
         # Now try and clean up again
         thisReference.cleanUpBrackets()
+    @pairUpBrackets()
 
+  ###*
+   * [pairUpBrackets description]
+  ###
+  pairUpBrackets: () ->
+    ref = this
+    bracketsCounter = 0
+    $('li.dot').each (index, element) ->
+      if($(element).attr('data-bracket') is 'left')
+        counter = 1
+        matchingRightBracket = undefined
+        $(element).nextAll('li.dot').each (index, dot) ->
+          if($(dot).attr('data-bracket') is 'left') then counter++
+          if($(dot).attr('data-bracket') is 'right') then counter--
+          if(counter == 0)
+            matchingRightBracket = dot
+            return false
 
+        # For the given pair, give them the game color
+        leftBracketColor = ref.getNextBracketColor(bracketsCounter)
+        $(element).css('color', leftBracketColor)
+        $(matchingRightBracket).css('color', leftBracketColor)
+
+        # For the given pair, assign them a pairing identiefer using data-bracketid attribute
+        $(element).attr('data-bracketid', ref.bracketsCounter)
+        $(matchingRightBracket).attr('data-bracketid', ref.bracketsCounter)
+        bracketsCounter += 1

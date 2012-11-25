@@ -16,6 +16,10 @@ class GameScreen extends Screen
     @drawGoal()
     @drawDiceAllocations()
 
+
+  onUpdatedState:() ->
+    @drawDiceAllocations()
+
   ###*
    * We received the next turn in the game so update the allocations of the dice.
   ###
@@ -41,6 +45,10 @@ class GameScreen extends Screen
       html += '<li' + currentHtml + '>' + nameHtml + '</li>'
     html += '</ul>'
     $('#player-list').html(html)
+    # If it is our turn, then make the container glow else don't make it glow
+    glowOnOff = if(Game.state.currentPlayer is Game.myPlayerId) then 'on' else 'off'
+    $('#container').attr('data-glow', glowOnOff)
+
 
 
   ###*
