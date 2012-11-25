@@ -6,6 +6,10 @@ class GameScreen extends Screen
   # {Json[]} An of json for commentary information
   commentary: []
 
+
+  # {EquationBuilder} Used to build the draft answer.
+  equationBuilder: undefined
+
   constructor: () -> 
 
   ###*
@@ -15,6 +19,7 @@ class GameScreen extends Screen
   init: (json) ->
     @drawGoal()
     @drawDiceAllocations()
+    @equationBuilder = new EquationBuilder('#answers')
 
 
   onUpdatedState:() ->
@@ -122,3 +127,22 @@ class GameScreen extends Screen
   ###
   drawGoal: () ->
     $("#goal-dice-ctnr").html(DiceFace.listToHtml(Game.getGoalValues()))
+
+
+
+
+  addDiceToAnswerArea: (array, index) ->
+    if(@equationBuilder.hasCompletedBrackets()) 
+      thisReference = this
+
+      # Work out the dice we want to add to the answer area based on index
+      diceFace = DiceFace.toHtml(@array[index])
+      html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
+      
+      # Add it to the answers
+      $(@equationBuilder.addDiceToEnd(html)).bind 'click', (event) ->
+        
+
+
+  removeDiceFromAnswerArea: () ->
+

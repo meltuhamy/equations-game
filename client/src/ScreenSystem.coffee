@@ -1,4 +1,5 @@
 class ScreenSystem
+
   # {Number} The total number of screens that have finished loaded
   @numberLoaded: 0
 
@@ -67,6 +68,9 @@ class ScreenSystem
   @loadAllScreens: (callback) ->
     @container = $("#" + Settings.containerId)
     for screen in @screens 
+      # If the screen hasn't loaded, then load it - 
+      # give ajax a callback that updates how many screens have loaded
+      # Also call the callback parameter when it has loaded
       if !screen.hasLoaded
         screen.load(=> 
           @numberLoaded++
