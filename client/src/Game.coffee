@@ -54,7 +54,7 @@ class Game
     @players = players
     @firstTurnPlayerIndex = firstTurnPlayerId
     @state.currentplayer = firstTurnPlayerId
-    @state.unallocated = globalDice
+    @globalDice = globalDice
     # Am I the player chosen to set the goal? 
     # Yes: show goal setting screen. No: show goal wait screen.
     if (Game.myPlayerId == firstTurnPlayerId) 
@@ -78,11 +78,9 @@ class Game
   @getGoalValues: () ->
     diceValues = []
     for g in @goal
-      console.log DiceFace
       if(g == -1) then diceValues.push (DiceFace.symbols.bracketL) 
       else if(g == -2) then diceValues.push (DiceFace.symbols.bracketR) 
-      else diceValues.push (@state.unallocated[g]) 
-    console.log diceValues
+      else diceValues.push (@globalDice[g]) 
     return diceValues
 
 

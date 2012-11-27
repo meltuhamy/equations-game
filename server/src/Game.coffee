@@ -120,18 +120,18 @@ class Game
     if (dices > 6) then throw "Goal uses more than six dice"
     # Now check that there are not duplicates. We can't use the same dice twice.
     # Also, we check that the indices are in bounds. We can use dice that don't exist.
-    unallocatedMax = @globalDice.length
+    numGlobalDice = @globalDice.length
 
     # Copy global dice into unallocated using split (which is [..] in coffeescript)
     # Later, we will remove from unallocatedTemp as we work out which dice the dice setter chose 
     # for the goal in the loops below. See line (*). The final v. will be state.unallocated.
-    unallocatedTemp = @globalDice[..] 
+    unallocatedTemp = [0...numGlobalDice]
 
 
     diceValues = []
     for i in [0 ... dice.length]
       for j in [i+1 ... dice.length]
-        if (dice[i] < -2  || dice[i] >= unallocatedMax) then throw "Goal has out of bounds array index"
+        if (dice[i] < -2  || dice[i] >= numGlobalDice) then throw "Goal has out of bounds array index"
         if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then throw "Goal uses duplicates dice"
       if dice[i] == -1
         diceValues.push(DICEFACESYMBOLS.bracketL)
@@ -139,9 +139,10 @@ class Game
         diceValues.push(DICEFACESYMBOLS.bracketR)
       else
         diceValues.push(@globalDice[dice[i]])
-        unallocatedTemp.splice(i, 1) # Remove the dice from unallocated.
+        unallocatedTemp.splice(dice[i], 1) # Remove the dice from unallocated.
 
     @state.unallocated = unallocatedTemp
+
 
     # Finally, check that the expression in the dice parses as an expression.
     p = new ExpressionParser()
@@ -194,12 +195,6 @@ class Game
   nextTurn: () ->
     @state.currentPlayer = (@state.currentPlayer + 1) % @players.length
 
-  resourceExists: (resource) ->
-    index = @state.unallocated.indexOf resource
-    if (index) == -1
-      throw new Error("Resource #{resource} not in Unallocated")
-    else
-      index
 
   moveToRequired: (index, clientId) ->
     if @challengeMode

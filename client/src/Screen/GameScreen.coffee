@@ -29,10 +29,10 @@ class GameScreen extends Screen
    * We received the next turn in the game so update the allocations of the dice.
   ###
   drawDiceAllocations: () ->
-    $("#required").html(DiceFace.listToHtml(Game.getState().required))
-    $("#optional").html(DiceFace.listToHtml(Game.getState().optional))
-    $('#forbidden').html(DiceFace.listToHtml(Game.getState().forbidden))
-    $("#unallocated").html(DiceFace.listToHtml(Game.getState().unallocated))
+    $("#required").html(DiceFace.listToHtmlByIndex(Game.globalDice, Game.getState().required))
+    $("#optional").html(DiceFace.listToHtmlByIndex(Game.globalDice, Game.getState().optional))
+    $('#forbidden').html(DiceFace.listToHtmlByIndex(Game.globalDice, Game.getState().forbidden))
+    $("#unallocated").html(DiceFace.listToHtmlByIndex(Game.globalDice, Game.getState().unallocated))
     @addClickListeners()
     @removeAllocationMoveMenu # Get rid of the allocation menu because it probably doesn't match dice anymore!
     @drawPlayerList()

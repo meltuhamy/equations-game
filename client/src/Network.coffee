@@ -57,9 +57,6 @@ now.acceptPlayer = (id, dicefaceSymbols) -> #id is the index
   DiceFace.symbols = dicefaceSymbols
 
 
-
-
-
 ###*
  * Receive list of the games that the server has
  * @param  {Json} gameListJson A json with 
