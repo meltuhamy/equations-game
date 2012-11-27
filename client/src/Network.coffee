@@ -15,7 +15,6 @@ class Network
   ###
   @sendGoal: (goalArray) ->
     try
-      console.log goalArray
       now.receiveGoal(goalArray) #calls the server function receiveGoal, which parses it and stores it in the server-side game object
     catch e #Catches when wrong client tries to send goal
       console.warn e

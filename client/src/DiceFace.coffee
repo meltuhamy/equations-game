@@ -8,7 +8,7 @@ class DiceFace
    * @param  {Number} face The dice face number to of the face to show
    * @return {String}      The html form for the diceface.
   ###
-  @toHtml: (face) ->
+  @faceToHtml: (face) ->
     switch face
       when @symbols.bracketL then "("
       when @symbols.bracketR then ")"
@@ -24,33 +24,35 @@ class DiceFace
    * Turns an array of dicefaces into li's
    * @param  {Number[]} list The array of dicefaces values
    * @param  {Boolean} showIndexData Whether to add the attribute data-index to each li
-   * @param  {Boolean} dots Whether to add dots li between each dice li
    * @return {String}         A string with the html containing li's
   ###
-  @listToHtml: (list, showIndexData, dots) ->
-    html = '';
+  @listToHtml: (list, showIndexData) ->
+    html = ''
     indexCounter = 0
-    if(dots) then html += "<li class='dot' data-index='" + indexCounter + "''>.</li>"
     for d in list
       dataIndex = if (showIndexData) then " data-index='#{indexCounter}'" else ""
-      html += "<li class='dice'" + dataIndex + "><span>#{@toHtml(d)}<span></li>" 
-      if(dots) then html += "<li class='dot' data-index='" + indexCounter + "''>.</li>" 
+      html += "<li class='dice'" + dataIndex + "><span>#{@faceToHtml(d)}<span></li>" 
       indexCounter++
     return html
 
 
   ###*
-   * Turns an array of dicefaces into li's
+   * Turns an array of indices to diceface array into li's
    * @param  {Number[]} diceFaces The array of dicefaces magic numbers. Referenced by 'indices' param.
    * @param  {Number[]} The actual list of dice to be printed. An array of indices to 'diceFaces' param.
    * @param  {Boolean} showIndexData Whether to add the attribute data-index to each li
-   * @param  {Boolean} dots Whether to add dots li between each dice li
    * @return {String}         A string with the html containing li's
   ###
-  @listToHtmlByIndex: (diceFaces, indices, showIndexData, showRefData, dots) ->
-    result = []
-    result.push diceFaces[i] for i in indices
-    return @listToHtml(result, showIndexData, dots)
+  @listToHtmlByIndex: (diceFaces, indices, showIndexData, showRefData) ->
+    html = ''
+    indexCounter = 0
+    for i in indices
+      face = diceFaces[i]
+      dataIndex = if (showIndexData) then " data-index='#{indexCounter}'" else ""
+      dataRef = if (showRefData) then " data-ref='#{i}'" else ""
+      html += "<li class='dice'" + dataIndex + dataRef + "><span>#{@faceToHtml(face)}<span></li>" 
+      indexCounter++
+    return html
 
 
 

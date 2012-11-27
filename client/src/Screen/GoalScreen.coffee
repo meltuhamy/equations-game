@@ -44,7 +44,6 @@ class GoalScreen extends Screen
       if($(d).hasClass('dice'))
         goalArray.push ($(d).data('index')) 
       else if($(d).hasClass('dot'))
-        console.log "this is a dot"
         if($(d).attr('data-bracket') is 'left')
           goalArray.push (-1)
         else if($(d).attr('data-bracket') is 'right')
@@ -67,7 +66,7 @@ class GoalScreen extends Screen
     if(@equationBuilder.getNumberOfDice() < 6 && @equationBuilder.hasCompletedBrackets()) 
       thisReference = this
 
-      diceFace = DiceFace.toHtml(@globalDice[index])
+      diceFace = DiceFace.faceToHtml(@globalDice[index])
       html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
       
       # Remove the dice from the top
