@@ -206,7 +206,8 @@ class EquationBuilder
       if rightBracketType is 'none' then $(d).css('color', '')
 
       if (twoDotsCase || leftBrkDotCase || dotRightBrkCase || leftBkrRightBrkCase1 || leftBkrRightBrkCase2)
-        # Adjust the left dot accordingly (since we always delete the right ... see below)
+        # Copy the value of the right dot to the left dot accordingly
+        # We *always* delete the right dot from dom ... see below (*))
         if(leftBkrRightBrkCase1)
           $(d).prev().attr('data-bracket', 'none')
         else if(leftBkrRightBrkCase2)
@@ -221,7 +222,7 @@ class EquationBuilder
           $(d).prev().remove()
           thisReference.numberDots--
 
-        # Always remove the right dot/bracket
+        # Always remove the right dot/bracket (*)
         thisReference.numberDots--
         $(d).remove()
         # Now try and clean up again

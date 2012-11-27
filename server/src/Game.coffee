@@ -36,6 +36,8 @@ class Game
   challenger: undefined
 
 
+  # {Number} The dice that will be used throughout the game. An array of diceface magic numbers.
+  globalDice: []
 
   possiblePlayers: []
 
@@ -67,11 +69,14 @@ class Game
   setUnallocated: (array) ->
 
 
+  ###*
+   * Spawns the global array. Uses a random distribution to work out the dice for the game.
+  ###
   allocate: ->
     if DEBUG
-      @state.unallocated = [1, DICEFACESYMBOLS.plus, 2, DICEFACESYMBOLS.minus, 3, 4, 5, 6, 7, 8, 9, 0, DICEFACESYMBOLS.divide, 9, 9, 1, 2, 9, 4, 5, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.plus, 2, 4]
+      # TODO move this ugly thing to a settings file
+      @globalDice = [1, DICEFACESYMBOLS.plus, 2, DICEFACESYMBOLS.minus, 3, 4, 5, 6, 7, 8, 9, 0, DICEFACESYMBOLS.divide, 9, 9, 1, 2, 9, 4, 5, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.plus, 2, 4]
     else
-      @state.unallocated = []
       ops = 0
       for x in [1..24]  #24 dice rolls
         rand = Math.random()  #get a random number
@@ -80,7 +85,7 @@ class Game
         else  #1/3 of the time we get an operator, again we generate a new random number to decide which operator to use
           rand = Math.floor(Math.random() * - DiceFace.numOps)
           ops++ #we keep track of the number of operators generated so that later we can check if there are enough
-        @state.unallocated.push(rand)  #here we add the die to the unallocated resources array
+        @globalDice.push(rand)  #here we add the die to the global dice array
       if (ops < 2) || (ops > 21)  #if there are too few or too many operators, we must roll again
         @allocate()  #do the allocation again
 
@@ -112,11 +117,16 @@ class Game
       if (dice[i] >= 0)
         dices++
       i++
-    console.log "num dices #{dices}"
     if (dices > 6) then throw "Goal uses more than six dice"
     # Now check that there are not duplicates. We can't use the same dice twice.
     # Also, we check that the indices are in bounds. We can use dice that don't exist.
-    unallocatedMax = @state.unallocated.length
+    unallocatedMax = @globalDice.length
+
+    # Copy global dice into unallocated using split (which is [..] in coffeescript)
+    # Later, we will remove from unallocatedTemp as we work out which dice the dice setter chose 
+    # for the goal in the loops below. See line (*). The final v. will be state.unallocated.
+    unallocatedTemp = @globalDice[..] 
+
 
     diceValues = []
     for i in [0 ... dice.length]
@@ -128,10 +138,12 @@ class Game
       else if dice[i] == -2
         diceValues.push(DICEFACESYMBOLS.bracketR)
       else
-        diceValues.push(@state.unallocated[dice[i]])
+        diceValues.push(@globalDice[dice[i]])
+        unallocatedTemp.splice(i, 1) # Remove the dice from unallocated.
+
+    @state.unallocated = unallocatedTemp
 
     # Finally, check that the expression in the dice parses as an expression.
-    console.log diceValues
     p = new ExpressionParser()
     @goalTree = p.parse(diceValues)
     @goalArray = diceValues

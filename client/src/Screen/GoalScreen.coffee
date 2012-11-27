@@ -4,8 +4,8 @@ class GoalScreen extends Screen
   # {String} The filename of the html file to load the screen.
   file: 'goal.html'
 
-  # {Number[]} An array of dicefaces. The resources used to form goal.
-  resources: []
+  # {Number[]} An array of dicefaces. The dice used to form goal.
+  globalDice: []
 
   # {EquationBuilder} Used to build equations in the goal screen.
   equationBuilder: undefined
@@ -18,14 +18,14 @@ class GoalScreen extends Screen
    * Load the Goal Screen. This screen lets the player chosen as goal-setter 
    * select which dice are the goal.
    * @param {Json} json This gives the screen this json: 
-   *               {resources: Number[] the diceface numbers that can be chosen to be the goal}
+   *               {globalDice: Number[] the diceface numbers that can be chosen for the game}
   ###
   init: (json) ->
     @equationBuilder = new EquationBuilder('#added-goal')
-    @resources = json.resources
+    @globalDice = json.globalDice
     # We received the array of dice that we will use to form the goal.
     # This method takes in the array of dice numbers to displays them in the dom. 
-    $("#notadded-goal").html(DiceFace.listToHtml(@resources, true))
+    $("#notadded-goal").html(DiceFace.listToHtml(@globalDice, true))
     thisReference = this
     resourceList = $('#notadded-goal li.dice')
     resourceList.bind 'click', (event) ->
@@ -36,7 +36,7 @@ class GoalScreen extends Screen
 
   ###*
    * Return the goal array from the dice in the added-to-goal area
-   * @return {Integer} Each element is an index to the original resources array
+   * @return {Integer} Each element is an index to the original global dice array
   ###
   createGoalArray: () ->
     goalArray = []
@@ -56,9 +56,9 @@ class GoalScreen extends Screen
 
 
   ###*
-   * Move a dice from resources to the goal.
+   * In the DOM, move a dice from global dice to the goal.
    * Add the diceface to the dom and add a click listener that removes it when its clicked 
-   * @param {Number} index The (zero based) index of the resources array to move.
+   * @param {Number} index The (zero based) index of the global array to move.
   ###
   addDiceToGoal: (index) ->
 
@@ -67,7 +67,7 @@ class GoalScreen extends Screen
     if(@equationBuilder.getNumberOfDice() < 6 && @equationBuilder.hasCompletedBrackets()) 
       thisReference = this
 
-      diceFace = DiceFace.toHtml(@resources[index])
+      diceFace = DiceFace.toHtml(@globalDice[index])
       html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
       
       # Remove the dice from the top
@@ -79,7 +79,7 @@ class GoalScreen extends Screen
 
 
   ###*
-   * Remove a dice from the goal and put it back to resources. 
+   * Remove a dice from the goal and put it back to global dice (append it to the end). 
    * Remove the diceface to the dom and add a click listener that adds it when its clicked
    * @param  {Number} index The (zero based) index in the adding to goal list of dice to remove
   ###

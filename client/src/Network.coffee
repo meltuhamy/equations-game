@@ -11,7 +11,7 @@ class Network
 
   ###*
    * Sends the goal array to the server
-   * @param  {Number[]} goalArray An array of indices to the resources array.
+   * @param  {Number[]} goalArray An array of indices to the global dice array.
   ###
   @sendGoal: (goalArray) ->
     try
@@ -77,17 +77,8 @@ now.receiveGameList = (gameListJson) ->
  * @param  {Number} firstTurnPlayerIndex      The index to this.players that specifies the goal setter
 ###
 now.receiveGoalTurn = (players, resources, firstTurnPlayerIndex) ->
-  Game.players = players
-  Game.firstTurnPlayerIndex = firstTurnPlayerIndex
-  Game.state.currentplayer = firstTurnPlayerIndex
-  Game.state.unallocated = resources
-
-  if (Game.myPlayerId == firstTurnPlayerIndex) 
-    ScreenSystem.renderScreen(Game.goalScreenId, {resources: resources})
-  else
-    ScreenSystem.renderScreen(Game.gameWaitScreenId)
-
-  Game.goingFirst = firstTurnPlayerIndex
+  Game.goalTurn(players, resources, firstTurnPlayerIndex)
+  
 
 
 ###*

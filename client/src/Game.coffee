@@ -18,6 +18,9 @@ class Game
   @lobbyScreenId: undefined
   @gameWaitScreenId : undefined
 
+  # {Number} The dice that will be used throughout the game. An array of diceface magic numbers.
+  @globalDice: []
+
  
   # {Json} The json of the current state of the game and what type each dice is.
   # unallocated, required, optional, forbidden are arrays of dicefaces.
@@ -30,13 +33,35 @@ class Game
     currentPlayer: 0
 
   ###*
-   * Initialise the game. Add screens.
+   * Initialise the game. Add screens. Called localled on page load.
   ###
   @initialise: () ->
     @gameScreenId = ScreenSystem.addScreen(new GameScreen())
     @goalScreenId = ScreenSystem.addScreen(new GoalScreen())
     @lobbyScreenId = ScreenSystem.addScreen(new LobbyScreen())
     @gameWaitScreenId = ScreenSystem.addScreen(new GoalWaitScreen())
+
+
+  ###*
+   * When all the players have joined, it's time to begin. Server call this.
+   * @param  {Player[]} players  An array of player objects sent over nowjs (a bit dodgy)
+   * @param  {[type]} globalDice The global dice for the game.
+   * @param  {[type]} firstTurnPlayerId The index to players array of the player who is setting goal.
+  ###
+  @goalTurn: (players, globalDice, firstTurnPlayerId) ->
+    # Set some state variables used for the first turn and will 
+    # be updated accordingly on subsequent turns.
+    @players = players
+    @firstTurnPlayerIndex = firstTurnPlayerId
+    @state.currentplayer = firstTurnPlayerId
+    @state.unallocated = globalDice
+    # Am I the player chosen to set the goal? 
+    # Yes: show goal setting screen. No: show goal wait screen.
+    if (Game.myPlayerId == firstTurnPlayerId) 
+      ScreenSystem.renderScreen(Game.goalScreenId, {globalDice: globalDice})
+    else
+      ScreenSystem.renderScreen(Game.gameWaitScreenId)
+
 
   ###*
    * Set the goal locally. The server has told us the goal-setter has set the goal.
