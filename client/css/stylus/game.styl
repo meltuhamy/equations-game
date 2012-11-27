@@ -1,0 +1,303 @@
+// ******************************************************
+// Styles for the main game screen
+// ******************************************************
+
+@import 'main'
+// -----------
+
+div#top-ctnr
+  text-align: center
+  background: #0066AD
+  padding: 10px 0px
+  margin-bottom: 10px
+  border-radius(5px)
+  clearfix()
+  div#goal-ctnr
+    background: #0078CD
+    border-radius(5px)
+    margin-left: 10px
+    margin-right: 20px
+    margin-bottom: 10px
+    padding: 10px 10px
+    float:left
+    ul#goal-dice-ctnr
+      display: block
+      margin-bottom: 10px
+      li.dice
+        display: inline-block
+        text-align: center
+        font-family: $font-list
+        font-size: 32px
+        margin-right: 5px
+        font-weight: bold
+        background: #FFC818
+        width: $dicewidth = 40px
+        height: $dicewidth
+        span
+          color: #BE6B00
+          text-shadow: rgba(0, 0, 0, .15) 0px 1px 0px
+          line-height: $dicewidth;
+  div#now-never-ctnr
+    text-align: center
+    float:left
+  div#player-list 
+    float: left
+    background: #0078CD
+    border-radius(5px)
+    margin-right: 10px
+    padding: 10px 10px
+    position: relative
+    ul
+      li
+        color: #9DC8FF
+        background: transparent url('../img/user-blue.png') no-repeat center 5px
+        background-color: $notTurnCol = #0090F0
+        display: inline-block
+        padding: 40px 10px 5px 10px
+        border-radius(5px)
+        font-size: 13px
+        font-weight: bold
+        /*text-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px*/
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px;
+      li.current-turn-player
+        color: #FFF4D0
+        background-color: $isTurnCol = #D88A00
+        background-image: url('../img/user-yellow.png') 
+        /*text-shadow: #FFD600 0px 1px 3px*/
+        /*box-shadow: #FFD600 0px 1px 1px*/
+
+  /* Add an arrow connecting player list to the commentary box */
+  div#player-list:after 
+    left: 100%
+    border: solid transparent
+    content: " "
+    height: 0
+    width: 0
+    position: absolute
+    pointer-events: none
+    float: left
+    border-left-color: #0078CD
+    border-width: $playerListArrowSize = 10px
+    top: 50%
+    margin-top: -1 * $playerListArrowSize
+
+
+  div#commentary_ctnr
+    float:left
+    background: #0078CD
+    width: 500px
+    border-radius(5px)
+    padding-bottom: 5px
+    ul li
+      color: #BEBEBE
+      text-align: left
+      font-size: 12px
+      padding: 0px 10px
+      span
+        color: #9FC6F1
+    ul li.now-commentary
+      color: #FFFFFF
+      background: #00A3FF
+      border-radius(5px 5px 0px 0px)
+      span
+        color: #F5FF00
+        font-weight: bold
+        padding-right: 5px     
+        
+
+/*************************************************************/
+/*********************    GOAL       *************************/
+/******* styles for the goal dice and challenge buttons ******/
+/*************************************************************/
+
+a.mini-button
+  cursor: pointer
+  background: #007DD5
+  font: bold 13px/1 $font-list
+  padding: 1px
+  margin: 1px
+  display: inline-block
+  border-radius(2px)
+  span
+    border: 1px solid #006680
+    color: #FFFFFF
+    padding: 3px 7px 
+    display: inline-block
+    border-radius(2px)
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+a.mini-button:first-child
+  margin-left: 10px
+
+span#now-button
+  background: #e3e3e3
+  border: 1px solid #bbb
+  border-radius(3px)
+  box-shadow(inset 0 0 1px 1px #f6f6f6)
+  color: #333
+  font: bold 12px/1 $font-list
+  padding: 7px 20px
+  text-align: center
+  text-shadow: 0 1px 0 #fff
+  display: inline-block
+
+span#now-button:hover
+  background: #d9d9d9
+  box-shadow(inset 0 0 1px 1px #eaeaea)
+  color: #222
+  cursor: pointer
+
+span#now-button:active
+  background: #d0d0d0
+  box-shadow(inset 0 0 1px 1px #e3e3e3)
+  color: #000
+
+div#never-button
+  background: #e3e3e3
+  border: 1px solid #bbb
+  border-radius(3px)
+  box-shadow(inset 0 0 1px 1px #f6f6f6)
+  color: #333
+  font: bold 12px/1 $font-list
+  padding: 8px 0 9px
+  text-align: center
+  text-shadow(0 1px 0 #fff)
+  width: 150px
+
+div#never-button:hover
+  background: #d9d9d9
+  box-shadow(inset 0 0 1px 1px #eaeaea)
+  color: #222
+  cursor: pointer
+
+div#never-button:active
+  background: #d0d0d0
+  box-shadow(inset 0 0 1px 1px #e3e3e3)
+  color: #000
+
+/*************************************************************/
+/********************  ALLOCATIONS    ************************/
+/******** styles for the mats and dice and in the mats *******/
+/*************************************************************/
+
+div#allocation_container
+  display: block
+  width: 100%
+  background: #0066AD
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 10px
+  border-radius(5px)
+  text-align: left
+  #dice_container
+    margin 0px 20px 0px 20px
+  ul#required li.dice
+    color: #FFFFFF
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+    border-color:#007BD1
+    background: #EC6A00
+    border-width: 8px
+  ul#optional li.dice
+    color: #FFFFFF
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+    border-color:#007BD1
+    background: #4FBA07
+    border-width: 8px
+  ul#forbidden li.dice
+    color: #FFFFFF
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+    border-color:#007BD1
+    background: red
+    border-width: 8px
+  ul#unallocated li.dice
+    color: #FFFFFF
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+    border-color:#007BD1
+    background: #777777
+    border-width: 8px
+
+
+
+$bubbleTipSize = 8px
+
+#move-allocation-menu
+  position: absolute
+  margin-top: $bubbleTipSize
+  display: block
+  width: 230px;
+  line-height: 20px;
+  padding: 10px;
+  font-size: 14px;
+  text-align: center;
+  color: rgb(113, 157, 171);
+  background: rgb(255, 255, 255);
+  border-radius: 5px;
+  text-shadow: rgba(0, 0, 0, 0.0976563) 1px 1px 1px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 2px 1px;
+  margin-left: -1 * (@width / 2)
+  span
+    font-family: $font-list
+    cursor: pointer
+  span#mamenu-required-btn
+    color: #FD4700
+    margin-right: 5px
+  span#mamenu-optional-btn
+    color: #52A25B
+    margin-right: 5px
+  span#mamenu-forbidden-btn
+    color: #FF0000
+
+#move-allocation-menu:after
+  content: ""
+  display: block
+  position: absolute
+  width: 0 
+  height: 0
+  border: $bubbleTipSize  transparent solid
+  border-bottom-color: #FFFFFF
+  bottom: -1 * $bubbleTipSize 
+  left: 50%
+  top: -2*$bubbleTipSize
+  margin-left: -1 * $bubbleTipSize
+
+
+/*************************************************************/
+/*********************  ANSWER AREA    ***********************/
+/***** styles for the rough answer area + the dice inside ****/
+/*************************************************************/
+
+#answer-area-container
+  #answer-area-toolbar ul
+    float:left
+    reset-box-model()
+    li 
+      background: #AAA
+      float: left
+      clear: left
+      display: inline-block
+      width: 20px
+
+ul#answers 
+  margin-left: -5px
+  li.dice
+    color: #FFFFFF
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+    border-color:#007BD1
+    background: #777777
+    border-width: 8px
+
+
+/*************************************************************/
+/*********************  SKETCH AREA    ***********************/
+/**** styles for the sketch/drawing area + the dice inside ***/
+/*************************************************************/
+
+
+#rough-area-container
+  width:100%
+  padding: 1px
+
+#rough-area-board 
+  display: block;
+  height: 100px;
+  margin: 10px;
+  background: #005983;

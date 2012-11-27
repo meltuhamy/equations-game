@@ -1,0 +1,99 @@
+// ******************************************************
+// Styles for the goal screen and the goal waiting screen
+// ******************************************************
+
+@import 'main'
+// -----------
+
+
+div#goalmake,
+div#goalwait
+  background: #005896
+  border-radius(5px)
+  padding: 20px
+  h2
+    color: #FFFFFF
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+    
+  p
+    color: #7D879B
+
+div#goalmake
+  h2
+    margin-bottom: 0px
+  p
+    margin-bottom: 10px
+
+
+div#goalwait h2
+  margin-bottom: 5px
+
+
+div#allocation_container ul,
+ul#answers,
+ul#added-goal,
+ul#notadded-goal
+  display: inline-block
+  text-align: center
+  margin: 0px 10px 0px 0px
+  li.dice 
+    margin-right: -5px
+    border: 4px solid red
+    display: inline-block
+    text-align: center
+    background: #CCC
+    width: $dicewidth = 30px
+    height: $dicewidth
+    span
+      font-family: $font-list
+      font-size: 20px
+      padding-top: 4px;
+      line-height: $dicewidth;
+
+  li.dot
+    font-size: 35px
+    color: #F8C627
+    font-weight: bold
+    display: inline-block
+    text-shadow: rgba(0, 0, 0, 0.3) 0px 2px 0px
+    width: 15px
+    height: 30px
+    line-height: 16px
+    margin-left: 5px
+    border: 8px solid transparent
+
+  li.dot[data-bracket='none'] span:after
+    content: '.'
+
+  li.dot[data-bracket='left'] span:after
+    content: '('
+
+  li.dot[data-bracket='right'] span:after
+    content: ')'
+
+
+
+ul#notadded-goal li.dice
+  color: #FFFFFF
+  text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+  border-color:#007BD1
+  background: #777777
+  border-width: 8px
+  margin-bottom: 5px
+
+ul#added-goal li.dice
+  color: #FFFFFF
+  text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+  border-color:#007BD1
+  background: #777777
+  margin-bottom: 15px
+
+button#sendgoal
+  padding: 7px 30px
+  border-color:#007BD1
+  color: #FFFFFF
+  background: #007BD1
+  text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+  font-weight: bold
+  border-radius(5px)
+  cursor: pointer
