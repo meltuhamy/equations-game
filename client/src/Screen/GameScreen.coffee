@@ -192,6 +192,7 @@ class GameScreen extends Screen
     $("#goal-dice-ctnr").html(DiceFace.listToHtml(Game.getGoalValues()))
 
 
+  colorDice: () ->
 
 
 
@@ -199,20 +200,20 @@ class GameScreen extends Screen
   addDiceToAnswerArea: (index) ->
     # Only let him add dice to the area if his brackets are complete
     # and if the dice hasn't already been added
-    
     if(@equationBuilder.hasCompletedBrackets() && $.inArray(index, @answerAreaDice) is -1)
-      @answerAreaDice.push(index) 
       thisReference = this
-      # Work out the dice we want to add to the answer area based on index
+      # Work out dice face from global dice array then make the html. add to list. add to dom
+      @answerAreaDice.push(index)
       diceFace = DiceFace.faceToHtml(Game.globalDice[index])
       html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
       # Add it to the answers
       $(@equationBuilder.addDiceToEnd(html)).bind 'click', (event) ->
-
-        thisReference.removeDiceFromAnswerArea($(this).data('index'));
+        pos = $('li.dice[data-index="#{index}"]').index('ul#answers')
+        thisReference.removeDiceFromAnswerArea(pos, $(this).data('index'));
     
 
-  removeDiceFromAnswerArea: (index) ->
+  removeDiceFromAnswerArea: (pos, index) ->
+    @answerAreaDice.splice(pos, 1)
     removedElement = @equationBuilder.removeDiceByIndex(index)
 
 
