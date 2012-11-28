@@ -30,7 +30,7 @@ class GameScreen extends Screen
     @drawGoal()
     @drawDiceAllocations()
     @equationBuilder = new EquationBuilder('#answers')
-    @currentContext = @Contexts.Neutral
+    @revertNeutralContext()
 
   
   ###*
@@ -40,7 +40,7 @@ class GameScreen extends Screen
    * @param  {Function} mouse A event handler for document click 
   ###
   changeToContext: (contextId, onChange, mouse) ->
-    if(contextOnChange?) then contextOnChange()
+    if(@contextChangeCallback?) then @contextChangeCallback()
     $("#container").unbind("click")
     if(mouse) then $("#container").bind("click", mouse)
     @contextChangeCallback = onChange
@@ -54,6 +54,7 @@ class GameScreen extends Screen
     $("#container").unbind("click")
     @contextChangeCallback = undefined
     currentContext = @Contexts.Neutral
+    
 
 
   ###*
@@ -61,7 +62,6 @@ class GameScreen extends Screen
   ###
   onUpdatedState:() ->
     @drawDiceAllocations()
-
 
 
   ###*
@@ -111,33 +111,57 @@ class GameScreen extends Screen
     thisReference = this
     resourceList = $('#unallocated li')
     resourceList.bind 'click', (event) ->
-      thisReference.drawAllocationMoveMenu(this);
+      thisReference.allocMenuContext(this)
+    $('#answer-add-dice-btn').bind 'click', (event) ->
+      thisReference.addAddAnsDiceContext()
+
+  allocMenuContext: (element) ->
+    if(Game.isMyTurn())
+      @changeToContext(@Contexts.AddAnsDice, @allocMenuContextChange)
+      @drawAllocationMoveMenu(element)
+
+  allocMenuContextChange: () ->
+    @removeAllocationMoveMenu()
+
+  addAddAnsDiceContext: () ->
+    thisReference = this
+    @changeToContext(@Contexts.AddAnsDice, @addAddAnsDiceContextChange)
+    $('#answer-add-dice-btn').css('background', 'black')
+    $('#answer-add-dice-btn').bind 'click', (event) ->
+      thisReference.revertNeutralContext()
+
+  addAddAnsDiceContextChange: () ->
+    $('#answer-add-dice-btn').css('background', '')
+
+ 
+
+
+
 
   ###*
    * Draws the bubble-menu for letting the user choose where to move the dice they clickedOn
    * @param  {HMTLLiEntity} clickedOn The html li element (diceface) they clicked on
   ###
   drawAllocationMoveMenuButtons: (clickedOn) ->
+    
     @removeAllocationMoveMenu() # Need to remove the menu to create a new one.
     # If its our turn, then open the menu else, .... for now do nothing..
-    if(Game.isMyTurn())
-      @changeToContext(@Contexts.AllocMenu, @removeAllocationMoveMenu)
-    
-      #Create the new allocation menu
-      html = '<div id="move-allocation-menu">
-        <span id="mamenu-required-btn">Required</span>
-        <span id="mamenu-optional-btn">Optional</span>
-        <span id="mamenu-forbidden-btn">Forbidden</span>
-        </div>'
-      $('#container').append(html)
+  
+    #Create the new allocation menu
+    html = '<div id="move-allocation-menu">
+      <span id="mamenu-required-btn">Required</span>
+      <span id="mamenu-optional-btn">Optional</span>
+      <span id="mamenu-forbidden-btn">Forbidden</span>
+      </div>'
+    $('#container').append(html)
 
-      #In general, remove the allocation menu one someone clicks any of the buttons
-      $("#move-allocation-menu span").click(=>@removeAllocationMoveMenu())
+    #In general, remove the allocation menu one someone clicks any of the buttons
+    $("#move-allocation-menu span").click(=>@removeAllocationMoveMenu())
 
-      #Add event listener for each of the "required" "optional" and "forbidden" buttons inside the menu
-      $("#mamenu-required-btn").click(=> Network.moveToRequired($('#unallocated li').index($(clickedOn))))
-      $("#mamenu-optional-btn").click(=>Network.moveToOptional($('#unallocated li').index($(clickedOn))))
-      $("#mamenu-forbidden-btn").click(=>Network.moveToForbidden($('#unallocated li').index($(clickedOn))))
+    #Add event listener for each of the "required" "optional" and "forbidden" buttons inside the menu
+    $("#mamenu-required-btn").click(=> Network.moveToRequired($('#unallocated li').index($(clickedOn))))
+    $("#mamenu-optional-btn").click(=>Network.moveToOptional($('#unallocated li').index($(clickedOn))))
+    $("#mamenu-forbidden-btn").click(=>Network.moveToForbidden($('#unallocated li').index($(clickedOn))))
 
 
 
@@ -158,7 +182,17 @@ class GameScreen extends Screen
   removeAllocationMoveMenu: ()->
     allocMenu = $('#move-allocation-menu')
     $('#move-allocation-menu').remove() if allocMenu.length > 0
-    @revertNeutralContext()
+
+
+
+
+  ###*
+   * [addDiceContext description]
+  ###
+  #addDiceContext: () ->
+
+    
+
 
 
   ###*
