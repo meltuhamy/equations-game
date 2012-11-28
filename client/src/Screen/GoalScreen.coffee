@@ -42,7 +42,7 @@ class GoalScreen extends Screen
     goalArray = []
     for d in $('#added-goal li')
       if($(d).hasClass('dice'))
-        goalArray.push ($(d).data('index')) 
+        goalArray.push (parseInt($(d).data('index'))) 
       else if($(d).hasClass('dot'))
         if($(d).attr('data-bracket') is 'left')
           goalArray.push (-1)

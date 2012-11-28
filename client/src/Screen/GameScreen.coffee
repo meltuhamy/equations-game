@@ -109,6 +109,7 @@ class GameScreen extends Screen
       thisReference.addAddAnsDiceContext()
 
     @drawPlayerList()
+    @recolorAnswerDice()
 
   neutralContextChange: () ->
     #$('#unallocated li').unbind('click')
@@ -139,12 +140,11 @@ class GameScreen extends Screen
       thisReference.neutralContext()
     $('#unallocated li').unbind ('click')
     $('#unallocated li').bind 'click', (event) ->
-      thisReference.addDiceToAnswerArea($(this).attr('data-index'))
+      thisReference.addDiceToAnswerArea(parseInt($(this).attr('data-index')))
 
 
   addAddAnsDiceContextChange: () ->
     $('#answer-add-dice-btn').css('background', '')
-
 
  
   ###*
@@ -183,7 +183,6 @@ class GameScreen extends Screen
 
 
 
-
   ###*
    * We received the goal of dice. This method takes in the array of dice numbers
    * to displays them in the dom. 
@@ -192,9 +191,21 @@ class GameScreen extends Screen
     $("#goal-dice-ctnr").html(DiceFace.listToHtml(Game.getGoalValues()))
 
 
-  colorDice: () ->
 
-
+  recolorAnswerDice: () ->
+    for a in @answerAreaDice
+      for x in Game.state.unallocated
+        console.log "COLOR1"
+        if (a == x) then $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', 'unallocated')
+      for x in Game.state.required
+        console.log "COLOR2"
+        if (a == x) then $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', 'required')
+      for x in Game.state.optional
+        console.log "COLOR3"
+        if (a == x) then $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', 'optional')
+      for x in Game.state.forbidden
+        console.log "COLOR4"
+        if (a == x) then $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', 'forbidden')
 
 
   addDiceToAnswerArea: (index) ->
@@ -208,16 +219,11 @@ class GameScreen extends Screen
       html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
       # Add it to the answers
       $(@equationBuilder.addDiceToEnd(html)).bind 'click', (event) ->
-        pos = $('li.dice[data-index="#{index}"]').index('ul#answers')
+        pos = $('li.dice[data-index="#{index}"]').index('ul#answers li')
         thisReference.removeDiceFromAnswerArea(pos, $(this).data('index'));
-    
+      @recolorAnswerDice()
+
 
   removeDiceFromAnswerArea: (pos, index) ->
     @answerAreaDice.splice(pos, 1)
     removedElement = @equationBuilder.removeDiceByIndex(index)
-
-
-
-  
-
-
