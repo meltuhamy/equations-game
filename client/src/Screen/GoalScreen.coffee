@@ -39,19 +39,8 @@ class GoalScreen extends Screen
    * @return {Integer} Each element is an index to the original global dice array
   ###
   createGoalArray: () ->
-    goalArray = []
-    for d in $('#added-goal li')
-      if($(d).hasClass('dice'))
-        goalArray.push (parseInt($(d).data('index'))) 
-      else if($(d).hasClass('dot'))
-        if($(d).attr('data-bracket') is 'left')
-          goalArray.push (-1)
-        else if($(d).attr('data-bracket') is 'right')
-          goalArray.push (-2)
-    return goalArray
+    return @equationBuilder.getIndicesToGlobalDice()
 
-
-  
 
 
   ###*

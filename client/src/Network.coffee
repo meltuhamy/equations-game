@@ -23,22 +23,27 @@ class Network
    * Tell the server that we want to move a dice from unallocated to required
    * @param  {Integer} The index of the diceface within the unallocated array
   ###
-  @moveToRequired : (index) ->
+  @moveToRequired: (index) ->
     now.moveToRequired(index)
 
-  @moveToOptional : (index) ->
+  @moveToOptional: (index) ->
     now.moveToOptional(index)
 
-  @moveToForbidden : (index) ->
+  @moveToForbidden: (index) ->
     now.moveToForbidden(index)
 
   # It wasn't our turn previously. Tell the server we want to make a now challenge
-  @sendNowChallengeRequest : () ->
+  @sendNowChallengeRequest: () ->
     now.nowChallengeRequest()
 
   # Tell the server our decision for the now challenge. isPossible=true if we think is possible
-  @sendNowChallengeDecision : (isPossible) ->
+  @sendNowChallengeDecision: (isPossible) ->
     now.nowChallengeDecision(isPossible)
+
+  @sendNowChallengeSolution: (answer) ->
+    console.log answer
+    now.nowChallengeSolution(answer)
+
 
 
 
@@ -114,8 +119,8 @@ now.receiveNowChallengeDecideTurn = (challengerId) ->
  * Now that the decision making has finished, ppl who agree send solutions.
  * @param  {Number} challengerId The id if the challenge
 ###
-now.receiveNowChallengeSolutionsTurn = (challengerId) ->
-  Game.receiveNowChallengeDecideTurn(challengerId)
+now.receiveNowChallengeSolutionsTurn = ->
+  Game.receiveNowChallengeSolutionsTurn()
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
 
@@ -142,11 +147,10 @@ now.receiveNowChallengeSolutionsTurn = (challengerId) ->
 
 
 now.badMove = (serverMessage) ->
-  alert(serverMessage)
+  console.warn(serverMessage)
 
 now.badGoal = (parserMessage) ->
   #do something here to show which part of the goal is malformed
-  console.log "Bad goal:"
   console.warn parserMessage
 
 

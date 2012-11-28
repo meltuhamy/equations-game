@@ -130,10 +130,18 @@ everyone.now.nowChallengeDecision = (isPossible) ->
     if(isPossible) then game.submitPossible(this.user.clientId)
     if(!isPossible) then game.submitImpossible(this.user.clientId)
     group.now.receiveState(game.state)
+    if(game.checkAllDecisionsMade()) then group.now.receiveNowChallengeSolutionsTurn()
   catch e
     this.now.badMove(e)
 
 
+everyone.now.nowChallengeSolution = (answer) ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
+  try
+    game.submitSolution(this.user.clientId, answer)
+  catch e
+    this.now.badMove(e)
+  
 
 
 everyone.now.logStuff = (message) ->

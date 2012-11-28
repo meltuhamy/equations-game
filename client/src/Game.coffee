@@ -30,16 +30,23 @@ class Game
   @isChallengeDecideTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeDecide
   @isChallengeSolutionTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeSolution
   @isChallengeCheckTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeCheck
+  @agreesWithChallenge: () -> @myPlayerId in @state.possiblePlayers
  
   # {Json} The json of the current state of the game and what type each dice is.
   # unallocated, required, optional, forbidden are arrays of dicefaces.
   # currentPlayer is the index of the player whose turn it currently is
-  @state: 
+  @state:
     unallocated: []
     required: []
     optional: []
     forbidden: []
+    # index of player whose turn it is. incremented after each resource move
     currentPlayer: 0
+    # {Number[]} array of indices to player array of the players who think now challenge possible
+    possiblePlayers: []
+    # {Number[]} array of indices to player array of the players who think now challenge not possible
+    impossiblePlayers: []
+
 
   ###*
    * Initialise the game. Add screens. Called localled on page load.
@@ -62,7 +69,7 @@ class Game
     # be updated accordingly on subsequent turns.
     @players = players
     @firstTurnPlayerIndex = firstTurnPlayerId
-    @state.currentplayer = firstTurnPlayerId
+    @state.currentPlayer = firstTurnPlayerId
     @globalDice = globalDice
     # Am I the player chosen to set the goal? 
     # Yes: show goal setting screen. No: show goal wait screen.
@@ -80,13 +87,10 @@ class Game
     @currentChallengeStage = @ChallengeStages.ChallengeDecide
     @challengerId = challengerId
 
-  ###*
-   * Update everyone with a new decision that somebody make.
-   * @param  {Number} challengerId The id if the player who made a decision
-   * @param  {Number} isPossible Whether it is true or not
-  ###
-  @receiveNowChallengeDecision: (clientid, isPossible) ->
 
+  # Time for players to submit solutions.
+  @receiveNowChallengeSolutionsTurn: () ->
+    @currentChallengeStage = @ChallengeStages.ChallengeSolution
 
 
 

@@ -70,6 +70,20 @@ class EquationBuilder
   getNumberOfDice: () -> @numberInGoal
 
 
+  getIndicesToGlobalDice: () ->
+    result = []
+    for d in $(@containerSelector + ' li')
+      if($(d).hasClass('dice'))
+        result.push (parseInt($(d).data('index'))) 
+      else if($(d).hasClass('dot'))
+        if($(d).attr('data-bracket') is 'left')
+          result.push (-1)
+        else if($(d).attr('data-bracket') is 'right')
+          result.push (-2)
+    return result
+
+
+
   ###*
    * Adds the a dot to the dom before or after an element. It adds the dotlistener click handler.
    * @param  {boolean} appendPrepend If true, appends to element. False prepends to element.

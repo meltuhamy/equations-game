@@ -45,7 +45,12 @@ class Game
 
   rightAnswers: []
 
-
+  ###*
+   * The game state.
+   * **************
+   * IF YOU CHANGE THIS, CHANGE client/Game.coffee
+   * **************
+  ###
   state:
     unallocated: []
     required: []
@@ -203,7 +208,7 @@ class Game
     @state.currentPlayer = (@state.currentPlayer+1)%@players.length
 
 
-  moveToRequired: (index, clientId) ->
+  checkValidAllocationMove: (index, clientId) ->
     if @challengeMode
       throw "Can't move during challenge mode"
     if !@goalHasBeenSet()
@@ -212,35 +217,22 @@ class Game
       throw "Not your turn"
     else if index < 0 || index >= @state.unallocated.length
       throw "Index for move out of bounds"
-    else
+    else true
+
+  moveToRequired: (index, clientId) ->
+    if(@checkValidAllocationMove(index, clientId))
       @state.required.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
       @nextTurn()
 
   moveToOptional: (index, clientId) ->
-    if @challengeMode
-      throw "Can't move during challenge mode"
-    if !@goalHasBeenSet()
-      throw "Can't move yet, goal has not been set"
-    if !@authenticateMove(clientId)
-      throw "Not your turn"
-    else if index < 0 || index >= @state.unallocated.length
-      throw "Index for move out of bounds"
-    else
+   if(@checkValidAllocationMove(index, clientId))
       @state.optional.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
       @nextTurn()
 
   moveToForbidden: (index, clientId) ->
-    if @challengeMode
-      throw "Can't move during challenge mode"
-    if !@goalHasBeenSet()
-      throw "Can't move yet, goal has not been set"
-    if !@authenticateMove(clientId)
-      throw "Not your turn"
-    else if index < 0 || index >= @state.unallocated.length
-      throw "Index for move out of bounds"
-    else
+    if(@checkValidAllocationMove(index, clientId))
       @state.forbidden.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
       @nextTurn()
@@ -268,26 +260,73 @@ class Game
     if (clientId in @state.possiblePlayers) || (clientId in @state.impossiblePlayers)
       throw "Already stated your opinion"
 
+  # Check if everyone has submitted their decisions for the decision making turn
+  checkAllDecisionsMade:() -> (@players.length == (@state.possiblePlayers.length + @state.impossiblePlayers.length))
 
-  submitSolution: (clientId, solutionArray) ->
+
+
+
+  ###*
+   * @param  {[type]} clientId      [description]
+   * @param  {[type]} dice An array of indices to the globalArray for the answer.
+  ###
+  submitSolution: (socketId, dice) ->
+    console.log "GAME SERVER DICE"
+    console.log dice
+
     if !@challengeMode
       throw "Not in challenge mode"
-    if !(clientId in @state.possiblePlayers)
+    if !(@getPlayerIdBySocket(socketId) in @state.possiblePlayers)
       throw "Client not in 'possible' list"
-    @submittedSolutions[@playerSocketIds.indexOf(clientId)] = solutionArray
-    if @submittedSolutions.length == @state.possiblePlayers.length
-      @evaluateSolutions()
-      #@challengeMode = false
 
-  evaluateSolutions: () ->
+    # Check if the solution submitted is valid
+    diceValues = []
+    numGlobalDice = @globalDice.length
+    for i in [0 ... dice.length]
+      for j in [i+1 ... dice.length]
+        if (dice[i] < -2  || dice[i] >= numGlobalDice) then throw "Solution has out of bounds array index"
+        if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then throw "Solution uses duplicate dice"
+      if dice[i] == -1
+        diceValues.push(DICEFACESYMBOLS.bracketL)
+      else if dice[i] == -2
+        diceValues.push(DICEFACESYMBOLS.bracketR)
+      else
+        diceValues.push(@globalDice[dice[i]])
+
+
+    console.log diceValues
+
+    # TODO: Now check that they use dice from the mats accordingly.
+
+    # Everything ok-doky index wise. Now let's check it parses and gives the same value.
+
     e = new Evaluator
     p = new ExpressionParser
-    goalValue = e.evaluate(@goalTree)
-    for i in [0...@submittedSolutions.length]
-      submissionValue = e.evaluate(p.parse(@submittedSolutions[i]))
-      if goalValue == submissionValue
-        @rightAnswers[i]=true
-      else
-        @rightAnswers[i]=false
+    # TODO separate out and wrap in try catch
+    submissionValue = e.evaluate(p.parse(diceValues))
+
+    console.log "SUBMITTED VALUE"
+    console.log submissionValue
+
+
+    # Ok it does. So add it to the submitted solutions list
+    @rightAnswers[i] = (goalValue == submissionValue)
+    @submittedSolutions[@playerSocketIds.indexOf(clientId)] = dice
+    
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+      
 
 module.exports.Game = Game

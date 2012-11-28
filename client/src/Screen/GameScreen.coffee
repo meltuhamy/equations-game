@@ -127,7 +127,16 @@ class GameScreen extends Screen
     if(Game.challengeMode)
       decideHtml = '<span id="challenge-agree-btn">Agree</span> <span id="challenge-disagree-btn">Disagree</span>'
       if(Game.isChallengeDecideTurn()) then $('#turn-notification').html('Select if you agree: ' + decideHtml)
-      if(Game.isChallengeSolutionTurn()) then $('#turn-notification').html('Submitting solutions time')
+      if(Game.isChallengeSolutionTurn())
+        if(Game.agreesWithChallenge())
+          $('#turn-notification').html('Submitting solutions time')
+          $('#answer-submit-btn').show()
+          $('#answer-submit-btn').bind 'click', (event) ->
+            thisReference.submitAnswer()
+
+
+
+
       $('#challenge-agree-btn').bind 'click', (event) ->
         Network.sendNowChallengeDecision(true)
       $('#challenge-disagree-btn').bind 'click', (event) ->
@@ -229,16 +238,12 @@ class GameScreen extends Screen
   recolorAnswerDice: () ->
     for a in @answerAreaDice
       for x in Game.state.unallocated
-        console.log "COLOR1"
         if (a == x) then $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', 'unallocated')
       for x in Game.state.required
-        console.log "COLOR2"
         if (a == x) then $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', 'required')
       for x in Game.state.optional
-        console.log "COLOR3"
         if (a == x) then $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', 'optional')
       for x in Game.state.forbidden
-        console.log "COLOR4"
         if (a == x) then $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', 'forbidden')
 
 
@@ -257,7 +262,10 @@ class GameScreen extends Screen
         thisReference.removeDiceFromAnswerArea(pos, $(this).data('index'));
       @recolorAnswerDice()
 
-
   removeDiceFromAnswerArea: (pos, index) ->
     @answerAreaDice.splice(pos, 1)
     removedElement = @equationBuilder.removeDiceByIndex(index)
+
+  submitAnswer: () ->
+    answer = @equationBuilder.getIndicesToGlobalDice()
+    Network.sendNowChallengeSolution(answer)
