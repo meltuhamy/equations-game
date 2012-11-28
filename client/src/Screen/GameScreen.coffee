@@ -19,6 +19,9 @@ class GameScreen extends Screen
   currentContext: undefined
   contextChangeCallback: undefined
 
+  # {Number[]} An array of indices to the globalDice array of dice in answer area.
+  answerAreaDice: []
+
 
   constructor: () -> 
 
@@ -191,15 +194,21 @@ class GameScreen extends Screen
 
 
 
+
+
   addDiceToAnswerArea: (index) ->
-    if(@equationBuilder.hasCompletedBrackets()) 
+    # Only let him add dice to the area if his brackets are complete
+    # and if the dice hasn't already been added
+    
+    if(@equationBuilder.hasCompletedBrackets() && $.inArray(index, @answerAreaDice) is -1)
+      @answerAreaDice.push(index) 
       thisReference = this
       # Work out the dice we want to add to the answer area based on index
       diceFace = DiceFace.faceToHtml(Game.globalDice[index])
       html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
       # Add it to the answers
       $(@equationBuilder.addDiceToEnd(html)).bind 'click', (event) ->
-        
+
         thisReference.removeDiceFromAnswerArea($(this).data('index'));
     
 
