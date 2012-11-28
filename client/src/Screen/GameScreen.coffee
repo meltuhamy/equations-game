@@ -125,8 +125,14 @@ class GameScreen extends Screen
     $('#unallocated li').unbind('click') 
 
     if(Game.challengeMode)
-      if(Game.isChallengeDecideTurn()) then $('#turn-notification').html('Select if you agree:')
+      decideHtml = '<span id="challenge-agree-btn">Agree</span> <span id="challenge-disagree-btn">Disagree</span>'
+      if(Game.isChallengeDecideTurn()) then $('#turn-notification').html('Select if you agree: ' + decideHtml)
       if(Game.isChallengeSolutionTurn()) then $('#turn-notification').html('Submitting solutions time')
+      $('#challenge-agree-btn').bind 'click', (event) ->
+        Network.sendNowChallengeDecision(true)
+      $('#challenge-disagree-btn').bind 'click', (event) ->
+        Network.sendNowChallengeDecision(false)
+
     else
       $('#answer-submit-btn').hide()
       $('#unallocated li').bind 'click', (event) ->

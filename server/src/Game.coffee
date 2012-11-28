@@ -33,30 +33,32 @@ class Game
   # {Number} The dice that will be used throughout the game. An array of diceface magic numbers.
   globalDice: []
 
-
   # {Boolean} Has the turn taking halted for a challenge?
   challengeMode: false
 
   # {Number} the index of the player array for the challenger
   challenger: undefined
 
-  # {Number[]} array of indices to player array of the players who think now challenge possible
-  possiblePlayers: []
-
-  # {Number[]} array of indices to player array of the players who think now challenge not possible
-  impossiblePlayers: []
-
   
+
   submittedSolutions: []
 
   rightAnswers: []
+
 
   state:
     unallocated: []
     required: []
     optional: []
     forbidden: []
-    currentPlayer: 0 #this tells us the index of the player who's turn it is, and is automatically incremented after each resource move
+    # index of player whose turn it is. incremented after each resource move
+    currentPlayer: 0
+    # {Number[]} array of indices to player array of the players who think now challenge possible
+    possiblePlayers: []
+    # {Number[]} array of indices to player array of the players who think now challenge not possible
+    impossiblePlayers: []
+
+
   
   constructor: (players, gameNumber, gameSize) ->
     @players = players
@@ -70,6 +72,8 @@ class Game
 
 
   setUnallocated: (array) ->
+
+  getPlayerIdBySocket: (socket) -> @playerSocketIds.indexOf(socket)
 
 
   ###*
@@ -246,34 +250,32 @@ class Game
    * @param  {Integer} clientId The nowjs unqiue id for client
   ###
   nowChallenge: (clientId) ->
-    if @challengeMode
-      throw "Can't challenge during challenge mode"
-    if !@validateChallenge(clientId)
-      throw "Can't make challenge, you've just moved"
     @challengeMode = true
     @challenger = clientId
+    @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
 
   submitPossible: (clientId) ->
-    if !@challengeMode
-      throw "Can't submit opinion, not currently challenge mode"
-    if (clientId in @possiblePlayers) || (clientId in @impossiblePlayers) || (clientId == @challenger)
-      throw "Already stated your opinion"
-    @possiblePlayers.push(clientId)
+    @checkChallegeDecision()
+    @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
 
   submitImpossible: (clientId) ->
+    @checkChallegeDecision()
+    @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
+
+  checkChallegeDecision:(clientId) ->
     if !@challengeMode
       throw "Can't submit opinion, not currently challenge mode"
-    if (clientId in @possiblePlayers) || (clientId in @impossiblePlayers) || (clientId == @challenger)
+    if (clientId in @state.possiblePlayers) || (clientId in @state.impossiblePlayers)
       throw "Already stated your opinion"
-    @impossiblePlayers.push(clientId)
+
 
   submitSolution: (clientId, solutionArray) ->
     if !@challengeMode
       throw "Not in challenge mode"
-    if !(clientId in @possiblePlayers)
+    if !(clientId in @state.possiblePlayers)
       throw "Client not in 'possible' list"
     @submittedSolutions[@playerSocketIds.indexOf(clientId)] = solutionArray
-    if @submittedSolutions.length == @possiblePlayers.length
+    if @submittedSolutions.length == @state.possiblePlayers.length
       @evaluateSolutions()
       #@challengeMode = false
 

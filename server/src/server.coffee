@@ -122,13 +122,14 @@ everyone.now.nowChallengeRequest = () ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   game.nowChallenge(this.user.clientId)
   group.now.receiveNowChallengeDecideTurn(this.user.clientId)
+  group.now.receiveState(game.state)
 
 everyone.now.nowChallengeDecision = (isPossible) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   try
     if(isPossible) then game.submitPossible(this.user.clientId)
     if(!isPossible) then game.submitImpossible(this.user.clientId)
-    group.now.receiveNowChallengeDecision(this.user.clientId, isPossible)
+    group.now.receiveState(game.state)
   catch e
     this.now.badMove(e)
 

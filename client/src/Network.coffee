@@ -109,15 +109,6 @@ now.receiveNowChallengeDecideTurn = (challengerId) ->
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
 
-###*
- * Update everyone with a new decision that somebody make.
- * @param  {Number} challengerId The id if the player who made a decision
- * @param  {Number} isPossible Whether it is true or not
-###
-now.receiveNowChallengeDecision = (clientid, isPossible) ->
-  Game.receiveNowChallengeDecision(clientid, challengerId)
-  ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
-
 
 ###*
  * Now that the decision making has finished, ppl who agree send solutions.
