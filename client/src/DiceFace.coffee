@@ -43,14 +43,13 @@ class DiceFace
    * @param  {Boolean} showIndexData Whether to add the attribute data-index to each li
    * @return {String}         A string with the html containing li's
   ###
-  @listToHtmlByIndex: (diceFaces, indices, showIndexData, showRefData) ->
+  @listToHtmlByIndex: (diceFaces, indices, showIndexData) ->
     html = ''
     indexCounter = 0
     for i in indices
       face = diceFaces[i]
-      dataIndex = if (showIndexData) then " data-index='#{indexCounter}'" else ""
-      dataRef = if (showRefData) then " data-ref='#{i}'" else ""
-      html += "<li class='dice'" + dataIndex + dataRef + "><span>#{@faceToHtml(face)}<span></li>" 
+      dataIndex = if (showIndexData?) then " data-index='#{i}'" else ""
+      html += "<li class='dice'" + dataIndex + "><span>#{@faceToHtml(face)}<span></li>" 
       indexCounter++
     return html
 
