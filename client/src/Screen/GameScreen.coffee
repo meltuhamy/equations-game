@@ -198,9 +198,16 @@ class GameScreen extends Screen
       diceFace = DiceFace.faceToHtml(Game.globalDice[index])
       html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
       # Add it to the answers
-      @equationBuilder.addDiceToEnd(html)
+      $(@equationBuilder.addDiceToEnd(html)).bind 'click', (event) ->
+        
+        thisReference.removeDiceFromAnswerArea($(this).data('index'));
     
 
+  removeDiceFromAnswerArea: (index) ->
+    removedElement = @equationBuilder.removeDiceByIndex(index)
 
-  removeDiceFromAnswerArea: () ->
+
+
+  
+
 
