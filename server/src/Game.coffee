@@ -241,6 +241,10 @@ class Game
       @state.unallocated.splice(index, 1)
       @nextTurn()
 
+  ###*
+   * Attempt to g into the decide stage of a now challenge.
+   * @param  {Integer} clientId The nowjs unqiue id for client
+  ###
   nowChallenge: (clientId) ->
     if @challengeMode
       throw "Can't challenge during challenge mode"

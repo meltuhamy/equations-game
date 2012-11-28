@@ -57,9 +57,8 @@ class GameScreen extends Screen
 
 
   nowButtonHandler: () ->
-    if not @challengeMode
-      @challengeMode = true
-      Network.nowChallenge()
+    if not Game.challengeMode
+      Network.sendNowChallengeRequest()
 
   #neverButtonHandler: () ->
 
@@ -73,6 +72,12 @@ class GameScreen extends Screen
   ###
   onUpdatedState:() ->
     @neutralContext()
+    if(Game.challengeMode)
+      $('#container').attr('data-challenge', 'now')
+      $('#container').attr('data-glow', 'on')
+      $('#now-button').hide()
+      $('#never-button').hide()
+
 
    
 
@@ -117,9 +122,15 @@ class GameScreen extends Screen
     $("#unallocated").html(DiceFace.listToHtmlByIndex(Game.globalDice, Game.getState().unallocated, true))
 
     thisReference = this 
-    $('#unallocated li').unbind('click')
-    $('#unallocated li').bind 'click', (event) ->
-      thisReference.allocMenuContext(this)
+    $('#unallocated li').unbind('click') 
+
+    if(Game.challengeMode)
+      if(Game.isChallengeDecideTurn()) then $('#turn-notification').html('Select if you agree:')
+      if(Game.isChallengeSolutionTurn()) then $('#turn-notification').html('Submitting solutions time')
+    else
+      $('#answer-submit-btn').hide()
+      $('#unallocated li').bind 'click', (event) ->
+        thisReference.allocMenuContext(this)
 
     $('#answer-add-dice-btn').unbind('click')
     $('#answer-add-dice-btn').bind 'click', (event) ->

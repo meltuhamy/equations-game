@@ -21,6 +21,15 @@ class Game
   # {Number} The dice that will be used throughout the game. An array of diceface magic numbers.
   @globalDice: []
 
+  # {Boolean} the index of the player array for the challenger
+  @challengeMode: false
+  @currentChallengeStage: undefined
+  @ChallengeStages: {ChallengeOff: 0, ChallengeDecide:1, ChallengeSolution:2, ChallengeCheck:3}
+
+  # Just some functions for everyone to ask us what is going on the challenge?
+  @isChallengeDecideTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeDecide
+  @isChallengeSolutionTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeSolution
+  @isChallengeCheckTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeCheck
  
   # {Json} The json of the current state of the game and what type each dice is.
   # unallocated, required, optional, forbidden are arrays of dicefaces.
@@ -45,8 +54,8 @@ class Game
   ###*
    * When all the players have joined, it's time to begin. Server call this.
    * @param  {Player[]} players  An array of player objects sent over nowjs (a bit dodgy)
-   * @param  {[type]} globalDice The global dice for the game.
-   * @param  {[type]} firstTurnPlayerId The index to players array of the player who is setting goal.
+   * @param  {Integer[]} globalDice The global dice for the game.
+   * @param  {Integer} firstTurnPlayerId The index to players array of the player who is setting goal.
   ###
   @goalTurn: (players, globalDice, firstTurnPlayerId) ->
     # Set some state variables used for the first turn and will 
@@ -61,6 +70,31 @@ class Game
       ScreenSystem.renderScreen(Game.goalScreenId, {globalDice: globalDice})
     else
       ScreenSystem.renderScreen(Game.gameWaitScreenId)
+
+  ###*
+   * Time for the players to choose if they agree with challenge.
+   * @param  {Integer} challengerId The challenger
+  ###
+  @receiveNowChallengeDecideTurn: (challengerId) ->
+    @challengeMode = true
+    @currentChallengeStage = @ChallengeStages.ChallengeDecide
+    @challengerId = challengerId
+
+  ###*
+   * Update everyone with a new decision that somebody make.
+   * @param  {Number} challengerId The id if the player who made a decision
+   * @param  {Number} isPossible Whether it is true or not
+  ###
+  @receiveNowChallengeDecision: (clientid, isPossible) ->
+
+
+
+
+
+
+
+
+
 
 
   ###*

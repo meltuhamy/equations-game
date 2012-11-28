@@ -118,12 +118,21 @@ everyone.now.moveToForbidden = (index) ->
     this.now.badMove(e)
   
 
-everyone.now.nowChallenge = () ->
+everyone.now.nowChallengeRequest = () ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
+  game.nowChallenge(this.user.clientId)
+  group.now.receiveNowChallengeDecideTurn(this.user.clientId)
+
+everyone.now.nowChallengeDecision = (isPossible) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   try
-    game.nowChallenge(this.user.clientId)
+    if(isPossible) then game.submitPossible(this.user.clientId)
+    if(!isPossible) then game.submitImpossible(this.user.clientId)
+    group.now.receiveNowChallengeDecision(this.user.clientId, isPossible)
   catch e
     this.now.badMove(e)
+
+
 
 
 everyone.now.logStuff = (message) ->

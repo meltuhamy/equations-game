@@ -32,12 +32,13 @@ class Network
   @moveToForbidden : (index) ->
     now.moveToForbidden(index)
 
+  # It wasn't our turn previously. Tell the server we want to make a now challenge
+  @sendNowChallengeRequest : () ->
+    now.nowChallengeRequest()
 
-  @nowChallenge : () ->
-    try
-      now.nowChallenge()
-    catch e
-      alert e
+  # Tell the server our decision for the now challenge. isPossible=true if we think is possible
+  @sendNowChallengeDecision : (isPossible) ->
+    now.nowChallengeDecision(isPossible)
 
 
 
@@ -96,6 +97,35 @@ now.receiveState = (state) ->
   Game.updateState(state)
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
+
+
+###*
+ * Tell everyone that the turn taking has ended. It's time for a now challenge.
+ * In this turn, the players must choose whether they agree or disagree.
+ * @param  {Number} challengerId The id if the challenge
+###
+now.receiveNowChallengeDecideTurn = (challengerId) ->
+  Game.receiveNowChallengeDecideTurn(challengerId)
+  ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
+
+
+###*
+ * Update everyone with a new decision that somebody make.
+ * @param  {Number} challengerId The id if the player who made a decision
+ * @param  {Number} isPossible Whether it is true or not
+###
+now.receiveNowChallengeDecision = (clientid, isPossible) ->
+  Game.receiveNowChallengeDecision(clientid, challengerId)
+  ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
+
+
+###*
+ * Now that the decision making has finished, ppl who agree send solutions.
+ * @param  {Number} challengerId The id if the challenge
+###
+now.receiveNowChallengeSolutionsTurn = (challengerId) ->
+  Game.receiveNowChallengeDecideTurn(challengerId)
+  ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
 
 
