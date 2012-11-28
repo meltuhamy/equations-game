@@ -117,7 +117,13 @@ everyone.now.moveToForbidden = (index) ->
   catch e
     this.now.badMove(e)
   
-#everyone.now.nowChallenge = () ->
+
+everyone.now.nowChallenge = () ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
+  try
+    game.nowChallenge(this.user.clientId)
+  catch e
+    this.now.badMove(e)
 
 
 everyone.now.logStuff = (message) ->

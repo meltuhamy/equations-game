@@ -10,6 +10,9 @@ class GameScreen extends Screen
   # {EquationBuilder} Used to build the draft answer.
   equationBuilder: undefined
 
+  # {Is the game currently in challenge mode}
+  challengeMode: false
+
 
   addingDice: false
 
@@ -33,6 +36,9 @@ class GameScreen extends Screen
     @drawGoal()
     @equationBuilder = new EquationBuilder('#answers')
     @neutralContext()
+    $("#now-button").bind("click", @nowButtonHandler)
+    $("#never-button").bind("click", @neverButtonHandler)
+
 
   
   ###*
@@ -47,6 +53,17 @@ class GameScreen extends Screen
     if(mouse) then $("#container").bind("click", mouse)
     if(onChange?) then @contextChangeCallback = onChange
     @currentContext = contextId
+
+
+
+  nowButtonHandler: () ->
+    if not @challengeMode
+      @challengeMode = true
+      Network.nowChallenge()
+
+  #neverButtonHandler: () ->
+
+
 
     
 

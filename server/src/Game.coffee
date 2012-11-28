@@ -30,20 +30,23 @@ class Game
   # {Boolean} True when the game has started (is full)
   started: false
 
-  challengeMode: false
-
-  #the index of the player array for the challenger
-  challenger: undefined
-
-
   # {Number} The dice that will be used throughout the game. An array of diceface magic numbers.
   globalDice: []
 
+
+  # {Boolean} Has the turn taking halted for a challenge?
+  challengeMode: false
+
+  # {Number} the index of the player array for the challenger
+  challenger: undefined
+
+  # {Number[]} array of indices to player array of the players who think now challenge possible
   possiblePlayers: []
 
-
+  # {Number[]} array of indices to player array of the players who think now challenge not possible
   impossiblePlayers: []
 
+  
   submittedSolutions: []
 
   rightAnswers: []
@@ -187,13 +190,13 @@ class Game
     (socketId == @playerSocketIds[@state.currentPlayer])
 
   validateChallenge: (socketId) ->
-    (socketId != @playerSocketIds[((@state.currentPlayer -1) + @players.length) % @players.length])
+    (socketId != @playerSocketIds[((@state.currentPlayer-1)+@players.length)%@players.length])
 
   start: ->
-    @state.currentPlayer = (@goalSetter + 1) % @players.length
+    @state.currentPlayer = (@goalSetter+1)%@players.length
 
   nextTurn: () ->
-    @state.currentPlayer = (@state.currentPlayer + 1) % @players.length
+    @state.currentPlayer = (@state.currentPlayer+1)%@players.length
 
 
   moveToRequired: (index, clientId) ->
@@ -241,7 +244,7 @@ class Game
   nowChallenge: (clientId) ->
     if @challengeMode
       throw "Can't challenge during challenge mode"
-    if !validateChallenge(clientId)
+    if !@validateChallenge(clientId)
       throw "Can't make challenge, you've just moved"
     @challengeMode = true
     @challenger = clientId

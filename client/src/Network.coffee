@@ -32,13 +32,12 @@ class Network
   @moveToForbidden : (index) ->
     now.moveToForbidden(index)
 
-###
+
   @nowChallenge : () ->
     try
       now.nowChallenge()
     catch e
       alert e
-    ###
 
 
 
