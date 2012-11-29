@@ -87,8 +87,11 @@ class ExpressionParser
   # Handle atomimic bits, numbers and variables
   atom:() ->
     c = @expr[@idx]
+    if @expr[@idx+1]? && @expr[@idx+1] == DICEFACESYMBOLS.bracketL then throw new Error("Invalid syntax. Must use a cross to multiply")
     if this.isNumber(c)
       node = new Node(type: "number", token: this.matchNumber())
+    else if !c?
+      throw new Error("You can't finish with an operator")
     else
       throw new Error("UNEXPECTED TOKEN: #{c}")
     return node
