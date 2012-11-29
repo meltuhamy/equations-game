@@ -121,7 +121,7 @@ everyone.now.moveToForbidden = (index) ->
 everyone.now.nowChallengeRequest = () ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   game.nowChallenge(this.user.clientId)
-  group.now.receiveNowChallengeDecideTurn(this.user.clientId)
+  group.now.receiveNowChallengeDecideTurn(game.getPlayerIdBySocket(this.user.clientId))
   group.now.receiveState(game.state)
 
 everyone.now.nowChallengeDecision = (isPossible) ->
@@ -133,6 +133,7 @@ everyone.now.nowChallengeDecision = (isPossible) ->
     if(game.checkAllDecisionsMade()) then group.now.receiveNowChallengeSolutionsTurn()
   catch e
     this.now.badMove(e)
+    console.log e
 
 
 everyone.now.nowChallengeSolution = (answer) ->
@@ -140,7 +141,8 @@ everyone.now.nowChallengeSolution = (answer) ->
   try
     game.submitSolution(this.user.clientId, answer)
   catch e
-    this.now.badMove(e)
+    this.now.badMove(e.message)
+    console.log e
   
 
 

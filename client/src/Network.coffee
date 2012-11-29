@@ -41,7 +41,6 @@ class Network
     now.nowChallengeDecision(isPossible)
 
   @sendNowChallengeSolution: (answer) ->
-    console.log answer
     now.nowChallengeSolution(answer)
 
 

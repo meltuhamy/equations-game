@@ -122,25 +122,28 @@ class GameScreen extends Screen
     $("#unallocated").html(DiceFace.listToHtmlByIndex(Game.globalDice, Game.getState().unallocated, true))
 
     thisReference = this 
-    $('#unallocated li').unbind('click') 
+    $('#unallocated li').unbind('click')
 
     if(Game.challengeMode)
       decideHtml = '<span id="challenge-agree-btn">Agree</span> <span id="challenge-disagree-btn">Disagree</span>'
-      if(Game.isChallengeDecideTurn()) then $('#turn-notification').html('Select if you agree: ' + decideHtml)
+      console.log Game.isChallenger()
+      if(Game.isChallengeDecideTurn())
+        if(!Game.isChallenger())
+          $('#turn-notification').html('Select if you agree: ' + decideHtml)
+          $('#challenge-agree-btn').unbind 'click'
+          $('#challenge-agree-btn').bind 'click', (event) ->
+            Network.sendNowChallengeDecision(true)
+          $('#challenge-disagree-btn').unbind 'click'
+          $('#challenge-disagree-btn').bind 'click', (event) ->
+            Network.sendNowChallengeDecision(false)
+        else 
+          $('#turn-notification').html('Please wait')
       if(Game.isChallengeSolutionTurn())
         if(Game.agreesWithChallenge())
           $('#turn-notification').html('Submitting solutions time')
           $('#answer-submit-btn').show()
           $('#answer-submit-btn').bind 'click', (event) ->
             thisReference.submitAnswer()
-
-
-
-
-      $('#challenge-agree-btn').bind 'click', (event) ->
-        Network.sendNowChallengeDecision(true)
-      $('#challenge-disagree-btn').bind 'click', (event) ->
-        Network.sendNowChallengeDecision(false)
 
     else
       $('#answer-submit-btn').hide()

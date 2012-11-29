@@ -25,12 +25,15 @@ class Game
   @challengeMode: false
   @currentChallengeStage: undefined
   @ChallengeStages: {ChallengeOff: 0, ChallengeDecide:1, ChallengeSolution:2, ChallengeCheck:3}
+  @challengerId: undefined
 
   # Just some functions for everyone to ask us what is going on the challenge?
   @isChallengeDecideTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeDecide
   @isChallengeSolutionTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeSolution
   @isChallengeCheckTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeCheck
   @agreesWithChallenge: () -> @myPlayerId in @state.possiblePlayers
+  @isChallenger: () -> @myPlayerId == @challengerId
+
  
   # {Json} The json of the current state of the game and what type each dice is.
   # unallocated, required, optional, forbidden are arrays of dicefaces.

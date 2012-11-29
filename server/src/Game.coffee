@@ -8,6 +8,7 @@ DEBUG = true
 class Game
   goalTree: undefined
   goalArray: []
+  goalValue: undefined
 
   # {Player[]} An array of players who have joined the game
   players: []
@@ -160,6 +161,10 @@ class Game
     p = new ExpressionParser()
     @goalTree = p.parse(diceValues)
     @goalArray = diceValues
+
+    e = new Evaluator()
+    @goalValue = e.evaluate(@goalArray)
+
     return true
   
   ###*
@@ -271,47 +276,44 @@ class Game
    * @param  {[type]} dice An array of indices to the globalArray for the answer.
   ###
   submitSolution: (socketId, dice) ->
-    console.log "GAME SERVER DICE"
-    console.log dice
+    if !@challengeMode then throw "Not in challenge mode"
+    playerid = @getPlayerIdBySocket(socketId)
 
-    if !@challengeMode
-      throw "Not in challenge mode"
-    if !(@getPlayerIdBySocket(socketId) in @state.possiblePlayers)
-      throw "Client not in 'possible' list"
+    # If he hasn't already submitted a solution..
+    if(!(@submittedSolutions[playerid]?))
+      if !(playerid in @state.possiblePlayers) then throw "Client not in 'possible' list"
 
-    # Check if the solution submitted is valid
-    diceValues = []
-    numGlobalDice = @globalDice.length
-    for i in [0 ... dice.length]
-      for j in [i+1 ... dice.length]
-        if (dice[i] < -2  || dice[i] >= numGlobalDice) then throw "Solution has out of bounds array index"
-        if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then throw "Solution uses duplicate dice"
-      if dice[i] == -1
-        diceValues.push(DICEFACESYMBOLS.bracketL)
-      else if dice[i] == -2
-        diceValues.push(DICEFACESYMBOLS.bracketR)
-      else
-        diceValues.push(@globalDice[dice[i]])
-
-
-    console.log diceValues
-
-    # TODO: Now check that they use dice from the mats accordingly.
-
-    # Everything ok-doky index wise. Now let's check it parses and gives the same value.
-
-    e = new Evaluator
-    p = new ExpressionParser
-    # TODO separate out and wrap in try catch
-    submissionValue = e.evaluate(p.parse(diceValues))
-
-    console.log "SUBMITTED VALUE"
-    console.log submissionValue
+      # Check if the solution submitted is valid
+      diceValues = []
+      numGlobalDice = @globalDice.length
+      for i in [0 ... dice.length]
+        for j in [i+1 ... dice.length]
+          if (dice[i] < -2  || dice[i] >= numGlobalDice) then throw "Solution has out of bounds array index"
+          if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then throw "Solution uses duplicate dice"
+        if dice[i] == -1
+          diceValues.push(DICEFACESYMBOLS.bracketL)
+        else if dice[i] == -2
+          diceValues.push(DICEFACESYMBOLS.bracketR)
+        else
+          diceValues.push(@globalDice[dice[i]])
 
 
-    # Ok it does. So add it to the submitted solutions list
-    @rightAnswers[i] = (goalValue == submissionValue)
-    @submittedSolutions[@playerSocketIds.indexOf(clientId)] = dice
+      # TODO: Now check that they use dice from the mats accordingly.
+
+      # Everything ok-doky index wise. Now let's check it parses and gives the same value.
+      e = new Evaluator
+      p = new ExpressionParser
+      # TODO separate out and wrap in try catch
+      submissionValue = e.evaluate(p.parse(diceValues))
+      # Ok it does. So add it to the submitted solutions list
+
+      @rightAnswers[playerid] = (@goalValue == submissionValue)
+      @submittedSolutions[playerid] = dice
+    else
+      playerid = @getPlayerIdBySocket(socketId)
+      throw "Player #{playerid} already submitted solution"
+
+    
     
 
 
