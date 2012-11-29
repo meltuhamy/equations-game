@@ -43,6 +43,10 @@ class Network
   @sendNowChallengeSolution: (answer) ->
     now.nowChallengeSolution(answer)
 
+  @sendNeverChallengeRequest: () ->
+    now.sendNeverChallengeRequest()
+
+
 
 
 

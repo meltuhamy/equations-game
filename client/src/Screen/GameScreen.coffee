@@ -55,12 +55,15 @@ class GameScreen extends Screen
     @currentContext = contextId
 
 
+  
 
   nowButtonHandler: () ->
-    if not Game.challengeMode
+    if Game.challengeMode
       Network.sendNowChallengeRequest()
 
-  #neverButtonHandler: () ->
+  neverButtonHandler: () ->
+    if Game.challengeMode
+      Network.sendNeverChallengeRequest()
 
 
 
@@ -266,8 +269,7 @@ class GameScreen extends Screen
       $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', mat)
       # Store the index to the mat array 
       pos = $("ul#answers li.dice[data-index='#{a}']").index('ul#' + mat + ' li')
-      console.log pos
-      $("ul#answers li.dice[data-index='#{a}']").attr('data-matindex', pos)
+      $('ul#' + mat + ' li.dice[data-index='#{a}']").attr('data-matindex', pos)
 
       # Make the corresponding dice in mat highlight when we hover over it
       correspondingMatDice = $('ul#' + mat + " li.dice[data-index='#{a}']")
