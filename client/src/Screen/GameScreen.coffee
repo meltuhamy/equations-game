@@ -142,6 +142,7 @@ class GameScreen extends Screen
         if(Game.agreesWithChallenge())
           $('#turn-notification').html('Submitting solutions time')
           $('#answer-submit-btn').show()
+          $('#answer-submit-btn').unbind 'click'
           $('#answer-submit-btn').bind 'click', (event) ->
             thisReference.submitAnswer()
 

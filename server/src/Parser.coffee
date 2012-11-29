@@ -1,4 +1,5 @@
 {DiceFace} = require './DiceFace.js'
+{Evaluator} = require './Evaluator.js'
 DICEFACESYMBOLS = DiceFace.symbols
 
 class Node
@@ -25,6 +26,7 @@ class ExpressionParser
     c = @expr[@idx]
     while c == DICEFACESYMBOLS.plus or c == DICEFACESYMBOLS.minus
       ++@idx
+      if @expr[@idx] == DICEFACESYMBOLS.bracketR then throw new Error("Invalid value before bracket")
       child2 = @handleMultiplyDivide()
       node = new Node(type: "binop", token: [c], children: [child1, child2])
       c = @expr[@idx]
@@ -38,6 +40,9 @@ class ExpressionParser
     while c == DICEFACESYMBOLS.multiply or c == DICEFACESYMBOLS.divide
       ++@idx
       child2 = @handlePower()
+      if(c == DICEFACESYMBOLS.divide)
+        e = new Evaluator
+        if e.evaluate(child2) == 0 then throw new Error("You can't divide by zero you idiot")
       node = new Node(type : "binop", token: [c], children: [ child1, child2 ]);
       c = @expr[@idx]
       child1 = node
@@ -58,6 +63,12 @@ class ExpressionParser
     node = {}
     if c == DICEFACESYMBOLS.minus or c == DICEFACESYMBOLS.plus or c == DICEFACESYMBOLS.sqrt
       ++@idx
+      if @expr[@idx] == DICEFACESYMBOLS.bracketR then throw new Error("Invalid value before bracket")
+      if c == DICEFACESYMBOLS.sqrt
+        temp = @idx
+        e = new Evaluator()
+        if e.evaluate(@handleUnaryOps())<0 then throw new Error("You can't square root a negative")
+        @idx = temp
       node = new Node(type: "unaryop", token: [c], children: [@handleUnaryOps()])
     else
       node = @handleParen()

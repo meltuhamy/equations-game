@@ -280,6 +280,7 @@ class Game
     playerid = @getPlayerIdBySocket(socketId)
 
     # If he hasn't already submitted a solution..
+    # console.log @submittedSolutions[playerid]
     if(!(@submittedSolutions[playerid]?))
       if !(playerid in @state.possiblePlayers) then throw "Client not in 'possible' list"
 

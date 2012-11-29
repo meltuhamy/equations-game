@@ -83,20 +83,39 @@ describe "parser", ->
     p = new ExpressionParser
     tree = p.parse [DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.bracketR]
 
-  it "should not parse", ->
-    p = new ExpressionParser
-    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.two]  
-    console.log tree
-
-  it "should parse", ->
-    p = new ExpressionParser
-    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.multiply, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR]  
-    console.log tree
-
   it "should parse", ->
     p = new ExpressionParser
     tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three]  
-    console.log tree
+
+  it "should not parse", ->
+    p = new ExpressionParser
+    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.divide, DICEFACESYMBOLS.zero]
+    expect(test).toThrow("You can't divide by zero you idiot")
+
+  it "should not parse", ->
+    p = new ExpressionParser
+    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.divide, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.three, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.bracketR]
+    expect(test).toThrow("You can't divide by zero you idiot")
+
+  it "should not parse", ->
+    p = new ExpressionParser
+    test = -> p.parse [DICEFACESYMBOLS.sqrt, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR]
+    expect(test).toThrow("You can't square root a negative")
+
+  it "should not parse", ->
+    p = new ExpressionParser
+    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.multiply, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.two]
+    expect(test).toThrow("Invalid value before bracket")
+
+  it "should not parse", ->
+    p = new ExpressionParser
+    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.multiply, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR]
+    expect(test).toThrow("Invalid value after bracket")
+
+  it "should not parse", ->
+    p = new ExpressionParser
+    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketL]
+    expect(test).toThrow("UNEXPECTED TOKEN: undefined")
 
 
   #it "should parse combinations of binary and unary operators", ->
