@@ -25,6 +25,9 @@ class GameScreen extends Screen
   # {Number[]} An array of indices to the globalDice array of dice in answer area.
   answerAreaDice: []
 
+  # {Boolean[]} A bitmap telling us if the globalDice has been used in answer area.
+  usedInAnswer: []
+
 
   constructor: () -> 
 
@@ -267,21 +270,20 @@ class GameScreen extends Screen
 
       # Store the index to the global dice array
       $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', mat)
-      # Store the index to the mat array 
-      pos = $("ul#answers li.dice[data-index='#{a}']").index('ul#' + mat + ' li')
-      $('ul#' + mat + ' li.dice[data-index='#{a}']").attr('data-matindex', pos)
 
-      # Make the corresponding dice in mat highlight when we hover over it
-      correspondingMatDice = $('ul#' + mat + " li.dice[data-index='#{a}']")
+      # Store the index to the mat array 
+      #pos = $('ul#' + mat + " li.dice[data-index='{a}']").index('ul#' + mat + ' li')
+      #$("ul#answers li.dice[data-index='#{a}']").attr('data-matindex', pos)
       
       $("ul#answers li.dice[data-index='#{a}']").unbind 'mouseover'
       $("ul#answers li.dice[data-index='#{a}']").bind 'mouseover', (event) ->
-        $(correspondingMatDice).attr('data-anshover', 'on')
+        $("ul#" + $(this).attr('data-alloc') + " li.dice[data-index='" + $(this).attr('data-index') + "']").attr('data-anshover', 'on')
 
       $("ul#answers li.dice[data-index='#{a}']").unbind 'mouseleave'
       $("ul#answers li.dice[data-index='#{a}']").bind 'mouseleave', (event) ->
-        $(correspondingMatDice).attr('data-anshover', 'off')
+        $("ul#" + $(this).attr('data-alloc')+" li.dice[data-index='" + $(this).attr('data-index') + "']").attr('data-anshover', 'off')
 
+      $("ul#" + mat + " li.dice[data-index='"+a+"']").attr('data-usedinans', 'true')
 
 
 
@@ -302,8 +304,17 @@ class GameScreen extends Screen
       @recolorAnswerDice()
 
   removeDiceFromAnswerArea: (pos, index) ->
+    # Find the corresponding mat and the dice in the mat and tell it that it's no longer
+    # used in our ans (usedinans=false). Also remove hover highlighting (anshover=false)
+    theDice = $("ul#answers li.dice[data-index='#{index}']")
+    theMat = theDice.attr('data-alloc')
+    theIndex = theDice.attr('data-index')
+    $("ul##{theMat} li.dice[data-index='#{theIndex}']").attr('data-usedinans', 'false')
+    $("ul##{theMat} li.dice[data-index='#{theIndex}']").attr('data-anshover', 'false')
+    # Now remove the dice from the answer area
     @answerAreaDice.splice(pos, 1)
     removedElement = @equationBuilder.removeDiceByIndex(index)
+
 
   submitAnswer: () ->
     answer = @equationBuilder.getIndicesToGlobalDice()

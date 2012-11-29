@@ -130,7 +130,8 @@ a.mini-button
 a.mini-button:first-child
   margin-left: 10px
 
-span#now-button
+span#now-button,
+span#never-button
   background: #e3e3e3
   border: 1px solid #bbb
   border-radius(3px)
@@ -142,39 +143,20 @@ span#now-button
   text-shadow: 0 1px 0 #fff
   display: inline-block
 
-span#now-button:hover
+span#now-button:hover,
+span#never-button:hover
   background: #d9d9d9
   box-shadow(inset 0 0 1px 1px #eaeaea)
   color: #222
   cursor: pointer
 
-span#now-button:active
+span#now-button:active,
+span#never-button:active
   background: #d0d0d0
   box-shadow(inset 0 0 1px 1px #e3e3e3)
   color: #000
 
-div#never-button
-  background: #e3e3e3
-  border: 1px solid #bbb
-  border-radius(3px)
-  box-shadow(inset 0 0 1px 1px #f6f6f6)
-  color: #333
-  font: bold 12px/1 $font-list
-  padding: 8px 0 9px
-  text-align: center
-  text-shadow(0 1px 0 #fff)
-  width: 150px
 
-div#never-button:hover
-  background: #d9d9d9
-  box-shadow(inset 0 0 1px 1px #eaeaea)
-  color: #222
-  cursor: pointer
-
-div#never-button:active
-  background: #d0d0d0
-  box-shadow(inset 0 0 1px 1px #e3e3e3)
-  color: #000
 
 /*************************************************************/
 /********************  ALLOCATIONS    ************************/
@@ -192,22 +174,31 @@ div#allocation_container
   #dice_container
     margin 0px 20px 0px 20px
   ul#required li.dice
-    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
     background: #EC6A00
   ul#optional li.dice
-    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
     background: #4FBA07
   ul#forbidden li.dice
-    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
     background: red
   ul#unallocated li.dice
-    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
     background: #777777
+
+
+  ul#required li.dice[data-usedinans="true"],
+  ul#optional li.dice[data-usedinans="true"],
+  ul#forbidden li.dice[data-usedinans="true"],
+  ul#unallocated li.dice[data-usedinans="true"]
+    box-shadow: rgba(0, 0, 0, 0.32) 0px -1px 9px 1px inset
+
+
   ul#required li.dice[data-anshover="on"],
   ul#optional li.dice[data-anshover="on"],
   ul#forbidden li.dice[data-anshover="on"],
-  ul#unallocated li.dice[data-anshover="on"]
-    opacity:0.4
+  ul#unallocated li.dice[data-anshover="on"],
+  ul#answers li.dice:hover
+    box-shadow: rgba(255, 255, 255, 0.32) 0px -1px 9px 1px inset
+
+  
+
   ul#required li.dice
   ul#optional li.dice
   ul#forbidden li.dice
@@ -216,6 +207,7 @@ div#allocation_container
     border-color:#007BD1
     opacity:1.0
     border-width: 8px
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
 
 
 
