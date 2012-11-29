@@ -252,14 +252,14 @@ class Game
     @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
 
   submitPossible: (clientId) ->
-    @checkChallegeDecision()
+    @checkChallengeDecision()
     @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
 
   submitImpossible: (clientId) ->
-    @checkChallegeDecision()
+    @checkChallengeDecision()
     @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
 
-  checkChallegeDecision:(clientId) ->
+  checkChallengeDecision:(clientId) ->
     if !@challengeMode
       throw "Can't submit opinion, not currently challenge mode"
     if (clientId in @state.possiblePlayers) || (clientId in @state.impossiblePlayers)
@@ -286,6 +286,8 @@ class Game
 
       # Check if the solution submitted is valid
       diceValues = []
+      numRequiredInAns = 0
+      numUnallocatedInAns = 0
       numGlobalDice = @globalDice.length
       for i in [0 ... dice.length]
         for j in [i+1 ... dice.length]
@@ -297,9 +299,12 @@ class Game
           diceValues.push(DICEFACESYMBOLS.bracketR)
         else
           diceValues.push(@globalDice[dice[i]])
+        if(dice[i] in @state.forbidden) then throw "Solution uses dice from forbidden"
+        if(dice[i] in @state.required) then numRequiredInAns++
+        if(dice[i] in @state.unallocated) then numUnallocatedInAns++
 
-
-      # TODO: Now check that they use dice from the mats accordingly.
+      if(numRequiredInAns < @state.required.length) then throw "Solution doesn't use all dice from required"
+      if(numUnallocatedInAns != 1) then throw "Solution doesn't use one dice from unallocated"
 
       # Everything ok-doky index wise. Now let's check it parses and gives the same value.
       e = new Evaluator

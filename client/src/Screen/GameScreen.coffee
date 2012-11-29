@@ -123,10 +123,12 @@ class GameScreen extends Screen
 
     thisReference = this 
     $('#unallocated li').unbind('click')
+    $('#optional li').unbind('click')
+    $('#required li').unbind('click')
+
 
     if(Game.challengeMode)
       decideHtml = '<span id="challenge-agree-btn">Agree</span> <span id="challenge-disagree-btn">Disagree</span>'
-      console.log Game.isChallenger()
       if(Game.isChallengeDecideTurn())
         if(!Game.isChallenger())
           $('#turn-notification').html('Select if you agree: ' + decideHtml)
@@ -140,11 +142,14 @@ class GameScreen extends Screen
           $('#turn-notification').html('Please wait')
       if(Game.isChallengeSolutionTurn())
         if(Game.agreesWithChallenge())
+          @changeToContext(@Contexts.Neutral, @neutralContextChange)
           $('#turn-notification').html('Submitting solutions time')
           $('#answer-submit-btn').show()
           $('#answer-submit-btn').unbind 'click'
           $('#answer-submit-btn').bind 'click', (event) ->
             thisReference.submitAnswer()
+        else
+          @changeToContext(@Contexts.Neutral, @neutralContextChange)
 
     else
       $('#answer-submit-btn').hide()
@@ -187,6 +192,12 @@ class GameScreen extends Screen
       thisReference.neutralContext()
     $('#unallocated li').unbind ('click')
     $('#unallocated li').bind 'click', (event) ->
+      thisReference.addDiceToAnswerArea(parseInt($(this).attr('data-index')))
+    $('#required li').unbind ('click')
+    $('#required li').bind 'click', (event) ->
+      thisReference.addDiceToAnswerArea(parseInt($(this).attr('data-index')))
+    $('#optional li').unbind ('click')
+    $('#optional li').bind 'click', (event) ->
       thisReference.addDiceToAnswerArea(parseInt($(this).attr('data-index')))
 
 
@@ -241,14 +252,36 @@ class GameScreen extends Screen
 
   recolorAnswerDice: () ->
     for a in @answerAreaDice
+      mat = ''
       for x in Game.state.unallocated
-        if (a == x) then $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', 'unallocated')
+        if (a == x) then mat = 'unallocated'
       for x in Game.state.required
-        if (a == x) then $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', 'required')
+        if (a == x) then mat = 'required'
       for x in Game.state.optional
-        if (a == x) then $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', 'optional')
+        if (a == x) then mat = 'optional'
       for x in Game.state.forbidden
-        if (a == x) then $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', 'forbidden')
+        if (a == x) then mat = 'forbidden'
+
+      # Store the index to the global dice array
+      $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', mat)
+      # Store the index to the mat array 
+      pos = $("ul#answers li.dice[data-index='#{a}']").index('ul#' + mat + ' li')
+      console.log pos
+      $("ul#answers li.dice[data-index='#{a}']").attr('data-matindex', pos)
+
+      # Make the corresponding dice in mat highlight when we hover over it
+      correspondingMatDice = $('ul#' + mat + " li.dice[data-index='#{a}']")
+      
+      $("ul#answers li.dice[data-index='#{a}']").unbind 'mouseover'
+      $("ul#answers li.dice[data-index='#{a}']").bind 'mouseover', (event) ->
+        $(correspondingMatDice).attr('data-anshover', 'on')
+
+      $("ul#answers li.dice[data-index='#{a}']").unbind 'mouseleave'
+      $("ul#answers li.dice[data-index='#{a}']").bind 'mouseleave', (event) ->
+        $(correspondingMatDice).attr('data-anshover', 'off')
+
+
+
 
 
   addDiceToAnswerArea: (index) ->

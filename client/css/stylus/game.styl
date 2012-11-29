@@ -192,28 +192,29 @@ div#allocation_container
   #dice_container
     margin 0px 20px 0px 20px
   ul#required li.dice
-    color: #FFFFFF
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
-    border-color:#007BD1
     background: #EC6A00
-    border-width: 8px
   ul#optional li.dice
-    color: #FFFFFF
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
-    border-color:#007BD1
     background: #4FBA07
-    border-width: 8px
   ul#forbidden li.dice
-    color: #FFFFFF
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
-    border-color:#007BD1
     background: red
-    border-width: 8px
+  ul#unallocated li.dice
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+    background: #777777
+  ul#required li.dice[data-anshover="on"],
+  ul#optional li.dice[data-anshover="on"],
+  ul#forbidden li.dice[data-anshover="on"],
+  ul#unallocated li.dice[data-anshover="on"]
+    opacity:0.4
+  ul#required li.dice
+  ul#optional li.dice
+  ul#forbidden li.dice
   ul#unallocated li.dice
     color: #FFFFFF
-    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
     border-color:#007BD1
-    background: #777777
+    opacity:1.0
     border-width: 8px
 
 
