@@ -394,3 +394,4 @@ class GameScreen extends Screen
     @submittedSolution = true
     Network.sendChallengeSolution(answer)
     $('#answer-submit-btn').hide()
+    $('#answer-add-dice-btn').hide()
