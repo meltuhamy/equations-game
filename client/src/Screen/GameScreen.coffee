@@ -28,6 +28,9 @@ class GameScreen extends Screen
   # {Boolean[]} A bitmap telling us if the globalDice has been used in answer area.
   usedInAnswer: []
 
+  # {Boolean} Have we submitted the solution
+  submittedSolution: false
+
 
   constructor: () -> 
 
@@ -61,11 +64,13 @@ class GameScreen extends Screen
   
 
   nowButtonHandler: () ->
-    if Game.challengeMode
+    console.log Game.challengeMode
+    if !Game.challengeMode
       Network.sendNowChallengeRequest()
 
   neverButtonHandler: () ->
-    if Game.challengeMode
+    console.log Game.challengeMode
+    if !Game.challengeMode
       Network.sendNeverChallengeRequest()
 
 
@@ -117,6 +122,40 @@ class GameScreen extends Screen
     for c in old
       oldHtml += '<li>' + c + '</li>'
   ###
+
+
+
+  drawCommentaryForChallenges: () ->
+    # We have a now/never challenge. Draw the buttons to let him agree/disagree
+    buttonsHtml = '<span id="challenge-agree-btn">Agree</span> <span id="challenge-disagree-btn">Disagree</span>'
+    thisReference = this
+    if(Game.isChallengeDecideTurn())
+      if(!Game.isChallenger())
+        html = if(Game.challengeModeNow) then "Now Challenge! " else "Never Challenge! "
+        html += "Please select if you agree: "
+        html += buttonsHtml
+        $('#turn-notification').html(html)
+        $('#challenge-agree-btn').unbind 'click'
+        $('#challenge-agree-btn').bind 'click', (event) ->
+          Network.sendChallengeDecision(true)
+        $('#challenge-disagree-btn').unbind 'click'
+        $('#challenge-disagree-btn').bind 'click', (event) ->
+          Network.sendChallengeDecision(false)
+      else 
+        $('#turn-notification').html('Please wait for other players to decide.')
+    else if(Game.isChallengeSolutionTurn())
+      if(Game.solutionRequired())
+        if(@submittedSolution)
+          $('#turn-notification').html('<p>Please wait for other players to submit solutions</p>')
+        else
+          @changeToContext(@Contexts.Neutral, @neutralContextChange)
+          $('#turn-notification').html('Please submit your solution.')
+          $('#answer-submit-btn').show()
+          $('#answer-submit-btn').unbind 'click'
+          $('#answer-submit-btn').bind 'click', (event) ->
+            thisReference.submitAnswer()
+      else
+        $('#turn-notification').html('<p>Please wait for other players to submit their solutions.</p>')
     
 
   neutralContext: () ->
@@ -133,30 +172,9 @@ class GameScreen extends Screen
     $('#required li').unbind('click')
 
 
+    # Update commentary box to update progress on challenges and show agree/disagree buttons etc.
     if(Game.challengeMode)
-      decideHtml = '<span id="challenge-agree-btn">Agree</span> <span id="challenge-disagree-btn">Disagree</span>'
-      if(Game.isChallengeDecideTurn())
-        if(!Game.isChallenger())
-          $('#turn-notification').html('Select if you agree: ' + decideHtml)
-          $('#challenge-agree-btn').unbind 'click'
-          $('#challenge-agree-btn').bind 'click', (event) ->
-            Network.sendNowChallengeDecision(true)
-          $('#challenge-disagree-btn').unbind 'click'
-          $('#challenge-disagree-btn').bind 'click', (event) ->
-            Network.sendNowChallengeDecision(false)
-        else 
-          $('#turn-notification').html('Please wait')
-      if(Game.isChallengeSolutionTurn())
-        if(Game.agreesWithChallenge())
-          @changeToContext(@Contexts.Neutral, @neutralContextChange)
-          $('#turn-notification').html('Submitting solutions time')
-          $('#answer-submit-btn').show()
-          $('#answer-submit-btn').unbind 'click'
-          $('#answer-submit-btn').bind 'click', (event) ->
-            thisReference.submitAnswer()
-        else
-          @changeToContext(@Contexts.Neutral, @neutralContextChange)
-
+      @drawCommentaryForChallenges()
     else
       $('#answer-submit-btn').hide()
       $('#unallocated li').bind 'click', (event) ->
@@ -318,4 +336,6 @@ class GameScreen extends Screen
 
   submitAnswer: () ->
     answer = @equationBuilder.getIndicesToGlobalDice()
-    Network.sendNowChallengeSolution(answer)
+    @submittedSolution = true
+    Network.sendChallengeSolution(answer)
+    $('#answer-submit-btn').hide()

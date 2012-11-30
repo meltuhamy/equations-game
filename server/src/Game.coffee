@@ -37,7 +37,7 @@ class Game
   # {Boolean} Has the turn taking halted for a challenge?
   challengeMode: false
 
-  # {Boolean} Differientiates between now and never challenges
+  # {Boolean} Differentiates between now and never challenges
   challengeModeNow: false
 
   # {Number} the index of the player array for the challenger
@@ -62,6 +62,9 @@ class Game
     forbidden: []
     # index of player whose turn it is. incremented after each resource move
     currentPlayer: 0
+    # What turn number is it? This increments after a turn has been made. 
+    # The dice setting has turnNumber = 0. The first turn to move dice has turnNumber = 1. 
+    #turnNumber
     # {Number[]} array of indices to player array of the players who think now challenge possible
     possiblePlayers: []
     # {Number[]} array of indices to player array of the players who think now challenge not possible

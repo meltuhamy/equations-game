@@ -26,13 +26,15 @@ class Game
   @currentChallengeStage: undefined
   @ChallengeStages: {ChallengeOff: 0, ChallengeDecide:1, ChallengeSolution:2, ChallengeCheck:3}
   @challengerId: undefined
+  @challengeModeNow = undefined
 
   # Just some functions for everyone to ask us what is going on the challenge?
   @isChallengeDecideTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeDecide
   @isChallengeSolutionTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeSolution
   @isChallengeCheckTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeCheck
-  @agreesWithChallenge: () -> @myPlayerId in @state.possiblePlayers
+  @agreesWithChallenge: () -> (@myPlayerId in @state.possiblePlayers && @challengeModeNow) || (@myPlayerId in @state.impossiblePlayers && !@challengeModeNow)
   @isChallenger: () -> @myPlayerId == @challengerId
+  @solutionRequired: -> (@agreesWithChallenge() && @challengeModeNow) || (!@agreesWithChallenge() && !@challengeModeNow)
 
  
   # {Json} The json of the current state of the game and what type each dice is.
@@ -85,15 +87,25 @@ class Game
    * Time for the players to choose if they agree with challenge.
    * @param  {Integer} challengerId The challenger
   ###
+  # TODO: Factorise this
   @receiveNowChallengeDecideTurn: (challengerId) ->
     @challengeMode = true
     @currentChallengeStage = @ChallengeStages.ChallengeDecide
     @challengerId = challengerId
+    @challengeModeNow = true
+
+  @receiveNeverChallengeDecideTurn: (challengerId) ->
+    @challengeMode = true
+    @currentChallengeStage = @ChallengeStages.ChallengeDecide
+    @challengerId = challengerId
+    @challengeModeNow = false
+
 
 
   # Time for players to submit solutions.
-  @receiveNowChallengeSolutionsTurn: () ->
+  @receiveChallengeSolutionsTurn: () ->
     @currentChallengeStage = @ChallengeStages.ChallengeSolution
+
 
 
 

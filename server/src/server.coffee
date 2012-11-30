@@ -124,13 +124,23 @@ everyone.now.nowChallengeRequest = () ->
   group.now.receiveNowChallengeDecideTurn(game.getPlayerIdBySocket(this.user.clientId))
   group.now.receiveState(game.state)
 
-everyone.now.nowChallengeDecision = (isPossible) ->
+everyone.now.neverChallengeRequest = () ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
+  console.log "Never challenge made"
+  game.neverChallenge(this.user.clientId)
+  group.now.receiveNeverChallengeDecideTurn(game.getPlayerIdBySocket(this.user.clientId))
+  group.now.receiveState(game.state)
+
+
+everyone.now.challengeDecision = (agree) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   try
-    if(isPossible) then game.submitPossible(this.user.clientId)
-    if(!isPossible) then game.submitImpossible(this.user.clientId)
+    if((agree && game.challengeModeNow) || (!agree && !game.challengeModeNow))
+      game.submitPossible(this.user.clientId)
+    else if((agree && !game.challengeModeNow) || (!agree && game.challengeModeNow))
+      game.submitImpossible(this.user.clientId)
     group.now.receiveState(game.state)
-    if(game.checkAllDecisionsMade()) then group.now.receiveNowChallengeSolutionsTurn()
+    if(game.checkAllDecisionsMade()) then group.now.receiveChallengeSolutionsTurn()
   catch e
     this.now.badMove(e)
     console.log e
