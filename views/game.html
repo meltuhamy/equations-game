@@ -70,21 +70,7 @@
         <div id="rough-area-container">
             <div id="rough-area-board">
                 <canvas id="simple_sketch" />
-                <script type="text/javascript">
-                var sketcher = null;
-                $(function() {
-                    var cv = document.getElementById('simple_sketch');
-                    var ctx = cv.getContext('2d');
-                    ctx.canvas.width  = $(cv).parent().width();
-                    ctx.canvas.height = $(cv).parent().height();
-                    $(window).resize(function(){
-                        ctx.canvas.width  = $(cv).parent().width();
-                        ctx.canvas.height = $(cv).parent().height();
-                    });
-                    sketcher = new Sketcher( "simple_sketch" );
-                });
 
-                </script>
             </div>
 
             <div id="rough-area-buttons">
