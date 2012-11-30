@@ -37,6 +37,9 @@ class Game
   # {Boolean} Has the turn taking halted for a challenge?
   challengeMode: false
 
+  # {Boolean} Differientiates between now and never challenges
+  challengeModeNow: false
+
   # {Number} the index of the player array for the challenger
   challenger: undefined
 
@@ -248,8 +251,15 @@ class Game
   ###
   nowChallenge: (clientId) ->
     @challengeMode = true
+    @challengeModeNow = true
     @challenger = clientId
     @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
+
+  neverChallenge: (clientId) ->
+    @challengeMode = true
+    @challengeModeNow = false
+    @challenger = clientId
+    @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
 
   submitPossible: (clientId) ->
     @checkChallengeDecision()
@@ -304,7 +314,7 @@ class Game
         if(dice[i] in @state.unallocated) then numUnallocatedInAns++
 
       if(numRequiredInAns < @state.required.length) then throw "Solution doesn't use all dice from required"
-      if(numUnallocatedInAns != 1) then throw "Solution doesn't use one dice from unallocated"
+      if(numUnallocatedInAns > 1 && @challengeModeNow) then throw "Solution doesn't use one dice from unallocated"
 
       # Everything ok-doky index wise. Now let's check it parses and gives the same value.
       e = new Evaluator

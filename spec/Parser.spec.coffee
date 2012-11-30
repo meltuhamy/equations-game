@@ -109,14 +109,28 @@ describe "parser", ->
 
   it "should not parse", ->
     p = new ExpressionParser
-    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.multiply, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR]
+    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.multiply, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.two]
     expect(test).toThrow("Invalid value after bracket")
 
   it "should not parse", ->
     p = new ExpressionParser
     test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketL]
-    expect(test).toThrow("UNEXPECTED TOKEN: undefined")
+    expect(test).toThrow("You can't finish with an operator")
 
+  it "should not parse", ->
+    p = new ExpressionParser
+    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR]
+    expect(test).toThrow("Invalid syntax. Must use a cross to multiply")
+
+  it "should not parse", ->
+    p = new ExpressionParser
+    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus]
+    expect(test).toThrow("You can't finish with an operator")
+
+  it "should not parse", ->
+    p = new ExpressionParser
+    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.plus]
+    expect(test).toThrow("You can't finish with an operator")
 
   #it "should parse combinations of binary and unary operators", ->
    # console.log "Need to implement this!"
