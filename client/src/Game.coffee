@@ -27,6 +27,10 @@ class Game
   @ChallengeStages: {ChallengeOff: 0, ChallengeDecide:1, ChallengeSolution:2, ChallengeCheck:3}
   @challengerId: undefined
   @challengeModeNow = undefined
+  @getChallengeName: () ->
+    if(!@challengeMode) then return ''
+    if(@challengeModeNow) then return 'Now Challenge' else return 'Never Challenge'
+
 
   # Just some functions for everyone to ask us what is going on the challenge?
   @isChallengeDecideTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeDecide

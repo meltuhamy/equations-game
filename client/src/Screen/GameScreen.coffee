@@ -175,8 +175,11 @@ class GameScreen extends Screen
 
     # Update commentary box to update progress on challenges and show agree/disagree buttons etc.
     if(Game.challengeMode)
+      $('#challenge-title').show()
+      $('#challenge-title').html(Game.getChallengeName())
       @drawCommentaryForChallenges()
     else
+      $('#challenge-title').hide()
       $('#answer-submit-btn').hide()
       $('#unallocated li').bind 'click', (event) ->
         event.stopPropagation()
