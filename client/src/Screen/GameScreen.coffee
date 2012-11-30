@@ -69,6 +69,11 @@ class GameScreen extends Screen
       ctx.canvas.height = $(cv).parent().height()
     @sketcher = new Sketcher("simple_sketch")
 
+    #Click listener for clear button
+    thisReference = this
+    $("#sketchClear").click (event) ->
+      thisReference.sketcher.clear()
+
 
 
   
