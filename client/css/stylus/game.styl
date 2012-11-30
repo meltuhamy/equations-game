@@ -131,31 +131,45 @@ a.mini-button:first-child
   margin-left: 10px
 
 span#now-button,
-span#never-button
+span#never-button,
+span#challenge-agree-btn,
+span#challenge-disagree-btn
   background: #e3e3e3
   border: 1px solid #bbb
   border-radius(3px)
   box-shadow(inset 0 0 1px 1px #f6f6f6)
   color: #333
   font: bold 12px/1 $font-list
-  padding: 7px 20px
+  padding: 5px 18px
   text-align: center
   text-shadow: 0 1px 0 #fff
   display: inline-block
 
 span#now-button:hover,
-span#never-button:hover
+span#never-button:hover,
+span#challenge-agree-btn:hover,
+span#challenge-disagree-btn:hover
   background: #d9d9d9
   box-shadow(inset 0 0 1px 1px #eaeaea)
   color: #222
   cursor: pointer
 
 span#now-button:active,
-span#never-button:active
+span#never-button:active,
+span#challenge-agree-btn:active,
+span#challenge-disagree-btn:active
   background: #d0d0d0
   box-shadow(inset 0 0 1px 1px #e3e3e3)
   color: #000
 
+
+span#challenge-title
+  color: white;
+  text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 0px;
+  font-weight: bold;
+  background: #004E81;
+  padding: 4px 32px;
+  border-radius(3px)
 
 
 /*************************************************************/
@@ -169,7 +183,7 @@ div#allocation_container
   padding-top: 10px;
   padding-bottom: 10px;
   //margin-bottom: 10px
-  border-radius(5px)
+  border-radius(5px 5px 0px 0px)
   text-align: left
   #dice_container
     margin 0px 20px 0px 20px
@@ -260,15 +274,25 @@ $bubbleTipSize = 8px
 
 #turn-notification 
   display: block
-  background: #0099FF
+  background: #0081D6
   border-radius(0px 0px 5px 5px)
   margin-bottom: 10px
   p
     text-align: left
-    margin-left: 20px
+    margin-left 20px
+    padding: 8px 0
     color: white
-    font-size: 12px
+    font-size: 15px
+    text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 0px;
 
+#turn-notification[data-currentturn="on"]
+  background: #CF8A4C
+  
+
+
+#challenge-agree-btn
+  margin-left: 10px
+  
 
 
 /*************************************************************/
