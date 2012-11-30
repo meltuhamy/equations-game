@@ -1,12 +1,16 @@
 function Sketcher( canvasID, brushImage ) {
-  this.renderFunction = (brushImage == null || brushImage == undefined) ? this.updateCanvasByLine : this.updateCanvasByBrush;
+  this.renderFunction = this.updateCanvasByLine;
   this.brush = brushImage;
   this.touchSupported = Modernizr.touch;
   this.canvasID = canvasID;
   this.canvas = $("#"+canvasID);
   this.context = this.canvas.get(0).getContext("2d"); 
-  this.context.strokeStyle = "#000000";
+  this.context.strokeStyle = "#FFFFFF";
   this.context.lineWidth = 3;
+  this.pencilSize = 4;
+  this.pencilColor = "#FFFFFF";
+  this.rubberSize = this.pencilSize*5;
+  this.rubberColor = $("#"+canvasID).parent().css('background-color');
   this.lastMousePoint = {x:0, y:0};
     
   if (this.touchSupported) {
@@ -21,6 +25,25 @@ function Sketcher( canvasID, brushImage ) {
   }
   
   this.canvas.bind( this.mouseDownEvent, this.onCanvasMouseDown() );
+  this.changeToPencil();
+}
+
+Sketcher.prototype.changeColor = function(colorHex){
+  this.context.strokeStyle = colorHex;
+}
+
+Sketcher.prototype.changeStrokeSize = function(size){
+  this.context.lineWidth = size;
+}
+
+Sketcher.prototype.changeToRubber = function(){
+  this.changeColor(this.rubberColor);
+  this.changeStrokeSize(this.rubberSize);
+}
+
+Sketcher.prototype.changeToPencil = function(){
+  this.changeColor(this.pencilColor);
+  this.changeStrokeSize(this.pencilSize);
 }
 
 Sketcher.prototype.onCanvasMouseDown = function () {
