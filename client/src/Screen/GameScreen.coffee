@@ -55,8 +55,8 @@ class GameScreen extends Screen
   ###
   changeToContext: (contextId, onChange, mouse) ->
     if(@contextChangeCallback?) then @contextChangeCallback()
-    $("#container").unbind("click")
-    if(mouse) then $("#container").bind("click", mouse)
+    $(document).unbind("click")
+    if(mouse?) then $(document).bind("click", mouse)
     if(onChange?) then @contextChangeCallback = onChange
     @currentContext = contextId
 
@@ -178,6 +178,7 @@ class GameScreen extends Screen
     else
       $('#answer-submit-btn').hide()
       $('#unallocated li').bind 'click', (event) ->
+        event.stopPropagation()
         thisReference.allocMenuContext(this)
 
     $('#answer-add-dice-btn').unbind('click')
@@ -193,13 +194,29 @@ class GameScreen extends Screen
 
   ### Allocation menu context ###
   allocMenuContext: (element) ->
-    #if(Game.isMyTurn())
-    @changeToContext(@Contexts.AllocMenu, @allocMenuContextChange)
-    @drawAllocationMoveMenu(element)
-    thisReference = this
-    $('#unallocated li').unbind('click')
-    $('#unallocated li').bind 'click', (event) ->
-      thisReference.allocMenuContext(this)
+    if(Game.isMyTurn())
+      thisReference = this
+      $('#unallocated li').unbind('click')
+      $('#unallocated li').bind 'click', (event) ->
+        thisReference.allocMenuContext(this)
+        event.stopPropagation()
+
+      # If the user clicks outside the menu then close it
+      exitMenuHandler  = (e) -> 
+        menu = $("#move-allocation-menu")
+        position = $(menu).position()
+        height = $(menu).height()
+        width = $(menu).width()
+        mouseXisInside = (e.clientX > position.left and e.clientX < position.left + width)
+        mouseYisInside = (e.clientY > position.top and e.clientY < position.left + height)
+        #if(!mouseXisInside || !mouseYisInside) then thisReference.changeToContext(thisReference.Contexts.Neutral)
+        thisReference.changeToContext(thisReference.Contexts.Neutral)
+      # Change the context to say the menu is now open
+      @changeToContext(@Contexts.AllocMenu, @allocMenuContextChange, exitMenuHandler)
+      @drawAllocationMoveMenu(element)
+     
+
+
 
 
 
@@ -243,7 +260,7 @@ class GameScreen extends Screen
       </div>'
     $('#container').append(html)
     #In general, remove the allocation menu one someone clicks any of the buttons
-    $("#move-allocation-menu span").click(=>@removeAllocationMoveMenu())
+    $("#move-allocation-menu span").click((event) =>@removeAllocationMoveMenu(); event.stopPropagation())
     #Add event listener for each of the "required" "optional" and "forbidden" buttons inside the menu
     $("#mamenu-required-btn").click(=>Network.moveToRequired($('#unallocated li').index($(clickedOn))))
     $("#mamenu-optional-btn").click(=>Network.moveToOptional($('#unallocated li').index($(clickedOn))))
