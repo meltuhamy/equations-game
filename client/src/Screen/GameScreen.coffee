@@ -31,6 +31,9 @@ class GameScreen extends Screen
   # {Boolean} Have we submitted the solution
   submittedSolution: false
 
+  # {Sketcher} The HTML5 drawing area
+  sketcher: undefined
+
 
   constructor: () -> 
 
@@ -44,6 +47,37 @@ class GameScreen extends Screen
     @neutralContext()
     $("#now-button").bind("click", @nowButtonHandler)
     $("#never-button").bind("click", @neverButtonHandler)
+
+    ### Sketcher stuf ###
+    @initSketcher()
+
+  ###*
+   * Initialises the html sketcher element
+   * @return {[type]} [description]
+  ###
+  initSketcher: () ->
+    cv = document.getElementById("simple_sketch")
+    ctx = cv.getContext("2d")
+
+    #Set the canvas size to fit its parent div
+    ctx.canvas.width = $(cv).parent().width()
+    ctx.canvas.height = $(cv).parent().height()
+
+    #On window resize, resize canvas too.
+    $(window).resize ->
+      ctx.canvas.width = $(cv).parent().width()
+      ctx.canvas.height = $(cv).parent().height()
+    @sketcher = new Sketcher("simple_sketch")
+
+    #Click listeners for the sketch buttons
+    thisReference = this
+    $("#sketchClear").click (event) ->
+      thisReference.sketcher.clear()
+    $("#sketchPencil").click (event) ->
+      thisReference.sketcher.changeToPencil()
+    $("#sketchRubber").click (event) ->
+      thisReference.sketcher.changeToRubber()
+
 
 
   
