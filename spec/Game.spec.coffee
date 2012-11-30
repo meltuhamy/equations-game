@@ -62,25 +62,26 @@ describe "game", ->
     game.addClient(32)
     game.setGoal([0,1,2])
     game.submitPossible(32)
-    game.submitSolution(32, [DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three])
-    expect(e.evaluate(game.goalTree)).toEqual(e.evaluate(p.parse(game.submittedSolutions[game.playerSocketIds.indexOf(32)])))
+    game.submitSolution(32, [5])
+ #   expect(e.evaluate(game.goalTree)).toEqual(e.evaluate(p.parse(game.submittedSolutions[game.playerSocketIds.indexOf(32)])))
+    expect(e.evaluate(game.goalTree)).toEqual(3)
 
   it "should add two players to game anone submit a right answer while the other submits a wrong answer", ->
-    game = new Game([],2)
+    game1 = new Game([],2)
     e = new Evaluator
     p = new ExpressionParser 
-    game.challengeMode = true
-    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three]
-    game.addClient(31)
-    game.addClient(32)
-    game.setGoal([0,1,2])
-    game.submitPossible(31)
-    game.submitSolution(31, [DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.two])
-    game.submitSolution(32, [DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three])
+    game1.challengeMode = true
+    game1.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three, DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three]
+    game1.addClient(31)
+    game1.addClient(32)
+    game1.setGoal([0,1,2])
+    game1.submitPossible(31)
+    game1.submitSolution(31, [0,1,2])
+    game1.submitSolution(32, [0,1,2])
     #!expect(e.evaluate(game.goalTree)).toEqual(e.evaluate(p.parse(game.submittedSolutions[game.playerSocketIds.indexOf(31)])))
-    expect(e.evaluate(game.goalTree)).toEqual(e.evaluate(p.parse(game.submittedSolutions[game.playerSocketIds.indexOf(32)])))
-    expect(game.rightAnswers[game.playerSocketIds.indexOf(31)]==false)
-    expect(game.rightAnswers[game.playerSocketIds.indexOf(32)]==true)
+    expect(e.evaluate(game1.goalTree)).toEqual(3)
+    expect(game1.rightAnswers[game1.playerSocketIds.indexOf(31)]==false)
+    expect(game1.rightAnswers[game1.playerSocketIds.indexOf(32)]==true)
 
 ###
   it "should not allow unbalanced brackets when setting the goal", ->

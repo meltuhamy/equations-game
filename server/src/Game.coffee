@@ -74,6 +74,7 @@ class Game
   
   constructor: (players, gameNumber, gameSize) ->
     @players = players
+    @submittedSolutions = []
     @gameNumber = gameNumber
     if gameSize? then @playerLimit = gameSize
     @nowJsGroupName = "game#{gameNumber}"
@@ -161,7 +162,6 @@ class Game
         unallocatedTemp.splice(dice[i], 1) # Remove the dice from unallocated.
 
     @state.unallocated = unallocatedTemp
-
 
     # Finally, check that the expression in the dice parses as an expression.
     p = new ExpressionParser()
@@ -291,12 +291,12 @@ class Game
   submitSolution: (socketId, dice) ->
     if !@challengeMode then throw "Not in challenge mode"
     playerid = @getPlayerIdBySocket(socketId)
-
+    #console.log "Player #{playerid} trying to submit solution #{dice}, clientid = #{socketId}"
+    #console.log @submittedSolutions
     # If he hasn't already submitted a solution..
     # console.log @submittedSolutions[playerid]
-    if(!(@submittedSolutions[playerid]?))
-      if !(playerid in @state.possiblePlayers) then throw "Client not in 'possible' list"
-
+    if (playerid in @state.possiblePlayers)
+      if (@submittedSolutions[playerid]?) then throw "Player #{socketId} already submitted solution which is: #{@submittedSolutions[playerid]}"
       # Check if the solution submitted is valid
       diceValues = []
       numRequiredInAns = 0
@@ -325,12 +325,12 @@ class Game
       # TODO separate out and wrap in try catch
       submissionValue = e.evaluate(p.parse(diceValues))
       # Ok it does. So add it to the submitted solutions list
-
       @rightAnswers[playerid] = (@goalValue == submissionValue)
       @submittedSolutions[playerid] = dice
     else
       playerid = @getPlayerIdBySocket(socketId)
-      throw "Player #{playerid} already submitted solution"
+      throw "Client not in 'possible' list"
+      
 
     
     
