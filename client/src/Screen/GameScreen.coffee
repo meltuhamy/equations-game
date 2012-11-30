@@ -134,6 +134,7 @@ class GameScreen extends Screen
         html = if(Game.challengeModeNow) then "Now Challenge! " else "Never Challenge! "
         html += "Please select if you agree: "
         html += buttonsHtml
+        html = '<p>' + html + '</p>'
         $('#turn-notification').html(html)
         $('#challenge-agree-btn').unbind 'click'
         $('#challenge-agree-btn').bind 'click', (event) ->
@@ -142,14 +143,14 @@ class GameScreen extends Screen
         $('#challenge-disagree-btn').bind 'click', (event) ->
           Network.sendChallengeDecision(false)
       else 
-        $('#turn-notification').html('Please wait for other players to decide.')
+        $('#turn-notification').html('<p>Please wait for other players to decide.</p>')
     else if(Game.isChallengeSolutionTurn())
       if(Game.solutionRequired())
         if(@submittedSolution)
           $('#turn-notification').html('<p>Please wait for other players to submit solutions</p>')
         else
           @changeToContext(@Contexts.Neutral, @neutralContextChange)
-          $('#turn-notification').html('Please submit your solution.')
+          $('#turn-notification').html('<p>Please submit your solution.</p>')
           $('#answer-submit-btn').show()
           $('#answer-submit-btn').unbind 'click'
           $('#answer-submit-btn').bind 'click', (event) ->
