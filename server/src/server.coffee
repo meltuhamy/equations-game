@@ -57,8 +57,8 @@ everyone.now.addClient = (gameNumber) -> #called by client when connected
     # Now see if the game is full after adding him (i.e see if is the last player)
     # If it is, then tell everyone in this game that its the goal setting turn. 
     if(game.isFull())
-      game.started = true
-      group.now.receiveGoalTurn(game.players, game.globalDice, game.getFirstTurnPlayer())
+      game.goalStart() # TODO: add timer callback
+      group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())
   else
     # else the game is already full, so tell him - tough luck
 
@@ -80,11 +80,14 @@ everyone.now.getGames = ->
 ###
 everyone.now.receiveGoal = (goalArray) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
-
+  groupReference = group.now
   if !(this.user.clientId == game.playerSocketIds[game.goalSetter])
     throw "Unauthorised goal setter"
   try
-    game.setGoal(goalArray)
+    game.setGoal(goalArray,  ->
+      groupReference.receiveMoveTimeUp()
+      groupReference.receiveState(game.state)
+    )
     group.now.receiveGoalTurnEnd(goalArray)
     group.now.receiveState(game.state)
   catch e #catches when parser returns error for goal
@@ -92,30 +95,50 @@ everyone.now.receiveGoal = (goalArray) ->
     this.now.badGoal(e.message)
 
 
+everyone.now.moveTimeUp = (nextPlayerSocId) ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
+  group.now.receiveState(game.state)
+  this.now.receiveMoveTimeUp()
+  
 
 everyone.now.moveToRequired = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
+  groupReference = group.now
   try
-    game.moveToRequired(index, this.user.clientId)
+    game.moveToForbidden(index, this.user.clientId, ->
+      groupReference.receiveMoveTimeUp()
+      groupReference.receiveState(game.state)
+    )
     group.now.receiveState(game.state)
   catch e
     this.now.badMove(e)
+    console.log e
 
 everyone.now.moveToOptional = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
+  groupReference = group.now
   try
-    game.moveToOptional(index, this.user.clientId)
+    game.moveToOptional(index, this.user.clientId, ->
+      groupReference.receiveMoveTimeUp()
+      groupReference.receiveState(game.state)
+    )
     group.now.receiveState(game.state)
   catch e
     this.now.badMove(e)
+    console.log e
 
 everyone.now.moveToForbidden = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
+  groupReference = group.now
   try
-    game.moveToForbidden(index, this.user.clientId)
+    game.moveToForbidden(index, this.user.clientId, ->
+      groupReference.receiveMoveTimeUp()
+      groupReference.receiveState(game.state)
+    )
     group.now.receiveState(game.state)
   catch e
     this.now.badMove(e)
+    console.log e
   
 
 everyone.now.nowChallengeRequest = () ->

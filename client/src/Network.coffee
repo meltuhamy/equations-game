@@ -76,14 +76,18 @@ now.receiveGameList = (gameListJson) ->
 
 
 
+now.receiveMoveTimeUp = () ->
+  Game.receiveMoveTimeUp()
+
+
 ###*
  * Called by the server once sufficient players have joined the game, to start the game.
  * @param  {Player[]} players                 An array of player object
  * @param  {Number[]} resources             Array of dicefaces reperesenting the resources dicefaces
- * @param  {Number} firstTurnPlayerIndex      The index to this.players that specifies the goal setter
+ * @param  {Number} goalSetterIndex      The index to this.players that specifies the goal setter
 ###
-now.receiveGoalTurn = (players, resources, firstTurnPlayerIndex) ->
-  Game.goalTurn(players, resources, firstTurnPlayerIndex)
+now.receiveGoalTurn = (players, resources, goalSetterIndex) ->
+  Game.goalTurn(players, resources, goalSetterIndex)
   
 
 

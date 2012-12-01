@@ -50,6 +50,15 @@ class GameScreen extends Screen
 
     ### Sketcher stuf ###
     @initSketcher()
+    
+    ### Timer Knob ###
+    knobSettings = 
+      width : 50
+      height : 50
+      fgColor : '#EEEEEE'
+      bgColor : '#87CEEB'
+    $('#timer-knob').knob(knobSettings)
+
 
   ###*
    * Initialises the html sketcher element
@@ -77,6 +86,7 @@ class GameScreen extends Screen
       thisReference.sketcher.changeToPencil()
     $("#sketchRubber").click (event) ->
       thisReference.sketcher.changeToRubber()
+
 
 
 
@@ -157,6 +167,18 @@ class GameScreen extends Screen
       oldHtml += '<li>' + c + '</li>'
   ###
 
+  drawCommentaryForAllocating: () ->
+    if(Game.isMyTurn())
+      $('#turn-notification').attr('data-attention', 'on')
+      $('#turn-notification').html('<p>It\'s your turn! Choose a dice from unallocated to move to another mat.</p>')
+    else
+      $('#turn-notification').attr('data-attention', 'off')
+      name = Game.getCurrentTurnPlayerName()
+      $('#turn-notification').html('<p>It is ' + name + '\'s turn to move a dice from unallocated to another mat.</p>')
+
+
+
+
 
 
   drawCommentaryForChallenges: () ->
@@ -215,6 +237,7 @@ class GameScreen extends Screen
     else
       $('#challenge-title').hide()
       $('#answer-submit-btn').hide()
+      @drawCommentaryForAllocating()
       $('#unallocated li').bind 'click', (event) ->
         event.stopPropagation()
         thisReference.allocMenuContext(this)

@@ -6,6 +6,7 @@ DICEFACESYMBOLS = DiceFace.symbols
 {Evaluator} = require './Evaluator.js'
 DEBUG = true
 class Game
+
   goalTree: undefined
   goalArray: []
   goalValue: undefined
@@ -69,6 +70,10 @@ class Game
     possiblePlayers: []
     # {Number[]} array of indices to player array of the players who think now challenge not possible
     impossiblePlayers: []
+    # {Date} The Unix timestamp of when the current turn started
+    turnStartTime: undefined
+    # {Number} The duration of the current turn in seconds
+    turnDuration: undefined
 
 
   
@@ -80,13 +85,14 @@ class Game
     @nowJsGroupName = "game#{gameNumber}"
     @allocate()
 
+
   goalHasBeenSet: () ->
     @goalTree? #returns false if goalTree undefined, true otherwise
 
 
-  setUnallocated: (array) ->
-
+  # Convert a player id to a socketid and vica versa
   getPlayerIdBySocket: (socket) -> @playerSocketIds.indexOf(socket)
+  getPlayerSocketById: (id) -> @playerSocketIds[id]
 
 
   ###*
@@ -112,14 +118,15 @@ class Game
 
   ###*
    * [setGoal description]
+   * the function that calls this (everyone.now.receiveGoal() in server.coffee) handles any thrown exceptions
    * @param {Integer} dice [description]
   ###
-  setGoal: (dice) ->  #the function that calls this (everyone.now.receiveGoal() in server.coffee) handles any thrown exceptions
+  setGoal: (dice, turnEndCallback) ->  
     if @goalHasBeenSet() #if goal already set
       throw "Goal already set"
     
     @checkGoal(dice)
-    @start()
+    @start(turnEndCallback)
     #e = new Evaluator()
     #val = e.evaluate(@goalTree)
     #console.log "Goal parsed and evaluates to #{val}"
@@ -191,11 +198,24 @@ class Game
   isFull: () -> @players.length == @playerLimit
   getNumPlayers: () -> return @players.length
 
+  
+  ###*
+   * Get the index of the player who moves the first dice from unallocated
+   * @return {[Integer} An index to the players array
+  ###
+  getFirstTurnPlayerId: () -> 
+    if !@goalSetter? then @getGoalSetterPlayerId()
+    return @goalSetter+1%@players.length
+  # If we want to get his socket id instead of the player array index
+  getFirstTurnPlayerSocketId: () -> @getPlayerSocketById(@getFirstTurnPlayerId())
+
+
+
   ###*
    * Return the index of the player who will set the goal
    * @return {[Integer} An index to the players array
   ###
-  getFirstTurnPlayer: () -> 
+  getGoalSetterPlayerId: () ->
     if !@goalSetter?
       @goalSetter = if DEBUG then 0 else Math.floor(Math.random() * @players.length) #set a random goalSetter
     @goalSetter
@@ -212,11 +232,44 @@ class Game
   validateChallenge: (socketId) ->
     (socketId != @playerSocketIds[((@state.currentPlayer-1)+@players.length)%@players.length])
 
-  start: ->
-    @state.currentPlayer = (@goalSetter+1)%@players.length
 
-  nextTurn: () ->
+  goalStart: (turnEndCallback) ->
+    @started = true
+    # TODO: add callback for timer
+
+
+  start: (turnEndCallback) ->
+    @state.currentPlayer = (@goalSetter+1)%@players.length
+    @resetTurnTimer(5, turnEndCallback)
+    
+    
+
+  nextTurn: (turnEndCallback) ->
+    console.log "NEXT TURN"
     @state.currentPlayer = (@state.currentPlayer+1)%@players.length
+    @resetTurnTimer(5, turnEndCallback)
+    
+    
+    
+
+  ###*
+   * When the turn has changed reset the timer back to the start.  
+   * @param  {Integer} turnSeconds       The number of seconds until the each of the turn.
+   * @param  {Function} endOfTurnTimeFunc This function is called when the time is up.
+  ###
+  resetTurnTimer: (turnSeconds, turnEndCallback) ->
+    @state.turnStartTime = Date.now()
+    @state.turnDuration = turnSeconds
+    clearInterval(@turnTimer)
+    # Has the player completed his turn BEFORE end of time?
+    thisReference = this
+    @turnTimer = setInterval(-> 
+      thisReference.nextTurn(turnEndCallback)
+      if(turnEndCallback?) then turnEndCallback() else console.log "TURN OVER"
+    , turnSeconds*1000)
+
+
+
 
 
   checkValidAllocationMove: (index, clientId) ->
@@ -230,23 +283,23 @@ class Game
       throw "Index for move out of bounds"
     else true
 
-  moveToRequired: (index, clientId) ->
+  moveToRequired: (index, clientId, turnEndCallback) ->
     if(@checkValidAllocationMove(index, clientId))
       @state.required.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
-      @nextTurn()
+      @nextTurn(turnEndCallback)
 
-  moveToOptional: (index, clientId) ->
+  moveToOptional: (index, clientId, turnEndCallback) ->
    if(@checkValidAllocationMove(index, clientId))
       @state.optional.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
-      @nextTurn()
+      @nextTurn(turnEndCallback)
 
-  moveToForbidden: (index, clientId) ->
+  moveToForbidden: (index, clientId, turnEndCallback) ->
     if(@checkValidAllocationMove(index, clientId))
       @state.forbidden.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
-      @nextTurn()
+      @nextTurn(turnEndCallback)
 
   ###*
    * Attempt to g into the decide stage of a now challenge.

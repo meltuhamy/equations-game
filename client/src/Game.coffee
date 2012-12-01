@@ -40,6 +40,8 @@ class Game
   @isChallenger: () -> @myPlayerId == @challengerId
   @solutionRequired: -> (@agreesWithChallenge() && @challengeModeNow) || (!@agreesWithChallenge() && !@challengeModeNow)
 
+  @getCurrentTurnPlayerName: () -> @players[@state.currentPlayer].name
+
  
   # {Json} The json of the current state of the game and what type each dice is.
   # unallocated, required, optional, forbidden are arrays of dicefaces.
@@ -55,6 +57,10 @@ class Game
     possiblePlayers: []
     # {Number[]} array of indices to player array of the players who think now challenge not possible
     impossiblePlayers: []
+     # {Date} The Unix timestamp of when the current turn started
+    turnStartTime: undefined
+    # {Number} The duration of the current turn in seconds
+    turnDuration: undefined
 
 
   ###*
@@ -65,6 +71,13 @@ class Game
     @goalScreenId = ScreenSystem.addScreen(new GoalScreen())
     @lobbyScreenId = ScreenSystem.addScreen(new LobbyScreen())
     @gameWaitScreenId = ScreenSystem.addScreen(new GoalWaitScreen())
+
+  ###*
+   * The server told us we took too long
+  ###
+  @receiveMoveTimeUp: () ->
+    console.log "PLAYER TOOK TOO LONG!!!!"
+
 
 
   ###*
@@ -109,13 +122,6 @@ class Game
   # Time for players to submit solutions.
   @receiveChallengeSolutionsTurn: () ->
     @currentChallengeStage = @ChallengeStages.ChallengeSolution
-
-
-
-
-
-
-
 
 
 
