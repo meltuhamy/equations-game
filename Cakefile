@@ -101,6 +101,13 @@ dostylus = (watch, callback) ->
   stylus.on 'exit', (code) ->
     callback?() if code is 0
 
+watch = () ->
+  watchScript = spawn 'sh', ['watchClient.sh', config.CAKE]
+  watchScript.stderr.on 'data', (data) ->
+    process.stderr.write data.toString()
+  watchScript.stdout.on 'data', (data) ->
+    print data.toString()
+
 setupNpmDependencies = (callback) ->
   dependencies = ['install', 'coffee-script', 'express', 'socket.io', 'now', 'stylus', 'jasmine-node', 'node-inspector', 'nib', 'soda']
   npmInstaller = spawn 'npm', dependencies
@@ -110,6 +117,8 @@ setupNpmDependencies = (callback) ->
     print data.toString()
   npmInstaller.on 'exit', (code) ->
     callback?() if code is 0
+
+
 
 
 task 'setup', 'Set up dependencies', ->
@@ -133,6 +142,9 @@ task 'build', 'Compile everything', ->
 
 task 'client', 'Compile client code including .styl', ->
   client()
+
+task 'watch', 'Compile client when changes made in client/src/*', ->
+  watch()
 
 task 'server', 'Compile server code', ->
   server()
