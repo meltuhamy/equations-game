@@ -12,6 +12,7 @@ class GoalScreen extends Screen
 
   
   constructor: () ->
+  
 
 
   ###*

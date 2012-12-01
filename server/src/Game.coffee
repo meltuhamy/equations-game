@@ -245,7 +245,6 @@ class Game
     
 
   nextTurn: (turnEndCallback) ->
-    console.log "NEXT TURN"
     @state.currentPlayer = (@state.currentPlayer+1)%@players.length
     @resetTurnTimer(5, turnEndCallback)
     

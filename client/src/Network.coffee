@@ -109,7 +109,6 @@ now.receiveGoalTurnEnd = (goalArray) ->
 ###
 now.receiveState = (state) ->
   Game.updateState(state)
-  ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
 
 

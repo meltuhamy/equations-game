@@ -73,16 +73,30 @@ div#top-ctnr
         border-radius: 3px
         line-height: 22px
 
-  div#timer-knob-ctnr
+  div#timer-ctnr
     float: left
     background: #0078CD
     border-radius(5px)
     padding: 10px 10px
 
+  div#timer-knob-ctnr
+    float:left
+
+  div#timer-text-ctnr
+    float:left
+    clear: left
+    margin-top: -38px
+    text-align: left
+    padding-left: 21px
+    font-size: 13px
+    color: #88E2FF
+    font-weight: bold
+
   /* Add an arrow connecting player list to the commentary box */
   div#player-list:after 
     left: 100%
     border: solid transparent
+    content: " "
     content: " "
     height: 0
     width: 0

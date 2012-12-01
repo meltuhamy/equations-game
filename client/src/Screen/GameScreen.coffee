@@ -34,6 +34,9 @@ class GameScreen extends Screen
   # {Sketcher} The HTML5 drawing area
   sketcher: undefined
 
+  # {Integer} The id of the interval for the turn timer
+  turnTimer: undefined
+
 
   constructor: () -> 
 
@@ -48,6 +51,8 @@ class GameScreen extends Screen
     $("#now-button").bind("click", @nowButtonHandler)
     $("#never-button").bind("click", @neverButtonHandler)
 
+
+
     ### Sketcher stuf ###
     @initSketcher()
     
@@ -55,8 +60,9 @@ class GameScreen extends Screen
     knobSettings = 
       width : 50
       height : 50
-      fgColor : '#EEEEEE'
-      bgColor : '#87CEEB'
+      fgColor : '#87CEEB'
+      bgColor : '#EEEEEE'
+      displayInput: false
     $('#timer-knob').knob(knobSettings)
 
 
@@ -122,19 +128,44 @@ class GameScreen extends Screen
     
 
 
-  ###*
-   * Called by Network telling us that a state has changed (likely a move has been made).
-  ###
+
+  # When the game state has changed
   onUpdatedState:() ->
     @neutralContext()
+    $('#timer-knob').trigger 'configure', {min: 0, max: 50}
     if(Game.challengeMode)
       $('#container').attr('data-challenge', 'now')
       $('#container').attr('data-glow', 'on')
       $('#now-button').hide()
       $('#never-button').hide()
 
+  knobInterval: 100
 
-   
+
+  # When the player has changed on a state change
+  onUpdatedPlayerTurn:() ->
+    clearInterval(@turnTimer)
+    # Every second 
+    thisReference = this
+    $('#timer-knob').val(Game.state.turnDuration).trigger('change');
+    value = @getKnobFaceTime()
+    $('#timer-text-ctnr').html("#{value}")
+    thisReference = this
+    knobInterval = @knobInterval
+    @turnTimer = setInterval ->
+      thisReference.doChangeKnob(thisReference)
+    , @knobInterval
+
+  doChangeKnob: (ref) ->
+    timeElapsed = Game.state.turnDuration*(1000/ref.knobInterval) - (Math.floor((Date.now() - Game.state.turnStartTime)))/ref.knobInterval
+    $('#timer-knob').val(timeElapsed).trigger('change')
+    value = ref.getKnobFaceTime()
+    $('#timer-text-ctnr').html("#{value}")
+
+  getKnobFaceTime: () -> Math.round(Game.state.turnDuration - (Math.floor((Date.now() - Game.state.turnStartTime)))/1000)
+
+
+
 
   ###*
    * When the turn has changed, update the player information.
