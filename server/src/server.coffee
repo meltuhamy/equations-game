@@ -105,7 +105,7 @@ everyone.now.moveToRequired = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
   try
-    game.moveToForbidden(index, this.user.clientId, ->
+    game.moveToRequired(index, this.user.clientId, ->
       groupReference.receiveMoveTimeUp()
       groupReference.receiveState(game.state)
     )
@@ -143,27 +143,45 @@ everyone.now.moveToForbidden = (index) ->
 
 everyone.now.nowChallengeRequest = () ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
-  game.nowChallenge(this.user.clientId)
+  groupReference = group.now
+  game.nowChallenge(this.user.clientId, ->
+    groupReference.receiveMoveTimeUp()
+    groupReference.receiveState(game.state)
+    group.now.receiveChallengeSolutionsTurn()
+  )
   group.now.receiveNowChallengeDecideTurn(game.getPlayerIdBySocket(this.user.clientId))
   group.now.receiveState(game.state)
 
 everyone.now.neverChallengeRequest = () ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
-  console.log "Never challenge made"
-  game.neverChallenge(this.user.clientId)
+  groupReference = group.now
+  game.neverChallenge(this.user.clientId, ->
+    groupReference.receiveMoveTimeUp()
+    groupReference.receiveState(game.state)
+    group.now.receiveChallengeSolutionsTurn()
+    console.log "YOU DID SUBMIT A DECISION IN TIME"
+  )
   group.now.receiveNeverChallengeDecideTurn(game.getPlayerIdBySocket(this.user.clientId))
   group.now.receiveState(game.state)
 
 
 everyone.now.challengeDecision = (agree) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
+  groupReference = group.now
+  callback = ->
+    groupReference.receiveMoveTimeUp()
+    groupReference.receiveState(game.state)
+    console.log "YOU DID SUBMIT A SOLUTION IN TIME"
+    #group.now.receiveChallengeRoundEndTurn()
   try
     if((agree && game.challengeModeNow) || (!agree && !game.challengeModeNow))
-      game.submitPossible(this.user.clientId)
+      game.submitPossible(this.user.clientId, callback)
     else if((agree && !game.challengeModeNow) || (!agree && game.challengeModeNow))
-      game.submitImpossible(this.user.clientId)
+      game.submitImpossible(this.user.clientId, callback)
     group.now.receiveState(game.state)
-    if(game.checkAllDecisionsMade()) then group.now.receiveChallengeSolutionsTurn()
+    if(game.allDecisionsMade())
+      group.now.receiveChallengeSolutionsTurn()
+
   catch e
     this.now.badMove(e)
     console.log e

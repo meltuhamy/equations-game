@@ -163,12 +163,7 @@ class Game
     if(newState.currentPlayer != prevstate.currentPlayer)
       ScreenSystem.getCurrentScreen().onUpdatedPlayerTurn() 
  
-
-
-
-
-
-
+ 
   # Is it currently our turn?
   # @return {Boolean} True if it is our turn and false its someone else's/
   @isMyTurn: () -> @state.currentPlayer == @myPlayerId

@@ -66,9 +66,9 @@ class Game
     # What turn number is it? This increments after a turn has been made. 
     # The dice setting has turnNumber = 0. The first turn to move dice has turnNumber = 1. 
     #turnNumber
-    # {Number[]} array of indices to player array of the players who think now challenge possible
+    # {Number[]} array of indices to player array of the players need to submit a solution
     possiblePlayers: []
-    # {Number[]} array of indices to player array of the players who think now challenge not possible
+    # {Number[]} array of indices to player array of the players are not submitting a solution
     impossiblePlayers: []
     # {Date} The Unix timestamp of when the current turn started
     turnStartTime: undefined
@@ -240,16 +240,15 @@ class Game
 
   start: (turnEndCallback) ->
     @state.currentPlayer = (@goalSetter+1)%@players.length
-    @resetTurnTimer(5, turnEndCallback)
+    @resetTurnTimer(7, turnEndCallback)
     
     
 
   nextTurn: (turnEndCallback) ->
     @state.currentPlayer = (@state.currentPlayer+1)%@players.length
-    @resetTurnTimer(5, turnEndCallback)
+    @resetTurnTimer(7, turnEndCallback)
     
-    
-    
+  
 
   ###*
    * When the turn has changed reset the timer back to the start.  
@@ -262,11 +261,23 @@ class Game
     clearInterval(@turnTimer)
     # Has the player completed his turn BEFORE end of time?
     thisReference = this
-    @turnTimer = setInterval(-> 
-      thisReference.nextTurn(turnEndCallback)
+    @turnTimer = setInterval(->
+      thisReference.handleTimeOut(turnEndCallback)
       if(turnEndCallback?) then turnEndCallback() else console.log "TURN OVER"
     , turnSeconds*1000)
 
+
+  handleTimeOut: (turnEndCallback) ->
+    if(@challengeMode)
+      # Move players into the option that makes them submit a solution
+      if(!@allDecisionsMade())
+        console.log "NOT EVERYONE MADE DECISION"
+        for p in @players
+          index = p.index
+          if((index not in @state.possiblePlayers) and (index not in @state.impossiblePlayers))
+            @submitPossible(@getPlayerSocketById(index))
+    else
+      @nextTurn(turnEndCallback)
 
 
 
@@ -304,25 +315,35 @@ class Game
    * Attempt to g into the decide stage of a now challenge.
    * @param  {Integer} clientId The nowjs unqiue id for client
   ###
-  nowChallenge: (clientId) ->
+  nowChallenge: (clientId, turnEndCallback) ->
     @challengeMode = true
     @challengeModeNow = true
     @challenger = clientId
     @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
+    @resetTurnTimer(9, turnEndCallback)
 
-  neverChallenge: (clientId) ->
+
+  neverChallenge: (clientId, turnEndCallback) ->
     @challengeMode = true
     @challengeModeNow = false
     @challenger = clientId
     @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
+    @resetTurnTimer(9, turnEndCallback)
 
-  submitPossible: (clientId) ->
+  submitPossible: (clientId, turnEndCallback) ->
     @checkChallengeDecision()
     @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
+    if(@allDecisionsMade())
+      # Give 40 seconds for the solutions turn
+      @resetTurnTimer(40, turnEndCallback)
 
-  submitImpossible: (clientId) ->
+  submitImpossible: (clientId, turnEndCallback) ->
     @checkChallengeDecision()
     @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
+    if(@allDecisionsMade())
+      # Give 40 seconds for the solutions turn
+      @resetTurnTimer(7, turnEndCallback)
+
 
   checkChallengeDecision:(clientId) ->
     if !@challengeMode
@@ -330,8 +351,9 @@ class Game
     if (clientId in @state.possiblePlayers) || (clientId in @state.impossiblePlayers)
       throw "Already stated your opinion"
 
+
   # Check if everyone has submitted their decisions for the decision making turn
-  checkAllDecisionsMade:() -> (@players.length == (@state.possiblePlayers.length + @state.impossiblePlayers.length))
+  allDecisionsMade:() -> (@players.length == (@state.possiblePlayers.length + @state.impossiblePlayers.length))
 
 
 

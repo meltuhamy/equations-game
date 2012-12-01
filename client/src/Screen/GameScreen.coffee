@@ -132,18 +132,12 @@ class GameScreen extends Screen
   # When the game state has changed
   onUpdatedState:() ->
     @neutralContext()
-    $('#timer-knob').trigger 'configure', {min: 0, max: 50}
+    $('#timer-knob').trigger 'configure', {min: 0, max: Game.state.turnDuration * 1000/@knobInterval}
     if(Game.challengeMode)
       $('#container').attr('data-challenge', 'now')
       $('#container').attr('data-glow', 'on')
       $('#now-button').hide()
       $('#never-button').hide()
-
-  knobInterval: 100
-
-
-  # When the player has changed on a state change
-  onUpdatedPlayerTurn:() ->
     clearInterval(@turnTimer)
     # Every second 
     thisReference = this
@@ -155,6 +149,14 @@ class GameScreen extends Screen
     @turnTimer = setInterval ->
       thisReference.doChangeKnob(thisReference)
     , @knobInterval
+
+  knobInterval: 100
+
+
+  # When the player has changed on a state change
+  onUpdatedPlayerTurn:() ->
+
+
 
   doChangeKnob: (ref) ->
     timeElapsed = Game.state.turnDuration*(1000/ref.knobInterval) - (Math.floor((Date.now() - Game.state.turnStartTime)))/ref.knobInterval
@@ -226,9 +228,11 @@ class GameScreen extends Screen
         $('#challenge-agree-btn').unbind 'click'
         $('#challenge-agree-btn').bind 'click', (event) ->
           Network.sendChallengeDecision(true)
+          clearInterval(thisReference.turnTimer)
         $('#challenge-disagree-btn').unbind 'click'
         $('#challenge-disagree-btn').bind 'click', (event) ->
           Network.sendChallengeDecision(false)
+          clearInterval(thisReference.turnTimer)
       else 
         $('#turn-notification').html('<p>Please wait for other players to decide.</p>')
     else if(Game.isChallengeSolutionTurn())
@@ -449,3 +453,4 @@ class GameScreen extends Screen
     Network.sendChallengeSolution(answer)
     $('#answer-submit-btn').hide()
     $('#answer-add-dice-btn').hide()
+    clearInterval(@knobInterval)
