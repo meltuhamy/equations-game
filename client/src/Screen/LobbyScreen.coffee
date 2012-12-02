@@ -70,9 +70,7 @@ class LobbyScreen extends Screen
       condition = (!difficulty? || (difficulty != 'easy' && difficulty != 'hard'))
       thisReference.handleError(condition, 'newgame-difficulty-label', 'Please select either Easy or Hard')
 
-      if(@formErrorNum == 0)
-        console.log "CREATING GAME"
-        Network.sendCreateGameRequest()
+      if(@formErrorNum == 0) then Network.sendCreateGameRequest(gameName, numPlayers)
 
       return false # this return false prevents the form being submitted (causing page refresh)
    
@@ -98,7 +96,7 @@ class LobbyScreen extends Screen
     html = '<table id="gameslist">'
     for g in @games
       html += '<tr data-gamenumber="' + g.gameNumber + '">'
-      html += "<td ><a href='#'>#{g.nowjsname}</a></td>"
+      html += "<td ><a href='#'>#{g.gameName}</a></td>"
       html += "<td>#{g.playerCount} / #{g.playerLimit} </td>"
       if(g.started)
         html += "<td>Currently playing!</td>"

@@ -11,6 +11,9 @@ class Game
   goalArray: []
   goalValue: undefined
 
+  # {String} The name of the game as it appears on the lobby etc.
+  name: ''
+
   # {Player[]} An array of players who have joined the game
   players: []
 
@@ -77,11 +80,13 @@ class Game
 
 
   
-  constructor: (players, gameNumber, gameSize) ->
+  constructor: (players, gameNumber, gameName, gameSize) ->
     @players = players
     @submittedSolutions = []
     @gameNumber = gameNumber
-    if gameSize? then @playerLimit = gameSize
+    @name = gameName
+    if gameSize?
+      if gameSize > 2 then @playerLimit = gameSize
     @nowJsGroupName = "game#{gameNumber}"
     @allocate()
 

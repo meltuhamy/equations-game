@@ -10,10 +10,10 @@ DICEFACESYMBOLS = DiceFace.symbols
 everyone = nowjs.initialize(server)
 
 gamesManager = new GamesManager()
-gamesManager.newGame()
-gamesManager.newGame()
-gamesManager.newGame()
-gamesManager.newGame()
+gamesManager.newGame('Test Game', 3)
+gamesManager.newGame('Some Game', 2)
+gamesManager.newGame('The Game', 2)
+gamesManager.newGame('One Game', 5)
 
 
 ###*
@@ -29,8 +29,8 @@ getThisGameGroup = (gameNumber) =>
     
 
 
-everyone.now.createGame = () ->
-  gamesManager.newGame()
+everyone.now.createGame = (name, numPlayers) ->
+  gamesManager.newGame(name, numPlayers)
   everyone.now.getGames()
 
 

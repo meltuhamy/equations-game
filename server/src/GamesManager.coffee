@@ -18,8 +18,8 @@ class GamesManager
   ###*
    * Add a new game to the game manager.
   ###
-  newGame: () ->
-    @games.push new Game([], @games.length)
+  newGame: (name, numplayers) ->
+    @games.push new Game([], @games.length, name, numplayers)
 
 
   ###*
@@ -32,6 +32,7 @@ class GamesManager
       gamesList.push
         # the string of the room used by nowjs for unique identification
         nowjsname: g.nowJsGroupName,
+        gameName: g.name
         # index to the games array
         gameNumber: g.gameNumber,
         playerCount: g.getNumPlayers(),
