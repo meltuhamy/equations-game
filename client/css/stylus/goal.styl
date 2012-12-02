@@ -5,6 +5,7 @@
 @import 'main'
 // -----------
 
+$dicewidth = 30px
 
 div#goalmake,
 div#goalwait
@@ -35,15 +36,15 @@ ul#added-goal,
 ul#notadded-goal
   display: inline-block
   text-align: center
-  margin: 0px 10px 0px 0px
   li.dice 
     margin-right: -5px
     border: 4px solid red
     display: inline-block
     text-align: center
     background: #CCC
-    width: $dicewidth = 30px
+    width: $dicewidth
     height: $dicewidth
+    cursor: pointer
     span
       font-family: $font-list
       font-size: 20px
@@ -72,21 +73,39 @@ ul#notadded-goal
     content: ')'
 
 
-
-ul#notadded-goal li.dice
-  color: #FFFFFF
-  text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
-  border-color:#007BD1
-  background: #777777
-  border-width: 8px
-  margin-bottom: 5px
-
-ul#added-goal li.dice
-  color: #FFFFFF
-  text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
-  border-color:#007BD1
-  background: #777777
+div#notadded-goal-ctnr
+  ul#notadded-goal 
+    float:left
+    li.dice
+      color: #FFFFFF
+      text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+      border-color:#005E9B
+      background: #777777
+      border-width: 7px 14px
+    
+div#added-goal-ctnr
+  ul#added-goal 
+    float:left
+    li.dice
+      color: #FFFFFF
+      text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+      border-color:#005E9B
+      background: #777777
+  
+div#added-goal-ctnr,
+div#notadded-goal-ctnr
   margin-bottom: 15px
+  padding: $tbpadding=10px 20px
+  background: #004E81
+  border-radius(5px) 
+  clearfix()
+  h3
+    float: left
+    margin: 10px
+    color: #4884AC
+    text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 0px
+
+
 
 button#sendgoal
   padding: 7px 30px
@@ -97,3 +116,6 @@ button#sendgoal
   font-weight: bold
   border-radius(5px)
   cursor: pointer
+
+button#sendgoal:hover
+  background: #2FA9FF

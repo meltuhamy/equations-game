@@ -1,4 +1,4 @@
 $(document).ready(->
-  Game.initialise()
+  Game.onDocumentReady()
   ScreenSystem.loadAllScreens(->Network.initialise())
 )

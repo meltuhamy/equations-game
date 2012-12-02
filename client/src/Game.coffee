@@ -13,26 +13,40 @@ class Game
   @goal: undefined
 
   # {Number} The id of screens given by the ScreenManager and used for the ScreenManager
+  @lobbyScreenId: undefined
+  @joinWaitScreenId: undefined
   @gameScreenId: undefined
   @goalScreenId: undefined
-  @lobbyScreenId: undefined
+  
   @gameWaitScreenId : undefined
 
   # {Number} The dice that will be used throughout the game. An array of diceface magic numbers.
   @globalDice: []
+
+  # {Json} A json for the list of rooms sent by the server.
+  @gameList: []
+
 
   # {Boolean} the index of the player array for the challenger
   @challengeMode: false
   @currentChallengeStage: undefined
   @ChallengeStages: {ChallengeOff: 0, ChallengeDecide:1, ChallengeSolution:2, ChallengeCheck:3}
   @challengerId: undefined
+  @challengeModeNow = undefined
+  @getChallengeName: () ->
+    if(!@challengeMode) then return ''
+    if(@challengeModeNow) then return 'Now Challenge' else return 'Never Challenge'
+
 
   # Just some functions for everyone to ask us what is going on the challenge?
   @isChallengeDecideTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeDecide
   @isChallengeSolutionTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeSolution
   @isChallengeCheckTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeCheck
-  @agreesWithChallenge: () -> @myPlayerId in @state.possiblePlayers
+  @agreesWithChallenge: () -> (@myPlayerId in @state.possiblePlayers && @challengeModeNow) || (@myPlayerId in @state.impossiblePlayers && !@challengeModeNow)
   @isChallenger: () -> @myPlayerId == @challengerId
+  @solutionRequired: -> (@agreesWithChallenge() && @challengeModeNow) || (!@agreesWithChallenge() && !@challengeModeNow)
+
+  @getCurrentTurnPlayerName: () -> @players[@state.currentPlayer].name
 
  
   # {Json} The json of the current state of the game and what type each dice is.
@@ -49,16 +63,45 @@ class Game
     possiblePlayers: []
     # {Number[]} array of indices to player array of the players who think now challenge not possible
     impossiblePlayers: []
+     # {Date} The Unix timestamp of when the current turn started
+    turnStartTime: undefined
+    # {Number} The duration of the current turn in seconds
+    turnDuration: undefined
 
 
   ###*
    * Initialise the game. Add screens. Called localled on page load.
   ###
-  @initialise: () ->
+  @onDocumentReady: () ->
+    @lobbyScreenId = ScreenSystem.addScreen(new LobbyScreen())
+    @joinWaitScreenId = ScreenSystem.addScreen(new JoinWaitScreen())
     @gameScreenId = ScreenSystem.addScreen(new GameScreen())
     @goalScreenId = ScreenSystem.addScreen(new GoalScreen())
-    @lobbyScreenId = ScreenSystem.addScreen(new LobbyScreen())
     @gameWaitScreenId = ScreenSystem.addScreen(new GoalWaitScreen())
+
+
+  @onConnection: () ->
+    Network.sendGameListRequest()
+    ScreenSystem.renderScreen(@lobbyScreenId)
+
+  # Update the gamelist json - the list of info about all games in lobby.
+  @updateGameList: (gameListJson) -> 
+    @gameList = gameListJson
+    ScreenSystem.getCurrentScreen().onUpdatedGameList(@gameList)
+    
+    
+  @joinGame: (gameNumber) ->
+    Network.sendJoinGameRequest(gameNumber)
+    ScreenSystem.renderScreen(@joinWaitScreenId)
+
+
+
+  ###*
+   * The server told us we took too long
+  ###
+  @receiveMoveTimeUp: () ->
+    console.log "PLAYER TOOK TOO LONG!!!!"
+
 
 
   ###*
@@ -85,21 +128,24 @@ class Game
    * Time for the players to choose if they agree with challenge.
    * @param  {Integer} challengerId The challenger
   ###
+  # TODO: Factorise this
   @receiveNowChallengeDecideTurn: (challengerId) ->
     @challengeMode = true
     @currentChallengeStage = @ChallengeStages.ChallengeDecide
     @challengerId = challengerId
+    @challengeModeNow = true
+
+  @receiveNeverChallengeDecideTurn: (challengerId) ->
+    @challengeMode = true
+    @currentChallengeStage = @ChallengeStages.ChallengeDecide
+    @challengerId = challengerId
+    @challengeModeNow = false
+
 
 
   # Time for players to submit solutions.
-  @receiveNowChallengeSolutionsTurn: () ->
+  @receiveChallengeSolutionsTurn: () ->
     @currentChallengeStage = @ChallengeStages.ChallengeSolution
-
-
-
-
-
-
 
 
 
@@ -135,8 +181,13 @@ class Game
    * @param {Json} newState The json of the new state of the game - given by server.
   ###
   @updateState: (newState) ->
+    prevstate = @state
     @state = newState
-
+    ScreenSystem.getCurrentScreen().onUpdatedState() 
+    if(newState.currentPlayer != prevstate.currentPlayer)
+      ScreenSystem.getCurrentScreen().onUpdatedPlayerTurn() 
+ 
+ 
   # Is it currently our turn?
   # @return {Boolean} True if it is our turn and false its someone else's/
   @isMyTurn: () -> @state.currentPlayer == @myPlayerId

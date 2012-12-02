@@ -3,8 +3,13 @@
 class Network
   @initialise: ->
     now.ready ->
-      now.getGames()
+      Game.onConnection()
+      
+  @sendGameListRequest: () ->
+    now.getGames()
 
+  @sendCreateGameRequest: (gameName, numberPlayers) ->
+    now.createGame(gameName, numberPlayers)
 
   @sendJoinGameRequest: (gameNumber) ->
     now.addClient(gameNumber)
@@ -36,12 +41,18 @@ class Network
   @sendNowChallengeRequest: () ->
     now.nowChallengeRequest()
 
-  # Tell the server our decision for the now challenge. isPossible=true if we think is possible
-  @sendNowChallengeDecision: (isPossible) ->
-    now.nowChallengeDecision(isPossible)
+  # It wasn't our turn previously. Tell the server we want to make a never challenge
+  @sendNeverChallengeRequest: () ->
+    now.neverChallengeRequest()
 
-  @sendNowChallengeSolution: (answer) ->
-    now.nowChallengeSolution(answer)
+
+  @sendChallengeDecision: (agree) ->
+    now.challengeDecision(agree)
+
+  @sendChallengeSolution: (answer) ->
+    now.challengeDecision(answer)
+
+
 
 
 
@@ -66,18 +77,23 @@ now.acceptPlayer = (id, dicefaceSymbols) -> #id is the index
                   nowjsname, roomNumber, playerCount, playerLimit, started
 ###
 now.receiveGameList = (gameListJson) ->
-  ScreenSystem.renderScreen(Game.lobbyScreenId, {gameListJson: gameListJson})
+  # TODO: fix this
+  Game.updateGameList(gameListJson)
 
+
+
+now.receiveMoveTimeUp = () ->
+  Game.receiveMoveTimeUp()
 
 
 ###*
  * Called by the server once sufficient players have joined the game, to start the game.
  * @param  {Player[]} players                 An array of player object
  * @param  {Number[]} resources             Array of dicefaces reperesenting the resources dicefaces
- * @param  {Number} firstTurnPlayerIndex      The index to this.players that specifies the goal setter
+ * @param  {Number} goalSetterIndex      The index to this.players that specifies the goal setter
 ###
-now.receiveGoalTurn = (players, resources, firstTurnPlayerIndex) ->
-  Game.goalTurn(players, resources, firstTurnPlayerIndex)
+now.receiveGoalTurn = (players, resources, goalSetterIndex) ->
+  Game.goalTurn(players, resources, goalSetterIndex)
   
 
 
@@ -99,7 +115,6 @@ now.receiveGoalTurnEnd = (goalArray) ->
 ###
 now.receiveState = (state) ->
   Game.updateState(state)
-  ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
 
 
@@ -113,14 +128,25 @@ now.receiveNowChallengeDecideTurn = (challengerId) ->
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
 
+###*
+ * 
+###
+now.receiveNeverChallengeDecideTurn = (challengerId) ->
+  Game.receiveNeverChallengeDecideTurn(challengerId)
+  ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
+
+
+
+
 
 ###*
  * Now that the decision making has finished, ppl who agree send solutions.
  * @param  {Number} challengerId The id if the challenge
 ###
-now.receiveNowChallengeSolutionsTurn = ->
-  Game.receiveNowChallengeSolutionsTurn()
+now.receiveChallengeSolutionsTurn = ->
+  Game.receiveChallengeSolutionsTurn()
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
+
 
 
 

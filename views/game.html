@@ -5,11 +5,19 @@
         </ul>
         <span id="now-button">Now</span>
         <span id="never-button">Never</span>
+        <span id="challenge-title"></span>
     </div>
 
     <div id="player-list">
         <ul>
         </ul>
+    </div>
+
+    <div id="timer-ctnr">
+        <div id="timer-knob-ctnr">
+            <input type="text" value="0" id="timer-knob"/>
+        </div>
+        <div id="timer-text-ctnr"></div>
     </div>
 
     <!--<div id="commentary_ctnr">
@@ -69,28 +77,13 @@
     <li>
         <div id="rough-area-container">
             <div id="rough-area-board">
-                <canvas id="simple_sketch"></canvas>
-                <script type="text/javascript">
-
-                  $(function() {
-                    var cv = document.getElementById('simple_sketch');
-                    var ctx = cv.getContext('2d');
-                    ctx.canvas.width  = $(cv).parent().width();
-                    ctx.canvas.height = $(cv).parent().height();
-                    $(window).resize(function(){
-                        ctx.canvas.width  = $(cv).parent().width();
-                        ctx.canvas.height = $(cv).parent().height();
-                    });
-                    $('#simple_sketch').sketch();
-                  });
-
-                </script>
+                <canvas id="simple_sketch" />
             </div>
 
             <div id="rough-area-buttons">
-                <a class="mini-button"><span>Undo</span></span></a>
-                <a class="mini-button"><span>Redo</span></span></a>
-                <a class="mini-button"><span>Clear</span></span></a>
+                <a class="mini-button" title="Use the pencil" id="sketchPencil"><span>Pencil</span></span></a>
+                <a class="mini-button" title="Use the rubber" id="sketchRubber"><span>Rubber</span></span></a>
+                <a class="mini-button" title="Clear drawing" id="sketchClear"><span>Clear</span></span></a>
             </div>
         </div>
     </li>

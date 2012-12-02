@@ -14,15 +14,95 @@ div#lobby
     color: #FFFFFF
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
     margin-bottom: 5px
-  table#gameslist 
-    text-align: left
-    width: 100%
-    td
-      color: #FFFFFF
-      padding: 5px
-    tr:nth-child(2n+1)
-      background: #007DD5
-    a
-      color: #FF8F64
-      text-decoration: none
-      font-weight: bold
+  div#gameslist-ctnr
+    margin-bottom: 10px
+    table#gameslist 
+      text-align: left
+      width: 100%
+      td
+        color: #87C2EB
+        text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+        padding: 5px
+        cursor:pointer
+      tr:nth-child(2n+1)
+        background: #0071C0
+      a
+        color: #A4D2D6
+        text-decoration: none
+        border-bottom: 1px solid #005855;
+        text-shadow: none
+        display: inline-block;
+        line-height: 23px
+        padding 0px 13px
+      tr:hover 
+        background: #004E81
+        a
+          color: #F5AF47
+
+div#addgame-btn-ctnr
+  margin-bottom: 10px
+
+div#new-game-form-ctnr
+  display: none
+  margin-bottom: 10px
+  padding:10px 20px
+  border-radius(5px)
+  color: #97B1C1
+  text-shadow: rgba(0, 0, 0, 0.2) 0px 1px 0px
+  background: #004E81
+
+
+div#joinwait
+  background: #005896
+  border-radius(5px)
+  padding: 20px
+  h2
+    color: #FFFFFF
+    margin-bottom: 0px
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+  p
+    color: #7D879B
+    margin-bottom: 10px
+
+
+form#new-game
+  clearfix()
+  padding-top: 15px
+  p
+    margin-bottom: 10px
+    clearfix()
+  label, select, input
+    float:left
+    clear: none
+
+  label
+    margin-right: 10px
+    width: 200px
+    span
+      float:left
+      clear: left
+      font-size:11px
+    span.form-title
+      font-size:14px
+      font-weight:bold
+      color: #51B8F7
+    span.form-error
+      color: #8D2200
+      clear:left
+      text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+  input
+    background: #005E9B
+    color: #51B8F7
+    padding: 7px 15px
+    font-size: 20px
+
+
+// For screen widths 0 <= w <= 600
+// Make the form labels have a auto width
+@media all and (max-width: 600px)
+  form#new-game label 
+    width: auto
+  form#new-game label, 
+  form#new-game select, 
+  form#new-game input
+    clear:left

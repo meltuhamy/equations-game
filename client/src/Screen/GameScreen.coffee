@@ -25,6 +25,21 @@ class GameScreen extends Screen
   # {Number[]} An array of indices to the globalDice array of dice in answer area.
   answerAreaDice: []
 
+  # {Boolean[]} A bitmap telling us if the globalDice has been used in answer area.
+  usedInAnswer: []
+
+  # {Boolean} Have we submitted the solution
+  submittedSolution: false
+
+  # {Boolean} Have we submitted our decision for the challenge
+  submittedDecision: false
+
+  # {Sketcher} The HTML5 drawing area
+  sketcher: undefined
+
+  # {Integer} The id of the interval for the turn timer
+  turnTimer: undefined
+
 
   constructor: () -> 
 
@@ -40,6 +55,50 @@ class GameScreen extends Screen
     $("#never-button").bind("click", @neverButtonHandler)
 
 
+
+    ### Sketcher stuf ###
+    @initSketcher()
+    
+    ### Timer Knob ###
+    knobSettings = 
+      width : 50
+      height : 50
+      fgColor : '#87CEEB'
+      bgColor : '#EEEEEE'
+      displayInput: false
+    $('#timer-knob').knob(knobSettings)
+
+
+  ###*
+   * Initialises the html sketcher element
+   * @return {[type]} [description]
+  ###
+  initSketcher: () ->
+    cv = document.getElementById("simple_sketch")
+    ctx = cv.getContext("2d")
+
+    #Set the canvas size to fit its parent div
+    ctx.canvas.width = $(cv).parent().width()
+    ctx.canvas.height = $(cv).parent().height()
+
+    #On window resize, resize canvas too.
+    $(window).resize ->
+      ctx.canvas.width = $(cv).parent().width()
+      ctx.canvas.height = $(cv).parent().height()
+    @sketcher = new Sketcher("simple_sketch")
+
+    #Click listeners for the sketch buttons
+    thisReference = this
+    $("#sketchClear").click (event) ->
+      thisReference.sketcher.clear()
+    $("#sketchPencil").click (event) ->
+      thisReference.sketcher.changeToPencil()
+    $("#sketchRubber").click (event) ->
+      thisReference.sketcher.changeToRubber()
+
+
+
+
   
   ###*
    * Change the current contextual state.
@@ -49,37 +108,76 @@ class GameScreen extends Screen
   ###
   changeToContext: (contextId, onChange, mouse) ->
     if(@contextChangeCallback?) then @contextChangeCallback()
-    $("#container").unbind("click")
-    if(mouse) then $("#container").bind("click", mouse)
+    $(document).unbind("click")
+    if(mouse?) then $(document).bind("click", mouse)
     if(onChange?) then @contextChangeCallback = onChange
     @currentContext = contextId
 
 
+  
 
   nowButtonHandler: () ->
-    if not Game.challengeMode
+    console.log Game.challengeMode
+    if !Game.challengeMode
       Network.sendNowChallengeRequest()
 
-  #neverButtonHandler: () ->
+  neverButtonHandler: () ->
+    console.log Game.challengeMode
+    if !Game.challengeMode
+      Network.sendNeverChallengeRequest()
 
 
 
     
 
 
-  ###*
-   * Called by Network telling us that a state has changed (likely a move has been made).
-  ###
+
+  # When the game state has changed
   onUpdatedState:() ->
     @neutralContext()
+    $('#timer-knob').trigger 'configure', {min: 0, max: Game.state.turnDuration * 1000/@knobInterval}
     if(Game.challengeMode)
       $('#container').attr('data-challenge', 'now')
       $('#container').attr('data-glow', 'on')
       $('#now-button').hide()
       $('#never-button').hide()
+    clearInterval(@turnTimer)
 
 
-   
+    # Add a setinterval (faster than 1sec) to countdown the timer
+    thisReference = this
+    $('#timer-knob').val(Game.state.turnDuration).trigger('change');
+    value = @getKnobFaceTime()
+    $('#timer-text-ctnr').html("#{value}")
+    thisReference = this
+    knobInterval = @knobInterval
+    @turnTimer = setInterval ->
+      thisReference.doChangeKnob(thisReference)
+    , @knobInterval
+
+
+
+
+    #if(@submittedSolution) then clear
+
+  knobInterval: 100
+
+
+  # When the player has changed on a state change
+  onUpdatedPlayerTurn:() ->
+
+
+
+  doChangeKnob: (ref) ->
+    timeElapsed = Game.state.turnDuration*(1000/ref.knobInterval) - (Math.floor((Date.now() - Game.state.turnStartTime)))/ref.knobInterval
+    $('#timer-knob').val(timeElapsed).trigger('change')
+    value = ref.getKnobFaceTime()
+    $('#timer-text-ctnr').html("#{value}")
+
+  getKnobFaceTime: () -> Math.round(Game.state.turnDuration - (Math.floor((Date.now() - Game.state.turnStartTime)))/1000)
+
+
+
 
   ###*
    * When the turn has changed, update the player information.
@@ -111,6 +209,55 @@ class GameScreen extends Screen
     for c in old
       oldHtml += '<li>' + c + '</li>'
   ###
+
+  drawCommentaryForAllocating: () ->
+    if(Game.isMyTurn())
+      $('#turn-notification').attr('data-attention', 'on')
+      $('#turn-notification').html('<p>It\'s your turn! Choose a dice from unallocated to move to another mat.</p>')
+    else
+      $('#turn-notification').attr('data-attention', 'off')
+      name = Game.getCurrentTurnPlayerName()
+      $('#turn-notification').html('<p>It is ' + name + '\'s turn to move a dice from unallocated to another mat.</p>')
+
+
+
+
+
+
+  drawCommentaryForChallenges: () ->
+    # We have a now/never challenge. Draw the buttons to let him agree/disagree
+    buttonsHtml = '<span id="challenge-agree-btn">Agree</span> <span id="challenge-disagree-btn">Disagree</span>'
+    thisReference = this
+    if(Game.isChallengeDecideTurn())
+      if(!Game.isChallenger() && !@submittedDecision)
+          html = if(Game.challengeModeNow) then "Now Challenge! " else "Never Challenge! "
+          html += "Please select if you agree: "
+          html += buttonsHtml
+          html = '<p>' + html + '</p>'
+          $('#turn-notification').html(html)
+          $('#challenge-agree-btn').unbind 'click'
+          $('#challenge-agree-btn').bind 'click', (event) ->
+            Network.sendChallengeDecision(true)
+            thisReference.submittedDecision = true
+          $('#challenge-disagree-btn').unbind 'click'
+          $('#challenge-disagree-btn').bind 'click', (event) ->
+            Network.sendChallengeDecision(false)
+            thisReference.submittedDecision = false
+      else 
+        $('#turn-notification').html('<p>Please wait for other players to decide.</p>')
+    else if(Game.isChallengeSolutionTurn())
+      if(Game.solutionRequired())
+        if(@submittedSolution)
+          $('#turn-notification').html('<p>Please wait for other players to submit solutions</p>')
+        else
+          @changeToContext(@Contexts.Neutral, @neutralContextChange)
+          $('#turn-notification').html('<p>Please submit your solution.</p>')
+          $('#answer-submit-btn').show()
+          $('#answer-submit-btn').unbind 'click'
+          $('#answer-submit-btn').bind 'click', (event) ->
+            thisReference.submitAnswer()
+      else
+        $('#turn-notification').html('<p>Please wait for other players to submit their solutions.</p>')
     
 
   neutralContext: () ->
@@ -127,33 +274,17 @@ class GameScreen extends Screen
     $('#required li').unbind('click')
 
 
+    # Update commentary box to update progress on challenges and show agree/disagree buttons etc.
     if(Game.challengeMode)
-      decideHtml = '<span id="challenge-agree-btn">Agree</span> <span id="challenge-disagree-btn">Disagree</span>'
-      if(Game.isChallengeDecideTurn())
-        if(!Game.isChallenger())
-          $('#turn-notification').html('Select if you agree: ' + decideHtml)
-          $('#challenge-agree-btn').unbind 'click'
-          $('#challenge-agree-btn').bind 'click', (event) ->
-            Network.sendNowChallengeDecision(true)
-          $('#challenge-disagree-btn').unbind 'click'
-          $('#challenge-disagree-btn').bind 'click', (event) ->
-            Network.sendNowChallengeDecision(false)
-        else 
-          $('#turn-notification').html('Please wait')
-      if(Game.isChallengeSolutionTurn())
-        if(Game.agreesWithChallenge())
-          @changeToContext(@Contexts.Neutral, @neutralContextChange)
-          $('#turn-notification').html('Submitting solutions time')
-          $('#answer-submit-btn').show()
-          $('#answer-submit-btn').unbind 'click'
-          $('#answer-submit-btn').bind 'click', (event) ->
-            thisReference.submitAnswer()
-        else
-          @changeToContext(@Contexts.Neutral, @neutralContextChange)
-
+      $('#challenge-title').show()
+      $('#challenge-title').html(Game.getChallengeName())
+      @drawCommentaryForChallenges()
     else
+      $('#challenge-title').hide()
       $('#answer-submit-btn').hide()
+      @drawCommentaryForAllocating()
       $('#unallocated li').bind 'click', (event) ->
+        event.stopPropagation()
         thisReference.allocMenuContext(this)
 
     $('#answer-add-dice-btn').unbind('click')
@@ -169,13 +300,29 @@ class GameScreen extends Screen
 
   ### Allocation menu context ###
   allocMenuContext: (element) ->
-    #if(Game.isMyTurn())
-    @changeToContext(@Contexts.AllocMenu, @allocMenuContextChange)
-    @drawAllocationMoveMenu(element)
-    thisReference = this
-    $('#unallocated li').unbind('click')
-    $('#unallocated li').bind 'click', (event) ->
-      thisReference.allocMenuContext(this)
+    if(Game.isMyTurn())
+      thisReference = this
+      $('#unallocated li').unbind('click')
+      $('#unallocated li').bind 'click', (event) ->
+        thisReference.allocMenuContext(this)
+        event.stopPropagation()
+
+      # If the user clicks outside the menu then close it
+      exitMenuHandler  = (e) -> 
+        menu = $("#move-allocation-menu")
+        position = $(menu).position()
+        height = $(menu).height()
+        width = $(menu).width()
+        mouseXisInside = (e.clientX > position.left and e.clientX < position.left + width)
+        mouseYisInside = (e.clientY > position.top and e.clientY < position.left + height)
+        #if(!mouseXisInside || !mouseYisInside) then thisReference.changeToContext(thisReference.Contexts.Neutral)
+        thisReference.changeToContext(thisReference.Contexts.Neutral)
+      # Change the context to say the menu is now open
+      @changeToContext(@Contexts.AllocMenu, @allocMenuContextChange, exitMenuHandler)
+      @drawAllocationMoveMenu(element)
+     
+
+
 
 
 
@@ -219,7 +366,7 @@ class GameScreen extends Screen
       </div>'
     $('#container').append(html)
     #In general, remove the allocation menu one someone clicks any of the buttons
-    $("#move-allocation-menu span").click(=>@removeAllocationMoveMenu())
+    $("#move-allocation-menu span").click((event) =>@removeAllocationMoveMenu(); event.stopPropagation())
     #Add event listener for each of the "required" "optional" and "forbidden" buttons inside the menu
     $("#mamenu-required-btn").click(=>Network.moveToRequired($('#unallocated li').index($(clickedOn))))
     $("#mamenu-optional-btn").click(=>Network.moveToOptional($('#unallocated li').index($(clickedOn))))
@@ -264,22 +411,20 @@ class GameScreen extends Screen
 
       # Store the index to the global dice array
       $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', mat)
-      # Store the index to the mat array 
-      pos = $("ul#answers li.dice[data-index='#{a}']").index('ul#' + mat + ' li')
-      console.log pos
-      $("ul#answers li.dice[data-index='#{a}']").attr('data-matindex', pos)
 
-      # Make the corresponding dice in mat highlight when we hover over it
-      correspondingMatDice = $('ul#' + mat + " li.dice[data-index='#{a}']")
+      # Store the index to the mat array 
+      #pos = $('ul#' + mat + " li.dice[data-index='{a}']").index('ul#' + mat + ' li')
+      #$("ul#answers li.dice[data-index='#{a}']").attr('data-matindex', pos)
       
       $("ul#answers li.dice[data-index='#{a}']").unbind 'mouseover'
       $("ul#answers li.dice[data-index='#{a}']").bind 'mouseover', (event) ->
-        $(correspondingMatDice).attr('data-anshover', 'on')
+        $("ul#" + $(this).attr('data-alloc') + " li.dice[data-index='" + $(this).attr('data-index') + "']").attr('data-anshover', 'on')
 
       $("ul#answers li.dice[data-index='#{a}']").unbind 'mouseleave'
       $("ul#answers li.dice[data-index='#{a}']").bind 'mouseleave', (event) ->
-        $(correspondingMatDice).attr('data-anshover', 'off')
+        $("ul#" + $(this).attr('data-alloc')+" li.dice[data-index='" + $(this).attr('data-index') + "']").attr('data-anshover', 'off')
 
+      $("ul#" + mat + " li.dice[data-index='"+a+"']").attr('data-usedinans', 'true')
 
 
 
@@ -300,9 +445,22 @@ class GameScreen extends Screen
       @recolorAnswerDice()
 
   removeDiceFromAnswerArea: (pos, index) ->
+    # Find the corresponding mat and the dice in the mat and tell it that it's no longer
+    # used in our ans (usedinans=false). Also remove hover highlighting (anshover=false)
+    theDice = $("ul#answers li.dice[data-index='#{index}']")
+    theMat = theDice.attr('data-alloc')
+    theIndex = theDice.attr('data-index')
+    $("ul##{theMat} li.dice[data-index='#{theIndex}']").attr('data-usedinans', 'false')
+    $("ul##{theMat} li.dice[data-index='#{theIndex}']").attr('data-anshover', 'false')
+    # Now remove the dice from the answer area
     @answerAreaDice.splice(pos, 1)
     removedElement = @equationBuilder.removeDiceByIndex(index)
 
+
   submitAnswer: () ->
     answer = @equationBuilder.getIndicesToGlobalDice()
-    Network.sendNowChallengeSolution(answer)
+    @submittedSolution = true
+    Network.sendChallengeSolution(answer)
+    $('#answer-submit-btn').hide()
+    $('#answer-add-dice-btn').hide()
+    clearInterval(@knobInterval)

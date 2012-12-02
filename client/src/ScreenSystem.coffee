@@ -37,6 +37,8 @@ class ScreenSystem
     else 
       throw "SCREEN HASNT LOADED"
 
+
+
   ###*
    * Update variables to change which screen is the current screen showing.
    * @private
@@ -55,11 +57,20 @@ class ScreenSystem
 
   ###*
    * Return a screen by its index (id)
-   * @param  {[type]} screenId The index to the array of screens of the screen we want.
+   * @param  {Number} screenId The index to the array of screens of the screen we want.
    * @return {Screen} The screen object in system corresponding to screenId
   ###
   @getScreen: (screenId) -> 
     @screens[screenId]
+
+  ###*
+   * Return a screen that has currently been chosen to be rendered
+   * @param  {Number} screenId The index to the array of screens of the screen we want.
+   * @return {Screen} The screen object in system corresponding to screenId
+  ###
+  @getCurrentScreen: () -> 
+    @screens[@currentScreenId]
+
 
   ###*
    * Load all the screens that have been added to the system.

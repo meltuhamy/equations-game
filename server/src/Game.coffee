@@ -6,10 +6,14 @@ DICEFACESYMBOLS = DiceFace.symbols
 {Evaluator} = require './Evaluator.js'
 DEBUG = true
 class Game
+
   goalTree: undefined
   goalArray: []
   goalValue: undefined
   
+
+  # {String} The name of the game as it appears on the lobby etc.
+  name: ''
 
   # {Player[]} An array of players who have joined the game
   players: []
@@ -38,7 +42,7 @@ class Game
   # {Boolean} Has the turn taking halted for a challenge?
   challengeMode: false
 
-  # {Boolean} Differientiates between now and never challenges
+  # {Boolean} Differentiates between now and never challenges
   challengeModeNow: false
 
   # {Number} the index of the player array for the challenger
@@ -64,30 +68,38 @@ class Game
     forbidden: []
     # index of player whose turn it is. incremented after each resource move
     currentPlayer: 0
-    # {Number[]} array of indices to player array of the players who think now challenge possible
+    # What turn number is it? This increments after a turn has been made. 
+    # The dice setting has turnNumber = 0. The first turn to move dice has turnNumber = 1. 
+    #turnNumber
+    # {Number[]} array of indices to player array of the players need to submit a solution
     possiblePlayers: []
-    # {Number[]} array of indices to player array of the players who think now challenge not possible
+    # {Number[]} array of indices to player array of the players are not submitting a solution
     impossiblePlayers: []
+    # {Date} The Unix timestamp of when the current turn started
+    turnStartTime: undefined
+    # {Number} The duration of the current turn in seconds
+    turnDuration: undefined
 
 
   
-  constructor: (players, gameNumber, gameSize) ->
+  constructor: (players, gameNumber, gameName, gameSize) ->
     @players = players
     @submittedSolutions = []
     @gameNumber = gameNumber
-    if gameSize? then @playerLimit = gameSize
+    @name = gameName
+    if gameSize?
+      if gameSize > 2 then @playerLimit = gameSize
     @nowJsGroupName = "game#{gameNumber}"
     @allocate()
+
 
   goalHasBeenSet: () ->
     @goalTree? #returns false if goalTree undefined, true otherwise
 
 
-  #setUnallocated: (array) ->
-  
-  
-
+  # Convert a player id to a socketid and vica versa
   getPlayerIdBySocket: (socket) -> @playerSocketIds.indexOf(socket)
+  getPlayerSocketById: (id) -> @playerSocketIds[id]
 
 
   ###*
@@ -113,14 +125,15 @@ class Game
 
   ###*
    * [setGoal description]
+   * the function that calls this (everyone.now.receiveGoal() in server.coffee) handles any thrown exceptions
    * @param {Integer} dice [description]
   ###
-  setGoal: (dice) ->  #the function that calls this (everyone.now.receiveGoal() in server.coffee) handles any thrown exceptions
+  setGoal: (dice, turnEndCallback) ->  
     if @goalHasBeenSet() #if goal already set
       throw "Goal already set"
     
     @checkGoal(dice)
-    @start()
+    @start(turnEndCallback)
     #e = new Evaluator()
     #val = e.evaluate(@goalTree)
     #console.log "Goal parsed and evaluates to #{val}"
@@ -192,11 +205,24 @@ class Game
   isFull: () -> @players.length == @playerLimit
   getNumPlayers: () -> return @players.length
 
+  
+  ###*
+   * Get the index of the player who moves the first dice from unallocated
+   * @return {[Integer} An index to the players array
+  ###
+  getFirstTurnPlayerId: () -> 
+    if !@goalSetter? then @getGoalSetterPlayerId()
+    return @goalSetter+1%@players.length
+  # If we want to get his socket id instead of the player array index
+  getFirstTurnPlayerSocketId: () -> @getPlayerSocketById(@getFirstTurnPlayerId())
+
+
+
   ###*
    * Return the index of the player who will set the goal
    * @return {[Integer} An index to the players array
   ###
-  getFirstTurnPlayer: () -> 
+  getGoalSetterPlayerId: () ->
     if !@goalSetter?
       @goalSetter = if DEBUG then 0 else Math.floor(Math.random() * @players.length) #set a random goalSetter
     @goalSetter
@@ -213,11 +239,54 @@ class Game
   validateChallenge: (socketId) ->
     (socketId != @playerSocketIds[((@state.currentPlayer-1)+@players.length)%@players.length])
 
-  start: ->
-    @state.currentPlayer = (@goalSetter+1)%@players.length
 
-  nextTurn: () ->
+  goalStart: (turnEndCallback) ->
+    @started = true
+    # TODO: add callback for timer
+
+
+  start: (turnEndCallback) ->
+    @state.currentPlayer = (@goalSetter+1)%@players.length
+    @resetTurnTimer(7, turnEndCallback)
+    
+    
+
+  nextTurn: (turnEndCallback) ->
     @state.currentPlayer = (@state.currentPlayer+1)%@players.length
+    @resetTurnTimer(7, turnEndCallback)
+    
+  
+
+  ###*
+   * When the turn has changed reset the timer back to the start.  
+   * @param  {Integer} turnSeconds       The number of seconds until the each of the turn.
+   * @param  {Function} endOfTurnTimeFunc This function is called when the time is up.
+  ###
+  resetTurnTimer: (turnSeconds, turnEndCallback) ->
+    @state.turnStartTime = Date.now()
+    @state.turnDuration = turnSeconds
+    clearInterval(@turnTimer)
+    # Has the player completed his turn BEFORE end of time?
+    thisReference = this
+    @turnTimer = setInterval(->
+      thisReference.handleTimeOut(turnEndCallback)
+      if(turnEndCallback?) then turnEndCallback() else console.log "TURN OVER"
+    , turnSeconds*1000)
+
+
+  handleTimeOut: (turnEndCallback) ->
+    if(@challengeMode)
+      # Move players into the option that makes them submit a solution
+      if(!@allDecisionsMade())
+        console.log "NOT EVERYONE MADE DECISION"
+        for p in @players
+          index = p.index
+          if((index not in @state.possiblePlayers) and (index not in @state.impossiblePlayers))
+            @submitPossible(@getPlayerSocketById(index))
+    else
+      @nextTurn(turnEndCallback)
+
+
 
 
   checkValidAllocationMove: (index, clientId) ->
@@ -231,47 +300,57 @@ class Game
       throw "Index for move out of bounds"
     else true
 
-  moveToRequired: (index, clientId) ->
+  moveToRequired: (index, clientId, turnEndCallback) ->
     if(@checkValidAllocationMove(index, clientId))
       @state.required.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
-      @nextTurn()
+      @nextTurn(turnEndCallback)
 
-  moveToOptional: (index, clientId) ->
+  moveToOptional: (index, clientId, turnEndCallback) ->
    if(@checkValidAllocationMove(index, clientId))
       @state.optional.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
-      @nextTurn()
+      @nextTurn(turnEndCallback)
 
-  moveToForbidden: (index, clientId) ->
+  moveToForbidden: (index, clientId, turnEndCallback) ->
     if(@checkValidAllocationMove(index, clientId))
       @state.forbidden.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
-      @nextTurn()
+      @nextTurn(turnEndCallback)
 
   ###*
    * Attempt to g into the decide stage of a now challenge.
    * @param  {Integer} clientId The nowjs unqiue id for client
   ###
-  nowChallenge: (clientId) ->
+  nowChallenge: (clientId, turnEndCallback) ->
     @challengeMode = true
     @challengeModeNow = true
     @challenger = clientId
     @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
+    @resetTurnTimer(9, turnEndCallback)
 
-  neverChallenge: (clientId) ->
+
+  neverChallenge: (clientId, turnEndCallback) ->
     @challengeMode = true
     @challengeModeNow = false
     @challenger = clientId
     @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
+    @resetTurnTimer(9, turnEndCallback)
 
-  submitPossible: (clientId) ->
+  submitPossible: (clientId, turnEndCallback) ->
     @checkChallengeDecision()
     @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
+    if(@allDecisionsMade())
+      # Give 40 seconds for the solutions turn
+      @resetTurnTimer(40, turnEndCallback)
 
-  submitImpossible: (clientId) ->
+  submitImpossible: (clientId, turnEndCallback) ->
     @checkChallengeDecision()
     @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
+    if(@allDecisionsMade())
+      # Give 40 seconds for the solutions turn
+      @resetTurnTimer(7, turnEndCallback)
+
 
   checkChallengeDecision:(clientId) ->
     if !@challengeMode
@@ -279,8 +358,9 @@ class Game
     if (clientId in @state.possiblePlayers) || (clientId in @state.impossiblePlayers)
       throw "Already stated your opinion"
 
+
   # Check if everyone has submitted their decisions for the decision making turn
-  checkAllDecisionsMade:() -> (@players.length == (@state.possiblePlayers.length + @state.impossiblePlayers.length))
+  allDecisionsMade:() -> (@players.length == (@state.possiblePlayers.length + @state.impossiblePlayers.length))
 
 
 

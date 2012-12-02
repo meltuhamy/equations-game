@@ -11,6 +11,9 @@ class Screen
 
   # @abstract {String} The name of the html file that contains the screen
   constructor: (@file) -> @file = @file
+  onUpdatedState: () ->
+  onUpdatedPlayerTurn: () ->
+  onUpdatedGameList: (roomlist) ->
 
   ###*
    * This function is called by ScreenSystem once the page has loaded
