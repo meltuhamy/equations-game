@@ -71,13 +71,9 @@ everyone.now.getGames = ->
 
 
 
-
-###*
- * Recieves the goal array from client
- * This is when the goal setter sends his goal. We tell everyone what the goal is.
- * @param  {[type]} goalArray [description]
- * @return {[type]}           [description]
-###
+# client telling the server about the goal
+# this is when the goal setter sends his goal. 
+# if the goal is valid, we tell everyone what the goal is.
 everyone.now.receiveGoal = (goalArray) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -98,12 +94,14 @@ everyone.now.receiveGoal = (goalArray) ->
     this.now.badGoal(e.message)
 
 
+# put this in everyone's pocket. Server calls this when a player took too long.
 everyone.now.moveTimeUp = (nextPlayerSocId) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   group.now.receiveState(game.state)
   this.now.receiveMoveTimeUp()
   
 
+# client telling the server that he wants to move a dice to required
 everyone.now.moveToRequired = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -117,6 +115,7 @@ everyone.now.moveToRequired = (index) ->
     this.now.badMove(e)
     console.log e
 
+# client telling the server that he wants to move a dice to optional
 everyone.now.moveToOptional = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -130,6 +129,7 @@ everyone.now.moveToOptional = (index) ->
     this.now.badMove(e)
     console.log e
 
+# client telling the server that he wants to move a dice to forbidden
 everyone.now.moveToForbidden = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -144,6 +144,7 @@ everyone.now.moveToForbidden = (index) ->
     console.log e
   
 
+# client telling the server that he wants to make a now challenge
 everyone.now.nowChallengeRequest = () ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -155,6 +156,7 @@ everyone.now.nowChallengeRequest = () ->
   group.now.receiveNowChallengeDecideTurn(game.getPlayerIdBySocket(this.user.clientId))
   group.now.receiveState(game.state)
 
+# client telling the server that he wants to make a never challenge
 everyone.now.neverChallengeRequest = () ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -168,13 +170,14 @@ everyone.now.neverChallengeRequest = () ->
   group.now.receiveState(game.state)
 
 
+# client telling the server that he has made a decision about the challenge
 everyone.now.challengeDecision = (agree) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
   callback = ->
     groupReference.receiveMoveTimeUp()
     groupReference.receiveState(game.state)
-    group.now.receiveChallengeRoundEndTurn()
+    group.now.receiveChallengeRoundEndTurn(game.getSubmittedSolutions())
   try
     if((agree && game.challengeModeNow) || (!agree && !game.challengeModeNow))
       game.submitPossible(this.user.clientId, callback)
@@ -189,23 +192,21 @@ everyone.now.challengeDecision = (agree) ->
     console.log e
 
 
+# client telling the server that he wants to submit a solution
 everyone.now.challengeSolution = (answer) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   try
     game.submitSolution(this.user.clientId, answer)
-    console.log "challengeSolution called game.submitSolution"
     if(game.allSolutionsSent())
-      console.log "END OF ROUND... "
-      group.now.receiveChallengeRoundEndTurn()
+      group.now.receiveChallengeRoundEndTurn(game.getSubmittedSolutions())
       
   catch e
     this.now.badMove(e.message)
     console.log e
-  
 
 
-everyone.now.logStuff = (message) ->
-  console.log message
+# client telling the server that he is ready for next round
+everyone.now.readyForNextRound = ->
+  group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())
 
-everyone.now.testFunc = () ->
-  console.log(this.user.addClient)
+

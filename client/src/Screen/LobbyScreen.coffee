@@ -96,7 +96,7 @@ class LobbyScreen extends Screen
     html = '<table id="gameslist">'
     for g in @games
       html += '<tr data-gamenumber="' + g.gameNumber + '">'
-      html += "<td ><a href='#'>#{g.gameName}</a></td>"
+      html += "<td><a href='#'>#{g.gameName}</a></td>"
       html += "<td>#{g.playerCount} / #{g.playerLimit} </td>"
       if(g.started)
         html += "<td>Currently playing!</td>"

@@ -151,9 +151,8 @@ now.receiveChallengeSolutionsTurn = ->
 
 
 
-now.receiveChallengeRoundEndTurn = ->
-  console.log "receiveChallengeRoundEndTurn"
-  Game.receiveChallengeRoundEndTurn()
+now.receiveChallengeRoundEndTurn = (solutions) ->
+  Game.receiveChallengeRoundEndTurn(solutions)
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
 

@@ -447,20 +447,24 @@ class Game
     if(@allSolutionsSent()) then @scoreAdder()
 
   allSolutionsSent: () ->
-    console.log "Called allSolutionsSent"
-    console.log "#{@state.possiblePlayers}"
-    console.log "#{@submittedSolutions[0]}"
-    console.log "#{@submittedSolutions[1]}"
     for i in @state.possiblePlayers
       if !@submittedSolutions[i]?
         return false
     return true
 
+  # Return a copy of the submitted solutions
+  getSubmittedSolutions: () -> @submittedSolutions[..]
+
+
         
   scoreAdder: ->
+    # See if we definitely know it's solvable. See if somebody got the goal.
     answerExists = false
     for playerid in [0...@players.length]
       if @rightAnswers[playerid] then answerExists = true
+    # If at least one person did, then we knows it possible. Give points to everyone who tried
+    # and give even more points to everyone who got it right. Give the most to the challenger.
+    # Otherwise, we assume it wasn't possible and give points to the people who said never.
     if answerExists
       for playerid in [0...@players.length]
         if playerid in @state.possiblePlayers then @state.playerScores[playerid] += 2

@@ -17,6 +17,7 @@ class Game
   @joinWaitScreenId: undefined
   @gameScreenId: undefined
   @goalScreenId: undefined
+  @endRoundScreenId: undefined
   
   @gameWaitScreenId : undefined
 
@@ -67,6 +68,7 @@ class Game
     turnStartTime: undefined
     # {Number} The duration of the current turn in seconds
     turnDuration: undefined
+    playerScores: []
 
 
   ###*
@@ -78,6 +80,7 @@ class Game
     @gameScreenId = ScreenSystem.addScreen(new GameScreen())
     @goalScreenId = ScreenSystem.addScreen(new GoalScreen())
     @gameWaitScreenId = ScreenSystem.addScreen(new GoalWaitScreen())
+    @endRoundScreenId = ScreenSystem.addScreen(new EndRoundScreen())
 
 
   @onConnection: () ->
@@ -147,9 +150,10 @@ class Game
   @receiveChallengeSolutionsTurn: () ->
     @currentChallengeStage = @ChallengeStages.ChallengeSolution
 
-  @receiveChallengeRoundEndTurn: () ->
+  @receiveChallengeRoundEndTurn: (solutions) ->
     @currentChallengeStage = @ChallengeStages.ChallengeEnd
-    console.log "End of round, well done."
+    ScreenSystem.renderScreen(@endRoundScreenId, {solutions: solutions})
+    
 
   ###*
    * Set the goal locally. The server has told us the goal-setter has set the goal.
