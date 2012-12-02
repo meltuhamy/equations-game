@@ -52,7 +52,7 @@ class Network
     now.challengeDecision(agree)
 
   @sendChallengeSolution: (answer) ->
-    now.challengeDecision(answer)
+    now.challengeSolution(answer)
 
 
 
@@ -151,7 +151,10 @@ now.receiveChallengeSolutionsTurn = ->
 
 
 
-
+now.receiveChallengeRoundEndTurn = ->
+  console.log "receiveChallengeRoundEndTurn"
+  Game.receiveChallengeRoundEndTurn()
+  ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
 
 

@@ -30,7 +30,7 @@ class Game
   # {Boolean} the index of the player array for the challenger
   @challengeMode: false
   @currentChallengeStage: undefined
-  @ChallengeStages: {ChallengeOff: 0, ChallengeDecide:1, ChallengeSolution:2, ChallengeCheck:3}
+  @ChallengeStages: {ChallengeOff: 0, ChallengeDecide:1, ChallengeSolution:2, ChallengeCheck:3, ChallengeEnd: 4}
   @challengerId: undefined
   @challengeModeNow = undefined
   @getChallengeName: () ->
@@ -147,8 +147,9 @@ class Game
   @receiveChallengeSolutionsTurn: () ->
     @currentChallengeStage = @ChallengeStages.ChallengeSolution
 
-
-
+  @receiveChallengeRoundEndTurn: () ->
+    @currentChallengeStage = @ChallengeStages.ChallengeEnd
+    console.log "End of round, well done."
 
   ###*
    * Set the goal locally. The server has told us the goal-setter has set the goal.

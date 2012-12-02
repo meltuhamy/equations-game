@@ -174,7 +174,7 @@ everyone.now.challengeDecision = (agree) ->
   callback = ->
     groupReference.receiveMoveTimeUp()
     groupReference.receiveState(game.state)
-    #group.now.receiveChallengeRoundEndTurn()
+    group.now.receiveChallengeRoundEndTurn()
   try
     if((agree && game.challengeModeNow) || (!agree && !game.challengeModeNow))
       game.submitPossible(this.user.clientId, callback)
@@ -189,10 +189,15 @@ everyone.now.challengeDecision = (agree) ->
     console.log e
 
 
-everyone.now.nowChallengeSolution = (answer) ->
+everyone.now.challengeSolution = (answer) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   try
     game.submitSolution(this.user.clientId, answer)
+    console.log "challengeSolution called game.submitSolution"
+    if(game.allSolutionsSent())
+      console.log "END OF ROUND... "
+      group.now.receiveChallengeRoundEndTurn()
+      
   catch e
     this.now.badMove(e.message)
     console.log e

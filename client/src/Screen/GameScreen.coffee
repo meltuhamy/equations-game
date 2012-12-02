@@ -460,6 +460,7 @@ class GameScreen extends Screen
   submitAnswer: () ->
     answer = @equationBuilder.getIndicesToGlobalDice()
     @submittedSolution = true
+    console.log "submitAnswer called."
     Network.sendChallengeSolution(answer)
     $('#answer-submit-btn').hide()
     $('#answer-add-dice-btn').hide()
