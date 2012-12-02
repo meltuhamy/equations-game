@@ -5,6 +5,22 @@ DICEFACESYMBOLS = DiceFace.symbols
 {Player} = require './Player.js'
 {Evaluator} = require './Evaluator.js'
 DEBUG = true
+
+deepObjCopy = (dupeObj) ->
+  retObj = new Object()
+  if typeof (dupeObj) is "object"
+    retObj = new Array()  unless typeof (dupeObj.length) is "undefined"
+    for objInd of dupeObj
+      if typeof (dupeObj[objInd]) is "object"
+        retObj[objInd] = deepObjCopy(dupeObj[objInd])
+      else if typeof (dupeObj[objInd]) is "string"
+        retObj[objInd] = dupeObj[objInd]
+      else if typeof (dupeObj[objInd]) is "number"
+        retObj[objInd] = dupeObj[objInd]
+      else (if (dupeObj[objInd] is true) then retObj[objInd] = true else retObj[objInd] = false)  if typeof (dupeObj[objInd]) is "boolean"
+  retObj
+
+
 class Game
 
   goalTree: undefined
@@ -59,32 +75,54 @@ class Game
    * IF YOU CHANGE THIS, CHANGE client/Game.coffee
    * **************
   ###
-  state:
-    unallocated: []
-    required: []
-    optional: []
-    forbidden: []
-    # index of player whose turn it is. incremented after each resource move
-    currentPlayer: 0
-    # What turn number is it? This increments after a turn has been made. 
-    # The dice setting has turnNumber = 0. The first turn to move dice has turnNumber = 1. 
-    #turnNumber
-    # {Number[]} array of indices to player array of the players need to submit a solution
-    possiblePlayers: []
-    # {Number[]} array of indices to player array of the players are not submitting a solution
-    impossiblePlayers: []
-    # {Date} The Unix timestamp of when the current turn started
-    turnStartTime: undefined
-    # {Number} The duration of the current turn in seconds
-    turnDuration: undefined
+  state: undefined
 
 
   
-  constructor: (players, gameNumber, gameName, gameSize) ->
-    @players = players
-    @submittedSolutions = []
+  constructor: (@gameNumber, @name, gameSize) ->
+    # Initalise all variables so that they're object (not prototype) specfific
+    @goalTree = undefined
+    @goalArray = []
+    @goalValue = undefined
+    @name= ''
+    @players= []
+    @playerSocketIds= []
+    @goalSetter= undefined
+    @nowJsGroupName= ''
+    @challenger= undefined
+    @submittedSolutions= []
+    @rightAnswers= []
+
+    ###*
+     * The game state.
+     * **************
+     * IF YOU CHANGE THIS, CHANGE client/Game.coffee
+     * **************
+    ###
+    @state=
+      unallocated: []
+      required: []
+      optional: []
+      forbidden: []
+      # index of player whose turn it is. incremented after each resource move
+      currentPlayer: 0
+      # What turn number is it? This increments after a turn has been made. 
+      # The dice setting has turnNumber = 0. The first turn to move dice has turnNumber = 1. 
+      #turnNumber
+      # {Number[]} array of indices to player array of the players need to submit a solution
+      possiblePlayers: []
+      # {Number[]} array of indices to player array of the players are not submitting a solution
+      impossiblePlayers: []
+      # {Date} The Unix timestamp of when the current turn started
+      turnStartTime: undefined
+      # {Number} The duration of the current turn in seconds
+      turnDuration: undefined
+
+
+
     @gameNumber = gameNumber
-    @name = gameName
+    @name = name
+    @gameSize = gameSize
     if gameSize?
       if gameSize > 2 then @playerLimit = gameSize
     @nowJsGroupName = "game#{gameNumber}"

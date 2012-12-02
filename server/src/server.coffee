@@ -80,7 +80,10 @@ everyone.now.getGames = ->
 everyone.now.receiveGoal = (goalArray) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
-  if !(this.user.clientId == game.playerSocketIds[game.goalSetter])
+  if !(this.user.clientId == game.playerSocketIds[game.getGoalSetterPlayerId()])
+    console.log "Goal setter id = " + game.getGoalSetterPlayerId()
+    console.log this.user.clientId
+    console.log game.playerSocketIds
     throw "Unauthorised goal setter"
   try
     game.setGoal(goalArray,  ->

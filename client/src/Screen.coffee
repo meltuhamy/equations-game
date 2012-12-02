@@ -10,7 +10,9 @@ class Screen
   content: undefined 
 
   # @abstract {String} The name of the html file that contains the screen
-  constructor: (@file) -> @file = @file
+  constructor: (@file) ->
+    @file = @file
+    @content = undefined
   onUpdatedState: () ->
   onUpdatedPlayerTurn: () ->
   onUpdatedGameList: (roomlist) ->
