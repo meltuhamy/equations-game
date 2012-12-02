@@ -3,8 +3,10 @@
 class Network
   @initialise: ->
     now.ready ->
-      now.getGames()
-
+      Game.onConnection()
+      
+  @sendGameListRequest: () ->
+    now.getGames()
 
   @sendJoinGameRequest: (gameNumber) ->
     now.addClient(gameNumber)
@@ -72,7 +74,8 @@ now.acceptPlayer = (id, dicefaceSymbols) -> #id is the index
                   nowjsname, roomNumber, playerCount, playerLimit, started
 ###
 now.receiveGameList = (gameListJson) ->
-  ScreenSystem.renderScreen(Game.lobbyScreenId, {gameListJson: gameListJson})
+  # TODO: fix this
+  Game.updateGameList(gameListJson)
 
 
 

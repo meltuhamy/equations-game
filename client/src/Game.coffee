@@ -13,13 +13,19 @@ class Game
   @goal: undefined
 
   # {Number} The id of screens given by the ScreenManager and used for the ScreenManager
+  @lobbyScreenId: undefined
+  @joinWaitScreenId: undefined
   @gameScreenId: undefined
   @goalScreenId: undefined
-  @lobbyScreenId: undefined
+  
   @gameWaitScreenId : undefined
 
   # {Number} The dice that will be used throughout the game. An array of diceface magic numbers.
   @globalDice: []
+
+  # {Json} A json for the list of rooms sent by the server.
+  @gameList: []
+
 
   # {Boolean} the index of the player array for the challenger
   @challengeMode: false
@@ -66,11 +72,29 @@ class Game
   ###*
    * Initialise the game. Add screens. Called localled on page load.
   ###
-  @initialise: () ->
+  @onDocumentReady: () ->
+    @lobbyScreenId = ScreenSystem.addScreen(new LobbyScreen())
+    @joinWaitScreenId = ScreenSystem.addScreen(new JoinWaitScreen())
     @gameScreenId = ScreenSystem.addScreen(new GameScreen())
     @goalScreenId = ScreenSystem.addScreen(new GoalScreen())
-    @lobbyScreenId = ScreenSystem.addScreen(new LobbyScreen())
     @gameWaitScreenId = ScreenSystem.addScreen(new GoalWaitScreen())
+
+
+  @onConnection: () ->
+    Network.sendGameListRequest()
+    ScreenSystem.renderScreen(@lobbyScreenId)
+
+  # Update the gamelist json - the list of info about all games in lobby.
+  @updateGameList: (gameListJson) -> 
+    @gameList = gameListJson
+    ScreenSystem.getCurrentScreen().onUpdatedGameList(@gameList)
+    
+    
+  @joinGame: (gameNumber) ->
+    Network.sendJoinGameRequest(gameNumber)
+    ScreenSystem.renderScreen(@joinWaitScreenId)
+
+
 
   ###*
    * The server told us we took too long

@@ -14,15 +14,50 @@ div#lobby
     color: #FFFFFF
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
     margin-bottom: 5px
-  table#gameslist 
-    text-align: left
-    width: 100%
-    td
-      color: #FFFFFF
-      padding: 5px
-    tr:nth-child(2n+1)
-      background: #007DD5
-    a
-      color: #FF8F64
-      text-decoration: none
-      font-weight: bold
+  div#gameslist-ctnr
+    margin-bottom: 10px
+    table#gameslist 
+      text-align: left
+      width: 100%
+      td
+        color: #87C2EB
+        text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+        padding: 5px
+        cursor:pointer
+      tr:nth-child(2n+1)
+        background: #007DD5
+      a
+        color: #A4D2D6
+        text-decoration: none
+        font-weight: bold
+        text-shadow: none
+      tr:hover 
+        background: #004E81
+        a
+          color: #F5AF47
+
+div#addgame-btn-ctnr
+  margin-bottom: 10px
+
+div#new-game-form-ctnr
+  display: none
+  margin-bottom: 10px
+  padding:10px 20px
+  border-radius(5px)
+  color: #97B1C1
+  text-shadow: rgba(0, 0, 0, 0.2) 0px 1px 0px
+  background: #004E81
+
+
+div#joinwait
+  background: #005896
+  border-radius(5px)
+  padding: 20px
+  h2
+    color: #FFFFFF
+    margin-bottom: 0px
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+  p
+    color: #7D879B
+    margin-bottom: 10px
+

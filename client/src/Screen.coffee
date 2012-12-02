@@ -13,6 +13,7 @@ class Screen
   constructor: (@file) -> @file = @file
   onUpdatedState: () ->
   onUpdatedPlayerTurn: () ->
+  onUpdatedGameList: (roomlist) ->
 
   ###*
    * This function is called by ScreenSystem once the page has loaded

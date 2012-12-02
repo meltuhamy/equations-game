@@ -5,16 +5,20 @@ class LobbyScreen extends Screen
 
   # {Json[]} An array with json objects describing the games
   games: []
+
+
   constructor: () -> 
 
   ###*
    * Load the Game Screen. This screen that shows once the goal has been set.
-   * @param {Json} json = {gameListJson: A json with the list of games} .
   ###
   init: (json) ->
-    @games = json.gameListJson
+
+  onUpdatedGameList: (roomlistroomlist) ->
+    @games = roomlistroomlist
     @renderRoomList()
     @addClickListeners()
+
 
   ###*
    * Add event listeners to the rows so when you click to join a game, a event fires; calling Network
@@ -24,7 +28,20 @@ class LobbyScreen extends Screen
     gamesList = $('#gameslist tr')
     gamesList.bind 'click', (event) ->
       gameNumber = $(this).data('gamenumber')
-      Network.sendJoinGameRequest(gameNumber)
+      Game.joinGame(gameNumber)
+
+    $('#show-add-game-btn').bind 'click', (event) ->
+      $('#new-game-form-ctnr').slideToggle("fast")
+
+    # When we have submitted the 
+    $('add-game-btn').bind 'click', (event) ->
+      gameName = $('#game-name').value
+      #difficulty = $('#game-name').value
+
+
+
+      
+
 
   ###*
    * Render the list of rooms inside the rooms container
@@ -42,4 +59,6 @@ class LobbyScreen extends Screen
         html += "<td>Waiting for players...</td>"
       html += '</tr>'  
     html += '</table>'
-    $('#gameslistcontainer').html(html)
+    $('#gameslist-ctnr').html(html)
+
+
