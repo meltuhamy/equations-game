@@ -9,6 +9,7 @@ class Game
   goalTree: undefined
   goalArray: []
   goalValue: undefined
+  
 
   # {Player[]} An array of players who have joined the game
   players: []
@@ -57,6 +58,7 @@ class Game
   ###
   state:
     unallocated: []
+    playerScores: []
     required: []
     optional: []
     forbidden: []
@@ -81,7 +83,9 @@ class Game
     @goalTree? #returns false if goalTree undefined, true otherwise
 
 
-  setUnallocated: (array) ->
+  #setUnallocated: (array) ->
+  
+  
 
   getPlayerIdBySocket: (socket) -> @playerSocketIds.indexOf(socket)
 
@@ -327,24 +331,54 @@ class Game
     else
       playerid = @getPlayerIdBySocket(socketId)
       throw "Client not in 'possible' list"
-      
+    for i in [0...@state.possiblePlayers]
+      if @submittedSolutions[i] == undefined
+        return
+    @scoreAdder()
+    #@nextRound()
 
+      
+scoreAdder: ->
+  answerExists = false
+  for playerid in [0 ... @players.length]
+    if @rightAnswers[playerid] then answerExists = true
+  if answerExists
+    for playerid in [0 ... @players.length]
+      if playerid in @possiblePlayers then state.playerScores[playerid] += 2
+      if @rightAnswers[playerid] then state.playerScores[playerid] += 2
+      if @challenger == playerid && playerid in @possiblePlayers then state.playerScores[playerid] += 2
+  else
+    for playerid in [0 ... @players.length]
+      if playerid in @impossiblePlayers then state.playerScores[playerid] += 2
+      if @challenger == playerid && playerid in @impossiblePlayers then state.playerScores[playerid] += 2
     
-    
+
+nextRound: ->
+  @goalTree = undefined
+  @goalArray = []
+  @goalValue = undefined
+  #players: []
+  #playerSocketIds: []
+  #playerLimit: 2
+  @goalSetter = undefined
+  #nowJsGroupName: ''
+  #gameNumber: 0
+  @started = false
+  @globalDice = []
+  @challengeMode = false
+  @challengeModeNow = false
+  @challenger = undefined
+  @submittedSolutions = []
+  @rightAnswers = []
+  @state.unallocated = []
+  @state.playerScores = []
+  @state.required = []
+  @state.optional = []
+  @state.forbidden = []
+  @state.currentPlayer = 0
+  @state.possiblePlayers = []
+  @state.impossiblePlayers = []
 
 
-
-
-
-
-
-
-
-
-
-
-      
-
-      
 
 module.exports.Game = Game
