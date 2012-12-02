@@ -10,22 +10,50 @@
 
   <div id="new-game-form-ctnr">
 
-    <label for="newgame-name">Name of Your Game</label>
-    <input id="newgame-name" type="text"  />
 
-    <label for="newgame-numplayers">Number of players</label>
-    <select id="newgame-numplayers">
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5">5</option>
-    </select>
 
-    <label for="newgame-difficulty">Difficulty Level</label>
-    <select id="newgame-difficulty">
-      <option value="easy">Easy Mode</option>
-      <option value="hard">Hard Mode</option>
-    </select>
+    <form id="new-game" action="">
+      <!-- The name of the game -->
+      <p>
+        <label id="newgame-name-label">
+          <span class="form-title">Name of Game</span> <span class="form-error"></span>
+          <span>The name of the game will be shown in lobby.</span>
+        </label>
+        <input id="newgame-name" type="text" />
+      </p>
+
+      <!-- The number of playes in the game -->
+      <p>
+        <label id="newgame-numplayers-label">
+          <span class="form-title">Number of players</span> <span class="form-error"></span>
+          <span>How many players need to join play this game.</span>
+        </label>
+        <select id="newgame-numplayers">
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </p>
+
+      <!-- The difficulty of the game -->
+      <p>
+        <label id="newgame-difficulty-label">
+          <span class="form-title">Difficulty Mode</span>
+          <span>Easy mode recommended for new players.</span>
+          <span class="form-error"></span>
+        </label>
+        <select id="newgame-difficulty">
+          <option value="easy">Easy Mode</option>
+          <option value="hard">Hard Mode</option>
+        </select>
+      </p>
+
+      <p>
+        <button id="add-game-btn" class="grey-button">Add</button>
+      </p>
+
+    </form>
 
     <!-- Timing for making goal screen -->
     <!-- Timing for making allocation moves -->
@@ -33,7 +61,7 @@
     <!-- Timing for making submitting solutions -->
     <!-- Timing for making the round results screen -->
 
-    <span id="add-game-btn" class="grey-button">Add</span>
+  
 
   </div>
 

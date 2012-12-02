@@ -8,6 +8,9 @@ class Network
   @sendGameListRequest: () ->
     now.getGames()
 
+  @sendCreateGameRequest: () ->
+    now.createGame()
+
   @sendJoinGameRequest: (gameNumber) ->
     now.addClient(gameNumber)
 

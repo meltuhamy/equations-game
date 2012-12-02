@@ -28,11 +28,10 @@ getThisGameGroup = (gameNumber) =>
   return {game: game, group: group}
     
 
-###
-everyone.now.createGame = (jsonParams) ->
-  games.push(new Game(jsonParams))
-  this.now.addClient(games.length-1)
-###
+
+everyone.now.createGame = () ->
+  gamesManager.newGame()
+  everyone.now.getGames()
 
 
 everyone.now.addClient = (gameNumber) -> #called by client when connected

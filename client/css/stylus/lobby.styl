@@ -25,7 +25,7 @@ div#lobby
         padding: 5px
         cursor:pointer
       tr:nth-child(2n+1)
-        background: #007DD5
+        background: #0071C0
       a
         color: #A4D2D6
         text-decoration: none
@@ -64,3 +64,45 @@ div#joinwait
     color: #7D879B
     margin-bottom: 10px
 
+
+form#new-game
+  clearfix()
+  padding-top: 15px
+  p
+    margin-bottom: 10px
+    clearfix()
+  label, select, input
+    float:left
+    clear: none
+
+  label
+    margin-right: 10px
+    width: 200px
+    span
+      float:left
+      clear: left
+      font-size:11px
+    span.form-title
+      font-size:14px
+      font-weight:bold
+      color: #51B8F7
+    span.form-error
+      color: #8D2200
+      clear:left
+      text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+  input
+    background: #005E9B
+    color: #51B8F7
+    padding: 7px 15px
+    font-size: 20px
+
+
+// For screen widths 0 <= w <= 600
+// Make the form labels have a auto width
+@media all and (max-width: 600px)
+  form#new-game label 
+    width: auto
+  form#new-game label, 
+  form#new-game select, 
+  form#new-game input
+    clear:left
