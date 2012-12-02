@@ -9,7 +9,9 @@ class Network
     now.getGames()
 
   @sendCreateGameRequest: (gameName, numberPlayers) ->
+    ScreenSystem.renderScreen(Game.joinWaitScreenId)
     now.createGame(gameName, numberPlayers)
+    
 
   @sendJoinGameRequest: (gameNumber) ->
     now.addClient(gameNumber)
@@ -50,7 +52,7 @@ class Network
     now.challengeDecision(agree)
 
   @sendChallengeSolution: (answer) ->
-    now.challengeDecision(answer)
+    now.challengeSolution(answer)
 
 
 
@@ -149,7 +151,10 @@ now.receiveChallengeSolutionsTurn = ->
 
 
 
-
+now.receiveChallengeRoundEndTurn = ->
+  console.log "receiveChallengeRoundEndTurn"
+  Game.receiveChallengeRoundEndTurn()
+  ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
 
 

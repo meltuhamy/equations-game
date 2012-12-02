@@ -5,12 +5,13 @@ DICEFACESYMBOLS = DiceFace.symbols
 {Player} = require './Player.js'
 {Evaluator} = require './Evaluator.js'
 DEBUG = true
+
+
 class Game
 
   goalTree: undefined
   goalArray: []
   goalValue: undefined
-  
 
   # {String} The name of the game as it appears on the lobby etc.
   name: ''
@@ -60,33 +61,56 @@ class Game
    * IF YOU CHANGE THIS, CHANGE client/Game.coffee
    * **************
   ###
-  state:
-    unallocated: []
-    playerScores: []
-    required: []
-    optional: []
-    forbidden: []
-    # index of player whose turn it is. incremented after each resource move
-    currentPlayer: 0
-    # What turn number is it? This increments after a turn has been made. 
-    # The dice setting has turnNumber = 0. The first turn to move dice has turnNumber = 1. 
-    #turnNumber
-    # {Number[]} array of indices to player array of the players need to submit a solution
-    possiblePlayers: []
-    # {Number[]} array of indices to player array of the players are not submitting a solution
-    impossiblePlayers: []
-    # {Date} The Unix timestamp of when the current turn started
-    turnStartTime: undefined
-    # {Number} The duration of the current turn in seconds
-    turnDuration: undefined
+  state: undefined
 
 
   
-  constructor: (players, gameNumber, gameName, gameSize) ->
-    @players = players
-    @submittedSolutions = []
+  constructor: (@gameNumber, @name, gameSize) ->
+    # Initalise all variables so that they're object (not prototype) specfific
+    @goalTree = undefined
+    @goalArray = []
+    @goalValue = undefined
+    @name= ''
+    @players= []
+    @playerSocketIds= []
+    @goalSetter= undefined
+    @nowJsGroupName= ''
+    @challenger= undefined
+    @submittedSolutions= []
+
+    @rightAnswers= []
+
+    ###*
+     * The game state.
+     * **************
+     * IF YOU CHANGE THIS, CHANGE client/Game.coffee
+     * **************
+    ###
+    @state=
+      unallocated: []
+      required: []
+      optional: []
+      forbidden: []
+      # index of player whose turn it is. incremented after each resource move
+      currentPlayer: 0
+      # What turn number is it? This increments after a turn has been made. 
+      # The dice setting has turnNumber = 0. The first turn to move dice has turnNumber = 1. 
+      #turnNumber
+      # {Number[]} array of indices to player array of the players need to submit a solution
+      possiblePlayers: []
+      # {Number[]} array of indices to player array of the players are not submitting a solution
+      impossiblePlayers: []
+      # {Date} The Unix timestamp of when the current turn started
+      turnStartTime: undefined
+      # {Number} The duration of the current turn in seconds
+      turnDuration: undefined
+      playerScores: []
+
+
+
     @gameNumber = gameNumber
-    @name = gameName
+    @name = name
+    @gameSize = gameSize
     if gameSize?
       if gameSize > 2 then @playerLimit = gameSize
     @nowJsGroupName = "game#{gameNumber}"
@@ -347,6 +371,8 @@ class Game
     @checkChallengeDecision()
     @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
     if(@allDecisionsMade())
+      #for i in [0...@state.possiblePlayers.length]
+        #@submittedSolutions[i] = []
       # Give 40 seconds for the solutions turn
       @resetTurnTimer(40, turnEndCallback)
 
@@ -354,6 +380,8 @@ class Game
     @checkChallengeDecision()
     @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
     if(@allDecisionsMade())
+      #for i in [0...@state.possiblePlayers.length]
+        #@submittedSolutions[i] = []
       # Give 40 seconds for the solutions turn
       @resetTurnTimer(7, turnEndCallback)
 
@@ -376,6 +404,7 @@ class Game
    * @param  {[type]} dice An array of indices to the globalArray for the answer.
   ###
   submitSolution: (socketId, dice) ->
+    console.log "submitSolution called"
     if !@challengeMode then throw "Not in challenge mode"
     playerid = @getPlayerIdBySocket(socketId)
     #console.log "Player #{playerid} trying to submit solution #{dice}, clientid = #{socketId}"
@@ -385,6 +414,7 @@ class Game
     if (playerid in @state.possiblePlayers)
       if (@submittedSolutions[playerid]?) then throw "Player #{socketId} already submitted solution which is: #{@submittedSolutions[playerid]}"
       # Check if the solution submitted is valid
+
       diceValues = []
       numRequiredInAns = 0
       numUnallocatedInAns = 0
@@ -414,57 +444,66 @@ class Game
       # Ok it does. So add it to the submitted solutions list
       @rightAnswers[playerid] = (@goalValue == submissionValue)
       @submittedSolutions[playerid] = dice
+      console.log "Player #{playerid} Submitted solution";
+      
     else
       playerid = @getPlayerIdBySocket(socketId)
       throw "Client not in 'possible' list"
-    for i in [0...@state.possiblePlayers]
-      if @submittedSolutions[i] == undefined
-        return
-    @scoreAdder()
-    #@nextRound()
+    console.log "here"
+    if(@allSolutionsSent()) then @scoreAdder()
 
+  allSolutionsSent: () ->
+    console.log "Called allSolutionsSent"
+    console.log "#{@state.possiblePlayers}"
+    console.log "#{@submittedSolutions[0]}"
+    console.log "#{@submittedSolutions[1]}"
+    for i in @state.possiblePlayers
+      if !@submittedSolutions[i]?
+        return false
+    return true
+
+        
+  scoreAdder: ->
+    answerExists = false
+    for playerid in [0...@players.length]
+      if @rightAnswers[playerid] then answerExists = true
+    if answerExists
+      for playerid in [0...@players.length]
+        if playerid in @state.possiblePlayers then @state.playerScores[playerid] += 2
+        if @rightAnswers[playerid] then @state.playerScores[playerid] += 2
+        if @challenger == playerid && playerid in @state.possiblePlayers then @state.playerScores[playerid] += 2
+    else
+      for playerid in [0...@players.length]
+        if playerid in @state.impossiblePlayers then @state.playerScores[playerid] += 2
+        if @challenger == playerid && playerid in @state.impossiblePlayers then @state.playerScores[playerid] += 2
       
-scoreAdder: ->
-  answerExists = false
-  for playerid in [0 ... @players.length]
-    if @rightAnswers[playerid] then answerExists = true
-  if answerExists
-    for playerid in [0 ... @players.length]
-      if playerid in @possiblePlayers then state.playerScores[playerid] += 2
-      if @rightAnswers[playerid] then state.playerScores[playerid] += 2
-      if @challenger == playerid && playerid in @possiblePlayers then state.playerScores[playerid] += 2
-  else
-    for playerid in [0 ... @players.length]
-      if playerid in @impossiblePlayers then state.playerScores[playerid] += 2
-      if @challenger == playerid && playerid in @impossiblePlayers then state.playerScores[playerid] += 2
-    
 
-nextRound: ->
-  @goalTree = undefined
-  @goalArray = []
-  @goalValue = undefined
-  #players: []
-  #playerSocketIds: []
-  #playerLimit: 2
-  @goalSetter = undefined
-  #nowJsGroupName: ''
-  #gameNumber: 0
-  @started = false
-  @globalDice = []
-  @challengeMode = false
-  @challengeModeNow = false
-  @challenger = undefined
-  @submittedSolutions = []
-  @rightAnswers = []
-  @state.unallocated = []
-  @state.playerScores = []
-  @state.required = []
-  @state.optional = []
-  @state.forbidden = []
-  @state.currentPlayer = 0
-  @state.possiblePlayers = []
-  @state.impossiblePlayers = []
+  nextRound: ->
+    @goalTree = undefined
+    @goalArray = []
+    @goalValue = undefined
+    #players: []
+    #playerSocketIds: []
+    #playerLimit: 2
+    @goalSetter = undefined
+    #nowJsGroupName: ''
+    #gameNumber: 0
+    @started = false
+    @globalDice = []
+    @challengeMode = false
+    @challengeModeNow = false
+    @challenger = undefined
+    @submittedSolutions = []
+    @rightAnswers = []
+    @state.unallocated = []
+    @state.playerScores = []
+    @state.required = []
+    @state.optional = []
+    @state.forbidden = []
+    @state.currentPlayer = 0
+    @state.possiblePlayers = []
+    @state.impossiblePlayers = []
 
 
 
-module.exports.Game = Game
+  module.exports.Game = Game
