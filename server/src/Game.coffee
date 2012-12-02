@@ -6,20 +6,6 @@ DICEFACESYMBOLS = DiceFace.symbols
 {Evaluator} = require './Evaluator.js'
 DEBUG = true
 
-deepObjCopy = (dupeObj) ->
-  retObj = new Object()
-  if typeof (dupeObj) is "object"
-    retObj = new Array()  unless typeof (dupeObj.length) is "undefined"
-    for objInd of dupeObj
-      if typeof (dupeObj[objInd]) is "object"
-        retObj[objInd] = deepObjCopy(dupeObj[objInd])
-      else if typeof (dupeObj[objInd]) is "string"
-        retObj[objInd] = dupeObj[objInd]
-      else if typeof (dupeObj[objInd]) is "number"
-        retObj[objInd] = dupeObj[objInd]
-      else (if (dupeObj[objInd] is true) then retObj[objInd] = true else retObj[objInd] = false)  if typeof (dupeObj[objInd]) is "boolean"
-  retObj
-
 
 class Game
 

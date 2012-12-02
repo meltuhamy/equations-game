@@ -30,7 +30,8 @@ getThisGameGroup = (gameNumber) =>
 
 
 everyone.now.createGame = (name, numPlayers) ->
-  gamesManager.newGame(name, numPlayers)
+  gameNumber = gamesManager.newGame(name, numPlayers)
+  this.now.addClient(gameNumber)
   everyone.now.getGames()
 
 
