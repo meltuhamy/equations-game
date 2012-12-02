@@ -109,4 +109,35 @@ class ExpressionParser
       throw "Can't have more than two digits, maytey"
     result
 
+  precedence: (node) ->
+    if node.type == 'unaryop'
+      return 4
+    else
+      switch node.token[0]
+        when DICEFACESYMBOLS.plus then 1
+        when DICEFACESYMBOLS.minus then 1
+        when DICEFACESYMBOLS.divide then 2
+        when DICEFACESYMBOLS.multiply then 2
+        when DICEFACESYMBOLS.power then 3
+
+  flatten: (node) ->
+    result = []
+    if node.type == 'binop'
+      leftResult = @flatten(node.children[0])
+      rightResult = @flatten(node.children[1])
+      if @precedence(node.children[0]) < @precedence(node)
+        leftResult.push(DICEFACESYMBOLS.bracketL)
+        leftResult.concat([DICEFACESYMBOLS.bracketR])
+      if @precedence(node.children[1]) < @precedence(node)
+        rightResult.push(DICEFACESYMBOLS.bracketL)
+        rightResult.concat([DICEFACESYMBOLS.bracketR])
+      result = leftResult.concat(node.token,rightResult)
+      return result
+    else if node.type == 'unaryop'
+      return result.concat(node.token, @flatten(node.children[0]))
+    else if node.type == 'number'
+      return node.token
+
+
+
 module.exports.ExpressionParser = ExpressionParser;

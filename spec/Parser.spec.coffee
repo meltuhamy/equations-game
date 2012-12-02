@@ -85,7 +85,19 @@ describe "parser", ->
 
   it "should parse", ->
     p = new ExpressionParser
-    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three]  
+    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three]
+
+  it "should flatten correctly", ->
+    p = new ExpressionParser
+    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three] 
+    flat = p.flatten(tree)
+    expect(flat).toEqual([DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three])
+
+  it "should remove redundant brackets correctly", ->
+    p = new ExpressionParser
+    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.bracketR] 
+    flat = p.flatten(tree)
+    expect(flat).toEqual([DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three])
 
   it "should not parse", ->
     p = new ExpressionParser

@@ -204,10 +204,16 @@ class Game
     # Finally, check that the expression in the dice parses as an expression.
     p = new ExpressionParser()
     @goalTree = p.parse(diceValues)
-    @goalArray = diceValues
-
+    result = []
+    flattened = p.flatten(@goalTree)
+    for i in [0...flattened.length]
+      while dice[0] == -1 || dice[0] == -2
+        dice.splice(0,1)
+      result = result.concat(dice[0])
+      dice.splice(0,1)
+    @goalArray = result    
     e = new Evaluator()
-    @goalValue = e.evaluate(@goalArray)
+    @goalValue = e.evaluate(@goalTree)
 
     return true
   

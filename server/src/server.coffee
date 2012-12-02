@@ -87,7 +87,7 @@ everyone.now.receiveGoal = (goalArray) ->
       groupReference.receiveMoveTimeUp()
       groupReference.receiveState(game.state)
     )
-    group.now.receiveGoalTurnEnd(goalArray)
+    group.now.receiveGoalTurnEnd(game.goalArray)
     group.now.receiveState(game.state)
   catch e #catches when parser returns error for goal
     console.log e.message
