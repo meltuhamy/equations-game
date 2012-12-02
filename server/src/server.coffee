@@ -10,8 +10,8 @@ DICEFACESYMBOLS = DiceFace.symbols
 everyone = nowjs.initialize(server)
 
 gamesManager = new GamesManager()
-gamesManager.newGame('Test Game', 3)
-gamesManager.newGame('Some Game', 2)
+gamesManager.newGame('Test Game', 2)
+gamesManager.newGame('Some Game', 3)
 gamesManager.newGame('The Game', 2)
 gamesManager.newGame('One Game', 5)
 
@@ -170,7 +170,6 @@ everyone.now.challengeDecision = (agree) ->
   callback = ->
     groupReference.receiveMoveTimeUp()
     groupReference.receiveState(game.state)
-    console.log "YOU DID SUBMIT A SOLUTION IN TIME"
     #group.now.receiveChallengeRoundEndTurn()
   try
     if((agree && game.challengeModeNow) || (!agree && !game.challengeModeNow))

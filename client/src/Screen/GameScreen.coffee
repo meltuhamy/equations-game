@@ -31,6 +31,9 @@ class GameScreen extends Screen
   # {Boolean} Have we submitted the solution
   submittedSolution: false
 
+  # {Boolean} Have we submitted our decision for the challenge
+  submittedDecision: false
+
   # {Sketcher} The HTML5 drawing area
   sketcher: undefined
 
@@ -139,7 +142,9 @@ class GameScreen extends Screen
       $('#now-button').hide()
       $('#never-button').hide()
     clearInterval(@turnTimer)
-    # Every second 
+
+
+    # Add a setinterval (faster than 1sec) to countdown the timer
     thisReference = this
     $('#timer-knob').val(Game.state.turnDuration).trigger('change');
     value = @getKnobFaceTime()
@@ -149,6 +154,11 @@ class GameScreen extends Screen
     @turnTimer = setInterval ->
       thisReference.doChangeKnob(thisReference)
     , @knobInterval
+
+
+
+
+    #if(@submittedSolution) then clear
 
   knobInterval: 100
 
@@ -219,20 +229,20 @@ class GameScreen extends Screen
     buttonsHtml = '<span id="challenge-agree-btn">Agree</span> <span id="challenge-disagree-btn">Disagree</span>'
     thisReference = this
     if(Game.isChallengeDecideTurn())
-      if(!Game.isChallenger())
-        html = if(Game.challengeModeNow) then "Now Challenge! " else "Never Challenge! "
-        html += "Please select if you agree: "
-        html += buttonsHtml
-        html = '<p>' + html + '</p>'
-        $('#turn-notification').html(html)
-        $('#challenge-agree-btn').unbind 'click'
-        $('#challenge-agree-btn').bind 'click', (event) ->
-          Network.sendChallengeDecision(true)
-          clearInterval(thisReference.turnTimer)
-        $('#challenge-disagree-btn').unbind 'click'
-        $('#challenge-disagree-btn').bind 'click', (event) ->
-          Network.sendChallengeDecision(false)
-          clearInterval(thisReference.turnTimer)
+      if(!Game.isChallenger() && !@submittedDecision)
+          html = if(Game.challengeModeNow) then "Now Challenge! " else "Never Challenge! "
+          html += "Please select if you agree: "
+          html += buttonsHtml
+          html = '<p>' + html + '</p>'
+          $('#turn-notification').html(html)
+          $('#challenge-agree-btn').unbind 'click'
+          $('#challenge-agree-btn').bind 'click', (event) ->
+            Network.sendChallengeDecision(true)
+            thisReference.submittedDecision = true
+          $('#challenge-disagree-btn').unbind 'click'
+          $('#challenge-disagree-btn').bind 'click', (event) ->
+            Network.sendChallengeDecision(false)
+            thisReference.submittedDecision = false
       else 
         $('#turn-notification').html('<p>Please wait for other players to decide.</p>')
     else if(Game.isChallengeSolutionTurn())
