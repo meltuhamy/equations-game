@@ -105,6 +105,8 @@ class Game
       # {Number} The duration of the current turn in seconds
       turnDuration: undefined
       playerScores: []
+      # The player array indices of players who ready-ed themselves for the next round.
+      readyForNextRound: []
 
 
 
@@ -480,18 +482,18 @@ class Game
       for playerid in [0...@players.length]
         if playerid in @state.impossiblePlayers then @state.playerScores[playerid] += 2
         if @challenger == playerid && playerid in @state.impossiblePlayers then @state.playerScores[playerid] += 2
-      
+  
+  readyForNextRound: (clientid) ->
+    index = @getPlayerIdBySocket(clientid)
+    if(index not in @state.readyForNextRound) then @state.readyForNextRound.push(index)
+
+  allNextRoundReady: () -> @state.readyForNextRound.length == @players.length
 
   nextRound: ->
     @goalTree = undefined
     @goalArray = []
     @goalValue = undefined
-    #players: []
-    #playerSocketIds: []
-    #playerLimit: 2
     @goalSetter = undefined
-    #nowJsGroupName: ''
-    #gameNumber: 0
     @started = false
     @globalDice = []
     @challengeMode = false
@@ -507,6 +509,9 @@ class Game
     @state.currentPlayer = 0
     @state.possiblePlayers = []
     @state.impossiblePlayers = []
+    @state.readyForNextRound = []
+    @goalStart()
+    @allocate()
 
 
 

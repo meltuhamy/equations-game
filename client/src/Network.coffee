@@ -54,6 +54,9 @@ class Network
   @sendChallengeSolution: (answer) ->
     now.challengeSolution(answer)
 
+  @sendNextRoundReady: () ->
+    now.nextRoundReady()
+
 
 
 
@@ -155,7 +158,8 @@ now.receiveChallengeRoundEndTurn = (solutions) ->
   Game.receiveChallengeRoundEndTurn(solutions)
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
-
+now.receiveNextRoundAllReady = () ->
+  Game.nextRound()
 
 
 ###*

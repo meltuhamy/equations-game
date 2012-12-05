@@ -8,37 +8,36 @@ class GameScreen extends Screen
 
 
   # {EquationBuilder} Used to build the draft answer.
-  equationBuilder: undefined
-
-  # {Is the game currently in challenge mode}
-  challengeMode: false
+  #equationBuilder: undefined
 
 
-  addingDice: false
+  #addingDice: false
 
   # {Json} These are mutually exclusive contextual actions. 
   # At most one of these can be happening at a time.
   Contexts: {Neutral: 0, AllocMenu: 1, AddAnsDice: 2, MatchBracket: 3, DelAnsDice: 4}
-  currentContext: undefined
-  contextChangeCallback: undefined
+  #currentContext: undefined
+  #contextChangeCallback: undefined
 
   # {Number[]} An array of indices to the globalDice array of dice in answer area.
-  answerAreaDice: []
+  #answerAreaDice: []
 
   # {Boolean[]} A bitmap telling us if the globalDice has been used in answer area.
-  usedInAnswer: []
+  #usedInAnswer: []
 
   # {Boolean} Have we submitted the solution
-  submittedSolution: false
+  #submittedSolution: false
 
   # {Boolean} Have we submitted our decision for the challenge
-  submittedDecision: false
+  #ubmittedDecision: false
 
   # {Sketcher} The HTML5 drawing area
-  sketcher: undefined
+  #sketcher: undefined
 
   # {Integer} The id of the interval for the turn timer
-  turnTimer: undefined
+  #turnTimer: undefined
+
+  knobSettings: {width:50,height:50,fgColor:'#87CEEB',bgColor:'#EEEEEE',displayInput: false}
 
 
   constructor: () -> 
@@ -48,25 +47,29 @@ class GameScreen extends Screen
    * @param {Json} json Empty.
   ###
   init: (json) ->
+    @commentary = []
+    @equationBuilder = undefined
+    @addingDice = false
+    @currentContext = undefined
+    @contextChangeCallback = undefined
+    @answerAreaDice = []
+    @usedInAnswer = []
+    @sketcher = undefined
+    @submittedSolution = false
+    @submittedDecision = false
+    @turnTimer = undefined
+
+    
     @drawGoal()
     @equationBuilder = new EquationBuilder('#answers')
     @neutralContext()
     $("#now-button").bind("click", @nowButtonHandler)
     $("#never-button").bind("click", @neverButtonHandler)
 
-
-
     ### Sketcher stuf ###
     @initSketcher()
-    
     ### Timer Knob ###
-    knobSettings = 
-      width : 50
-      height : 50
-      fgColor : '#87CEEB'
-      bgColor : '#EEEEEE'
-      displayInput: false
-    $('#timer-knob').knob(knobSettings)
+    $('#timer-knob').knob(@knobSettings)
 
 
   ###*

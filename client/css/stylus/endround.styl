@@ -34,3 +34,23 @@ div#endround
         display: inline-block;
         line-height: 23px
         padding 0px 13px
+
+ul.solution
+  margin-left: -5px
+  li.dice
+    color: #FFFFFF
+    text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
+    border-color:#007BD1
+    background: #777777
+    diceLayout(30px)
+  li.dice[data-alloc='unallocated']
+    background: #777777
+  li.dice[data-alloc='required']
+    background: #EC6A00
+  li.dice[data-alloc='optional']
+    background: #4FBA07
+  li.dice[data-alloc='forbidden']
+    background: red
+
+li.dice[data-alloc='forbidden']
+    background: red

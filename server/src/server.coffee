@@ -206,7 +206,15 @@ everyone.now.challengeSolution = (answer) ->
 
 
 # client telling the server that he is ready for next round
-everyone.now.readyForNextRound = ->
-  group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())
+everyone.now.nextRoundReady = ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
+  game.readyForNextRound(this.user.clientId)
+  console.log "READY FOR NEXT ROUND!"
+  if(game.allNextRoundReady())
+    console.log "EVERYONE!"
+    group.now.receiveNextRoundAllReady()
+    game.nextRound()
+    group.now.receiveState(game.state)
+    group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())
 
 

@@ -54,4 +54,29 @@ class DiceFace
     return html
 
 
+  
+  @drawDiceList: (indices) ->
+    html = ''
+    indexCounter = 0
+    for i in indices
+      # Add a left bracket, add a right bracket or add a normal number/operator
+      if (i == -1)
+        html += "<li class='dot' data-bracket='left'><span>#{@faceToHtml(@symbols.bracketL)}<span></li>"
+      else if (i == -2)
+        html += "<li class='dot' data-bracket='right'><span>#{@faceToHtml(@symbols.bracketR)}<span></li>"
+      else
+        mat = ''
+        for x in Game.state.unallocated
+          if (i == x) then mat = 'unallocated'
+        for x in Game.state.required
+          if (i == x) then mat = 'required'
+        for x in Game.state.optional
+          if (i == x) then mat = 'optional'
+        for x in Game.state.forbidden
+          if (i == x) then mat = 'forbidden'
+        html += "<li class='dice' data-index='"+i+"' data-alloc='"+mat+"'><span>"+@faceToHtml(Game.globalDice[i])+"</span></li>"
+      indexCounter++
+    return html
+  
+
 

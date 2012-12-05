@@ -196,3 +196,18 @@ class Game
   # Is it currently our turn?
   # @return {Boolean} True if it is our turn and false its someone else's/
   @isMyTurn: () -> @state.currentPlayer == @myPlayerId
+
+  ###*
+   * Resets all variables
+  ###
+  @nextRound: () ->
+    @players = undefined
+    @firstTurnPlayerIndex = undefined
+    @goal = undefined
+    @globalDice = []
+    @gameList = []
+    @challengeMode = false
+    @currentChallengeStage = undefined
+    @challengerId = undefined
+    @challengeModeNow = undefined
+    

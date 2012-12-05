@@ -79,6 +79,37 @@ display-box()
   display: -moz-box
   display: box
 
+diceLayout(width)
+  display: inline-block
+  text-align: center
+  margin-right: 5px
+  width: $dicewidth = width
+  height: $dicewidth
+  span
+    line-height: $dicewidth;
+
+
+li.dot
+  font-size: 35px
+  color: #F8C627
+  font-weight: bold
+  display: inline-block
+  text-shadow: rgba(0, 0, 0, 0.3) 0px 2px 0px
+  width: 15px
+  height: 30px
+  line-height: 16px
+  margin-left: 5px
+  border: 8px solid transparent
+
+li.dot[data-bracket='none'] span:after
+  content: '.'
+
+li.dot[data-bracket='left'] span:after
+  content: '('
+
+li.dot[data-bracket='right'] span:after
+  content: ')'
+
 
 
 
@@ -92,7 +123,7 @@ ul#main-columns
   padding: 0
   margin: 0
 
-ul#main-columns li
+ul#main-columns > li
   display-box() //making the boxflex children display box messes up FF
   background: #007DD5
   list-style: none
