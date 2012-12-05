@@ -139,7 +139,7 @@ div#top-ctnr
         color: #F5FF00
         font-weight: bold
         padding-right: 5px     
-        
+  
 
 a.mini-button
   cursor: pointer
@@ -212,17 +212,35 @@ span#challenge-title
 /******** styles for the mats and dice and in the mats *******/
 /*************************************************************/
 
+
 div#allocation_container
   display: block
   background: #0066AD
   padding-top: 10px;
   padding-bottom: 10px;
-  //margin-bottom: 10px
   border-radius(5px 5px 0px 0px)
-  margin: 0px 10px 0px 0px
   text-align: left
+
   #dice_container
     margin 0px 20px 0px 20px
+
+  ul
+    display: inline-block
+    text-align: center
+    li.dice 
+      background: #CCC
+      diceBubble(30px, #777777, 5px)
+      cursor: pointer
+      span
+        font-family: $font-list
+        font-size: 20px
+        padding-top: 4px;
+
+  ul#required,
+  ul#optional,
+  ul#unallocated
+    margin-right: 5px
+
   ul#required li.dice
     background: #EC6A00
   ul#optional li.dice
@@ -232,13 +250,11 @@ div#allocation_container
   ul#unallocated li.dice
     background: #777777
 
-
   ul#required li.dice[data-usedinans="true"],
   ul#optional li.dice[data-usedinans="true"],
   ul#forbidden li.dice[data-usedinans="true"],
   ul#unallocated li.dice[data-usedinans="true"]
     box-shadow: rgba(0, 0, 0, 0.32) 0px -1px 9px 1px inset
-
 
   ul#required li.dice[data-anshover="on"],
   ul#optional li.dice[data-anshover="on"],
@@ -352,9 +368,8 @@ ul#answers
   li.dice
     color: #FFFFFF
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
-    border-color:#007BD1
+    diceLayout(30px)
     background: #777777
-    border-width: 8px
     cursor: pointer
   li.dice[data-alloc='unallocated']
     background: #777777

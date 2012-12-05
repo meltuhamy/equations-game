@@ -336,7 +336,7 @@ class GameScreen extends Screen
   addAddAnsDiceContext: () ->
     thisReference = this
     @changeToContext(@Contexts.AddAnsDice, @addAddAnsDiceContextChange)
-    $('#answer-add-dice-btn').css('background', 'black')
+    $('#answer-add-dice-btn').css('background', '#CE8400')
     $('#answer-add-dice-btn').unbind ('click')
     $('#answer-add-dice-btn').bind 'click', (event) ->
       thisReference.neutralContext()

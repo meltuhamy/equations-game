@@ -58,7 +58,7 @@ div#container[data-glow='on']
     width: 95%
   ul#main-columns
     box-orient(vertical) // When the screen is too small, make the answer/rough area rows become columns
-    li
+    > li
       box-flex(1)
       
 
@@ -68,7 +68,7 @@ div#container[data-glow='on']
     width: 80%
   ul#main-columns
     box-orient(horizontal) // When the screen is big enough, make the answer/rough area rows become columns
-    li
+    > li
       box-flex(1)
       width: 0 // give columns equal maximum shared width (hack to work on both FF and CHR)
 
@@ -87,6 +87,19 @@ diceLayout(width)
   height: $dicewidth
   span
     line-height: $dicewidth;
+
+diceBubble(width, bubblebg, bubblesize)
+  display: inline-block
+  text-align: center
+  border: bubblesize solid bubblebg
+  width: $dicewidth = width
+  height: $dicewidth
+  margin-right: -5px
+  span
+    line-height: $dicewidth;
+
+
+
 
 
 li.dot

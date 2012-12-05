@@ -21,35 +21,38 @@ div#goalwait
 
 div#goalmake
   h2
-    margin-bottom: 0px
-  p
     margin-bottom: 10px
+  p
+    color: #7EB6DE
+    margin-bottom: 5px
 
 
 div#goalwait h2
   margin-bottom: 5px
 
 
-div#allocation_container ul,
-ul#answers,
+
 ul#added-goal,
 ul#notadded-goal
   display: inline-block
   text-align: center
   li.dice 
     margin-right: -5px
-    border: 4px solid red
-    display: inline-block
-    text-align: center
+    //border: 4px solid red
+    //display: inline-block
+    //text-align: center
     background: #CCC
-    width: $dicewidth
-    height: $dicewidth
+    //width: $dicewidth
+    //height: $dicewidth
+    diceLayout(30px)
     cursor: pointer
     span
       font-family: $font-list
       font-size: 20px
       padding-top: 4px;
-      line-height: $dicewidth;
+
+
+
 
 
 div#notadded-goal-ctnr
@@ -60,7 +63,6 @@ div#notadded-goal-ctnr
       text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
       border-color:#005E9B
       background: #777777
-      border-width: 7px 14px
     
 div#added-goal-ctnr
   ul#added-goal 
@@ -75,13 +77,13 @@ div#added-goal-ctnr,
 div#notadded-goal-ctnr
   margin-bottom: 15px
   padding: $tbpadding=10px 20px
-  background: #004E81
+  background: #0078CD
   border-radius(5px) 
   clearfix()
   h3
     float: left
-    margin: 10px
-    color: #4884AC
+    margin: 10px 25px 10px 10px
+    color: #FFFFFF
     text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 0px
 
 
@@ -97,4 +99,4 @@ button#sendgoal
   cursor: pointer
 
 button#sendgoal:hover
-  background: #2FA9FF
+  background: #CE8400
