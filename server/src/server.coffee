@@ -78,9 +78,6 @@ everyone.now.receiveGoal = (goalArray) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
   if !(this.user.clientId == game.playerSocketIds[game.getGoalSetterPlayerId()])
-    console.log "Goal setter id = " + game.getGoalSetterPlayerId()
-    console.log this.user.clientId
-    console.log game.playerSocketIds
     throw "Unauthorised goal setter"
   try
     game.setGoal(goalArray,  ->
@@ -164,7 +161,6 @@ everyone.now.neverChallengeRequest = () ->
     groupReference.receiveMoveTimeUp()
     groupReference.receiveState(game.state)
     group.now.receiveChallengeSolutionsTurn()
-    console.log "YOU DID SUBMIT A DECISION IN TIME"
   )
   group.now.receiveNeverChallengeDecideTurn(game.getPlayerIdBySocket(this.user.clientId))
   group.now.receiveState(game.state)
@@ -177,7 +173,13 @@ everyone.now.challengeDecision = (agree) ->
   callback = ->
     groupReference.receiveMoveTimeUp()
     groupReference.receiveState(game.state)
-    group.now.receiveChallengeRoundEndTurn(game.getSubmittedSolutions())
+    group.now.receiveChallengeRoundEndTurn(
+      game.getSubmittedSolutions(), 
+      game.getAnswerExists(),
+      game.getRoundChallengePoints(),
+      game.getRoundDecisionPoints(),
+      game.getRoundSolutionPoints()
+    )
   try
     if((agree && game.challengeModeNow) || (!agree && !game.challengeModeNow))
       game.submitPossible(this.user.clientId, callback)
@@ -198,8 +200,13 @@ everyone.now.challengeSolution = (answer) ->
   try
     game.submitSolution(this.user.clientId, answer)
     if(game.allSolutionsSent())
-      group.now.receiveChallengeRoundEndTurn(game.getSubmittedSolutions())
-      
+      group.now.receiveChallengeRoundEndTurn(
+        game.getSubmittedSolutions(),
+        game.getAnswerExists(),
+        game.getRoundChallengePoints(),
+        game.getRoundDecisionPoints(),
+        game.getRoundSolutionPoints()
+      )
   catch e
     this.now.badMove(e.message)
     console.log e
@@ -209,9 +216,7 @@ everyone.now.challengeSolution = (answer) ->
 everyone.now.nextRoundReady = ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   game.readyForNextRound(this.user.clientId)
-  console.log "READY FOR NEXT ROUND!"
   if(game.allNextRoundReady())
-    console.log "EVERYONE!"
     group.now.receiveNextRoundAllReady()
     game.nextRound()
     group.now.receiveState(game.state)

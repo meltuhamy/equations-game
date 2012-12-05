@@ -58,6 +58,7 @@ class GameScreen extends Screen
     @submittedSolution = false
     @submittedDecision = false
     @turnTimer = undefined
+    @knobInterval = 100
 
     
     @drawGoal()
@@ -100,9 +101,6 @@ class GameScreen extends Screen
       thisReference.sketcher.changeToRubber()
 
 
-
-
-  
   ###*
    * Change the current contextual state.
    * @param  {Contexts} contextId A value from Contexts
@@ -117,22 +115,12 @@ class GameScreen extends Screen
     @currentContext = contextId
 
 
-  
 
   nowButtonHandler: () ->
-    console.log Game.challengeMode
-    if !Game.challengeMode
-      Network.sendNowChallengeRequest()
+    if !Game.challengeMode then Network.sendNowChallengeRequest()
 
   neverButtonHandler: () ->
-    console.log Game.challengeMode
-    if !Game.challengeMode
-      Network.sendNeverChallengeRequest()
-
-
-
-    
-
+    if !Game.challengeMode then Network.sendNeverChallengeRequest()
 
 
   # When the game state has changed
@@ -144,8 +132,6 @@ class GameScreen extends Screen
       $('#container').attr('data-glow', 'on')
       $('#now-button').hide()
       $('#never-button').hide()
-    clearInterval(@turnTimer)
-
 
     # Add a setinterval (faster than 1sec) to countdown the timer
     thisReference = this
@@ -153,17 +139,10 @@ class GameScreen extends Screen
     value = @getKnobFaceTime()
     $('#timer-text-ctnr').html("#{value}")
     thisReference = this
-    knobInterval = @knobInterval
+    clearInterval(@turnTimer)
     @turnTimer = setInterval ->
       thisReference.doChangeKnob(thisReference)
     , @knobInterval
-
-
-
-
-    #if(@submittedSolution) then clear
-
-  knobInterval: 100
 
 
   # When the player has changed on a state change
@@ -225,14 +204,13 @@ class GameScreen extends Screen
 
 
 
-
-
   drawCommentaryForChallenges: () ->
     # We have a now/never challenge. Draw the buttons to let him agree/disagree
     buttonsHtml = '<span id="challenge-agree-btn">Agree</span> <span id="challenge-disagree-btn">Disagree</span>'
     thisReference = this
     if(Game.isChallengeDecideTurn())
       if(!Game.isChallenger() && !@submittedDecision)
+          $('#turn-notification').attr('data-attention', 'on')
           html = if(Game.challengeModeNow) then "Now Challenge! " else "Never Challenge! "
           html += "Please select if you agree: "
           html += buttonsHtml
@@ -248,18 +226,22 @@ class GameScreen extends Screen
             thisReference.submittedDecision = false
       else 
         $('#turn-notification').html('<p>Please wait for other players to decide.</p>')
+        $('#turn-notification').attr('data-attention', 'off')
     else if(Game.isChallengeSolutionTurn())
       if(Game.solutionRequired())
         if(@submittedSolution)
+          $('#turn-notification').attr('data-attention', 'off')
           $('#turn-notification').html('<p>Please wait for other players to submit solutions</p>')
         else
           @changeToContext(@Contexts.Neutral, @neutralContextChange)
+          $('#turn-notification').attr('data-attention', 'on')
           $('#turn-notification').html('<p>Please submit your solution.</p>')
           $('#answer-submit-btn').show()
           $('#answer-submit-btn').unbind 'click'
           $('#answer-submit-btn').bind 'click', (event) ->
             thisReference.submitAnswer()
       else
+        $('#turn-notification').attr('data-attention', 'off')
         $('#turn-notification').html('<p>Please wait for other players to submit their solutions.</p>')
     
 
@@ -463,8 +445,7 @@ class GameScreen extends Screen
   submitAnswer: () ->
     answer = @equationBuilder.getIndicesToGlobalDice()
     @submittedSolution = true
-    console.log "submitAnswer called."
     Network.sendChallengeSolution(answer)
     $('#answer-submit-btn').hide()
     $('#answer-add-dice-btn').hide()
-    clearInterval(@knobInterval)
+    @neutralContext()

@@ -78,7 +78,12 @@ class Game
     @challenger= undefined
     @submittedSolutions= []
 
-    @rightAnswers= []
+    @rightAnswers = []
+    @answerExists = false
+    @challengePoints = []
+    @decisionPoints = []
+    @solutionPoints = []
+
 
     ###*
      * The game state.
@@ -107,6 +112,7 @@ class Game
       playerScores: []
       # The player array indices of players who ready-ed themselves for the next round.
       readyForNextRound: []
+    
 
 
 
@@ -231,6 +237,7 @@ class Game
       newPlayerIndex = @players.length
       @players.push(new Player(newPlayerIndex, 'James'))
       @playerSocketIds.push(clientid)
+      @state.playerScores[newPlayerIndex] = 0
       return newPlayerIndex
 
 
@@ -357,7 +364,7 @@ class Game
   nowChallenge: (clientId, turnEndCallback) ->
     @challengeMode = true
     @challengeModeNow = true
-    @challenger = clientId
+    @challenger = @getPlayerIdBySocket(clientId)
     @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
     @resetTurnTimer(9, turnEndCallback)
 
@@ -365,7 +372,7 @@ class Game
   neverChallenge: (clientId, turnEndCallback) ->
     @challengeMode = true
     @challengeModeNow = false
-    @challenger = clientId
+    @challenger = @getPlayerIdBySocket(clientId)
     @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
     @resetTurnTimer(9, turnEndCallback)
 
@@ -373,8 +380,6 @@ class Game
     @checkChallengeDecision()
     @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
     if(@allDecisionsMade())
-      #for i in [0...@state.possiblePlayers.length]
-        #@submittedSolutions[i] = []
       # Give 40 seconds for the solutions turn
       @resetTurnTimer(40, turnEndCallback)
 
@@ -382,10 +387,8 @@ class Game
     @checkChallengeDecision()
     @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
     if(@allDecisionsMade())
-      #for i in [0...@state.possiblePlayers.length]
-        #@submittedSolutions[i] = []
       # Give 40 seconds for the solutions turn
-      @resetTurnTimer(7, turnEndCallback)
+      @resetTurnTimer(40, turnEndCallback)
 
 
   checkChallengeDecision:(clientId) ->
@@ -462,26 +465,45 @@ class Game
 
   # Return a copy of the submitted solutions
   getSubmittedSolutions: () -> @submittedSolutions[..]
+  getAnswerExists: () -> @answerExists
+  getRoundChallengePoints: () -> @challengePoints[..]
+  getRoundDecisionPoints: () -> @decisionPoints[..]
+  getRoundSolutionPoints: () -> @solutionPoints[..]
 
 
-        
+
+
   scoreAdder: ->
     # See if we definitely know it's solvable. See if somebody got the goal.
-    answerExists = false
+    
     for playerid in [0...@players.length]
-      if @rightAnswers[playerid] then answerExists = true
-    # If at least one person did, then we knows it possible. Give points to everyone who tried
+      if @rightAnswers[playerid] then @answerExists = true
+    # If at least one person solved it, then we knows it possible. Give points to everyone who tried
     # and give even more points to everyone who got it right. Give the most to the challenger.
     # Otherwise, we assume it wasn't possible and give points to the people who said never.
-    if answerExists
+    if @answerExists
       for playerid in [0...@players.length]
-        if playerid in @state.possiblePlayers then @state.playerScores[playerid] += 2
-        if @rightAnswers[playerid] then @state.playerScores[playerid] += 2
-        if @challenger == playerid && playerid in @state.possiblePlayers then @state.playerScores[playerid] += 2
+        # Points for making that right decision
+        if playerid in @state.possiblePlayers
+          @decisionPoints[playerid] = 2
+        # Points for getting the correct solution
+        if @rightAnswers[playerid]
+          @solutionPoints[playerid] = 2
+        # Points for being the challenger
+        if @challenger == playerid && playerid in @state.possiblePlayers
+          @challengePoints[playerid] = 2
     else
       for playerid in [0...@players.length]
-        if playerid in @state.impossiblePlayers then @state.playerScores[playerid] += 2
-        if @challenger == playerid && playerid in @state.impossiblePlayers then @state.playerScores[playerid] += 2
+        if playerid in @state.impossiblePlayers
+          @decisionPoints[playerid] = 2
+        if @challenger == playerid && playerid in @state.impossiblePlayers
+          @challengePoints[playerid] = 2
+
+    # Now add the scores to the player
+    for i in [0...@players.length]
+      if(@decisionPoints[i]?) then @state.playerScores[i] += @decisionPoints[i]
+      if(@solutionPoints[i]?) then @state.playerScores[i] += @solutionPoints[i]
+      if(@challengePoints[i]?) then @state.playerScores[i] += @challengePoints[i]
   
   readyForNextRound: (clientid) ->
     index = @getPlayerIdBySocket(clientid)
@@ -509,6 +531,10 @@ class Game
     @state.currentPlayer = 0
     @state.possiblePlayers = []
     @state.impossiblePlayers = []
+    @answerExists = false
+    @challengePoints = []
+    @decisionPoints = []
+    @solutionPoints = []
     @state.readyForNextRound = []
     @goalStart()
     @allocate()

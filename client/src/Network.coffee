@@ -154,8 +154,8 @@ now.receiveChallengeSolutionsTurn = ->
 
 
 
-now.receiveChallengeRoundEndTurn = (solutions) ->
-  Game.receiveChallengeRoundEndTurn(solutions)
+now.receiveChallengeRoundEndTurn = (solutions, answerExists, challengePts, decisionPts, solutionPts) ->
+  Game.receiveChallengeRoundEndTurn(solutions, answerExists, challengePts, decisionPts, solutionPts)
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
 now.receiveNextRoundAllReady = () ->

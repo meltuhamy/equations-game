@@ -44,6 +44,8 @@ class Game
   @isChallengeSolutionTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeSolution
   @isChallengeCheckTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeCheck
   @agreesWithChallenge: () -> (@myPlayerId in @state.possiblePlayers && @challengeModeNow) || (@myPlayerId in @state.impossiblePlayers && !@challengeModeNow)
+  @doesPlayerAgreeChallenge: (index) -> (index in @state.possiblePlayers && @challengeModeNow) || (index in @state.impossiblePlayers && !@challengeModeNow)
+
   @isChallenger: () -> @myPlayerId == @challengerId
   @solutionRequired: -> (@agreesWithChallenge() && @challengeModeNow) || (!@agreesWithChallenge() && !@challengeModeNow)
 
@@ -150,9 +152,14 @@ class Game
   @receiveChallengeSolutionsTurn: () ->
     @currentChallengeStage = @ChallengeStages.ChallengeSolution
 
-  @receiveChallengeRoundEndTurn: (solutions) ->
+  @receiveChallengeRoundEndTurn: (solutions, answerExists, challengePts, decisionPts, solutionPts) ->
     @currentChallengeStage = @ChallengeStages.ChallengeEnd
-    ScreenSystem.renderScreen(@endRoundScreenId, {solutions: solutions})
+    ScreenSystem.renderScreen @endRoundScreenId,
+      solutions: solutions
+      answerExists:answerExists
+      challengePts:challengePts
+      decisionPts:decisionPts
+      solutionPts: solutionPts
     
 
   ###*
