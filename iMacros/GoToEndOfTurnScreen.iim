@@ -1,0 +1,37 @@
+VERSION BUILD=5301016 RECORDER=CR
+URL GOTO=http://localhost:8080/
+TAB OPEN
+TAB T=1
+TAB T=2
+URL GOTO=http://localhost:8080/
+TAB T=1
+TAG POS=1 TYPE=TR ATTR=data-gamenumber:0
+TAB T=2
+TAG POS=1 TYPE=TR ATTR=data-gamenumber:0
+TAB T=1
+TAG POS=1 TYPE=LI ATTR=data-index:0
+TAG POS=1 TYPE=LI ATTR=data-index:1
+TAG POS=1 TYPE=LI ATTR=data-index:2
+TAG POS=1 TYPE=BUTTON ATTR=ID:sendgoal
+TAB T=2
+TAG POS=1 TYPE=LI ATTR=data-index:5
+TAG POS=1 TYPE=SPAN ATTR=ID:mamenu-required-btn
+TAB T=1
+TAG POS=1 TYPE=LI ATTR=data-index:3
+TAG POS=1 TYPE=SPAN ATTR=ID:mamenu-optional-btn
+TAB T=2
+TAG POS=1 TYPE=SPAN ATTR=ID:now-button
+TAB T=1
+TAG POS=1 TYPE=SPAN ATTR=ID:challenge-agree-btn
+TAB T=2
+TAG POS=1 TYPE=A ATTR=ID:answer-add-dice-btn
+TAG POS=1 TYPE=LI ATTR=data-index:5
+TAG POS=1 TYPE=LI ATTR=data-index:3
+TAG POS=1 TYPE=LI ATTR=data-index:15
+TAG POS=1 TYPE=A ATTR=ID:answer-submit-btn
+TAB T=1
+TAG POS=1 TYPE=A ATTR=ID:answer-add-dice-btn
+TAG POS=1 TYPE=LI ATTR=data-index:5
+TAG POS=1 TYPE=LI ATTR=data-index:3
+TAG POS=1 TYPE=LI ATTR=data-index:15
+TAG POS=1 TYPE=A ATTR=ID:answer-submit-btn
