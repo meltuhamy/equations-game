@@ -58,7 +58,7 @@ class Network
     now.nextRoundReady()
 
   @leaveGame: () ->
-    now.core.socketio.disconnect()
+    location.reload()
 
 
 

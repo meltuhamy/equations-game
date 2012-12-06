@@ -78,6 +78,8 @@ class Game
     @challenger= undefined
     @submittedSolutions= []
 
+    @started = false
+
     @rightAnswers = []
     @answerExists = false
     @challengePoints = []
@@ -252,8 +254,7 @@ class Game
     console.log "Removing from client"
     console.log @players.length
     if @players.length == 2
-      console.log "hello"
-      #deal with case where game can no longer continue
+      @restartGame()
     else #now we need to update players and playersocketIds
       index = @getPlayerIdBySocket(clientid)
       @players.splice(index, 1)
@@ -341,9 +342,12 @@ class Game
     
 
   nextTurn: (turnEndCallback) ->
-    @state.currentPlayer = (@state.currentPlayer+1)%@players.length
-    @state.turnNumber += 1
-    @resetTurnTimer(7, turnEndCallback)
+    if @started
+      @state.currentPlayer = (@state.currentPlayer+1)%@players.length
+      @state.turnNumber += 1
+      @resetTurnTimer(7, turnEndCallback)
+    else
+      clearInterval(@turnTimer)
     
   
 
@@ -353,28 +357,34 @@ class Game
    * @param  {Function} endOfTurnTimeFunc This function is called when the time is up.
   ###
   resetTurnTimer: (turnSeconds, turnEndCallback) ->
-    @state.turnStartTime = Date.now()
-    @state.turnDuration = turnSeconds
-    clearInterval(@turnTimer)
-    # Has the player completed his turn BEFORE end of time?
-    thisReference = this
-    @turnTimer = setInterval(->
-      thisReference.handleTimeOut(turnEndCallback)
-      if(turnEndCallback?) then turnEndCallback() else console.log "TURN OVER"
-    , turnSeconds*1000)
+    if @started
+      @state.turnStartTime = Date.now()
+      @state.turnDuration = turnSeconds
+      clearInterval(@turnTimer)
+      # Has the player completed his turn BEFORE end of time?
+      thisReference = this
+      @turnTimer = setInterval(->
+        thisReference.handleTimeOut(turnEndCallback)
+        if(turnEndCallback?) then turnEndCallback() else console.log "TURN OVER"
+      , turnSeconds*1000)
+    else
+      clearInterval(@turnTimer)
 
 
   handleTimeOut: (turnEndCallback) ->
-    if(@challengeMode)
-      # Move players into the option that makes them submit a solution
-      if(!@allDecisionsMade())
-        console.log "NOT EVERYONE MADE DECISION"
-        for p in @players
-          index = p.index
-          if((index not in @state.possiblePlayers) and (index not in @state.impossiblePlayers))
-            @submitPossible(@getPlayerSocketById(index))
+    if @started
+      if @challengeMode
+        # Move players into the option that makes them submit a solution
+        if(!@allDecisionsMade())
+          console.log "NOT EVERYONE MADE DECISION"
+          for p in @players
+            index = p.index
+            if((index not in @state.possiblePlayers) and (index not in @state.impossiblePlayers))
+              @submitPossible(@getPlayerSocketById(index))
+      else
+        @nextTurn(turnEndCallback)
     else
-      @nextTurn(turnEndCallback)
+      clearInterval(@turnTimer)
 
 
 
@@ -571,7 +581,7 @@ class Game
     @submittedSolutions = []
     @rightAnswers = []
     @state.unallocated = []
-    @state.playerScores = []
+    @state.playerScores = [] #don't we wan't to keep track of scores as games progress?
     @state.required = []
     @state.optional = []
     @state.forbidden = []
@@ -587,6 +597,15 @@ class Game
     @goalStart()
     @allocate()
 
+  restartGame: ->
+    @constructor(@gameNumber, @name, @gameSize)
+    ###
+    @nextRound()
+    @state.playerScores = []
+    @players = []
+    @started = false
+    @playerSocketIds = []
+    ###
 
 
   module.exports.Game = Game
