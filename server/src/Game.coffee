@@ -260,6 +260,8 @@ class Game
       @players.splice(index, 1)
       @playerSocketIds.splice(index,1)
       @state.playerScores.splice(index, 1)
+      @submittedSolutions.splice(index, 1)
+      @rightAnswers.splice(index,1)
       #now we update possiblePlayers, impossiblePlayers and readyForNextRound arrays in state
       for i in [0...@state.possiblePlayers.length]
         if @state.possiblePlayers[i] == index
