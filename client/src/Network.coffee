@@ -170,10 +170,12 @@ now.receiveNextRoundAllReady = () ->
 
 
 
+now.receiveError = (errorObject) ->
+  console.log "ERROR HANDLE"
+  console.warn(errorObject)
 
 
 
-  
 
 
 ### Fire these events on server ###

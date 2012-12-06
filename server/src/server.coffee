@@ -87,8 +87,11 @@ everyone.now.receiveGoal = (goalArray) ->
     group.now.receiveGoalTurnEnd(game.goalArray)
     group.now.receiveState(game.state)
   catch e #catches when parser returns error for goal
-    console.log e.message
-    this.now.badGoal(e.message)
+    #console.log e.message
+    #this.now.badGoal(e.message)
+    testError = new Error('TestJames')
+    testError.value = 5
+    this.now.badGoal(testError)
 
 
 # put this in everyone's pocket. Server calls this when a player took too long.
@@ -217,7 +220,7 @@ everyone.now.challengeSolution = (answer) ->
         game.getRoundSolutionPoints()
       )
   catch e
-    this.now.badMove(e.message)
+    this.now.receiveError(e)
     console.log e
 
 
