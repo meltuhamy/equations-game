@@ -4,6 +4,7 @@
 
 @import 'main'
 // -----------
+
 div#endround
   background: #0066AD
   border-radius(5px)
@@ -15,15 +16,38 @@ div#endround
     margin-bottom: 5px
   p
     color: #7D879B
+
+  div#round-goal
+    padding: 2px
+    border-radius(5px)
+
+  ul#goal-dice-ctnr
+    display: block
+    margin-bottom: 10px
+    li.dice
+      display: inline-block
+      text-align: center
+      font-family: $font-list
+      font-size: 25px
+      margin-right: 5px
+      font-weight: bold
+      background: #FFC818
+      border-radius(5px)
+      width: $dicewidth = 35px
+      height: $dicewidth
+      span
+        color: #BE6B00
+        text-shadow: rgba(0, 0, 0, .15) 0px 1px 0px
+        line-height: $dicewidth;
   div#round-results-ctnr
     margin-bottom: 10px
     table#resultslist 
       text-align: left
-      width: 100%
+      //width: 100%
       td
         color: #87C2EB
         text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
-        padding: 5px
+        padding: 15px
       tr:nth-child(2n+1)
         background: #0071C0
       a
@@ -51,6 +75,17 @@ ul.solution
     background: #4FBA07
   li.dice[data-alloc='forbidden']
     background: red
+
+ul.score-tally 
+  li
+    padding: 2px
+    font-size: 13px
+  span
+    display: inline-block
+    padding: 4px
+    color: white
+    background: #E46D00
+    border-radius(3px)
 
 li.dice[data-alloc='forbidden']
     background: red

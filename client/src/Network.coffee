@@ -176,10 +176,12 @@ now.receivePlayerDisconnect = (playerId) ->
 
 
 
+now.receiveError = (errorObject) ->
+  console.log "ERROR HANDLE"
+  console.warn(errorObject)
 
 
 
-  
 
 
 ### Fire these events on server ###

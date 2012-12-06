@@ -238,7 +238,7 @@ class GameScreen extends Screen
           $('#turn-notification').attr('data-attention', 'off')
           $('#turn-notification').html('<p>Please wait for other players to submit solutions</p>')
         else
-          @changeToContext(@Contexts.Neutral, @neutralContextChange)
+          @addAddAnsDiceContext()
           $('#turn-notification').attr('data-attention', 'on')
           $('#turn-notification').html('<p>Please submit your solution.</p>')
           $('#answer-submit-btn').show()
