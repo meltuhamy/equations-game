@@ -250,7 +250,9 @@ class Game
 
   removeClient: (clientid) ->
     console.log "Removing from client"
+    console.log @players.length
     if @players.length == 2
+      console.log "hello"
       #deal with case where game can no longer continue
     else #now we need to update players and playersocketIds
       index = @getPlayerIdBySocket(clientid)

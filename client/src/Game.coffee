@@ -205,12 +205,16 @@ class Game
   @isMyTurn: () -> @state.currentPlayer == @myPlayerId
 
   @removePlayer: (index) ->
-    for i in [(index + 1) ... @players.length]
-      @players[i].index--
-    @players.splice(index,1)
-    console.log "spliced"
-    if @myPlayerId > index
-      @myPlayerId--
+    if @players.length == 2
+      alert "Not enough players in game, taking you back to lobby!"
+      location.reload()
+    else
+      for i in [(index + 1) ... @players.length]
+        @players[i].index--
+      @players.splice(index,1)
+      console.log "spliced"
+      if @myPlayerId > index
+        @myPlayerId--
 
 
   ###*
