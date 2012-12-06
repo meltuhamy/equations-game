@@ -211,7 +211,7 @@ class Game
 
     # Finally, check that the expression in the dice parses as an expression.
     p = new ExpressionParser()
-    @goalTree = p.parse(diceValues)
+    @goalTree = p.parse(diceValues, true)
     result = []
     flattened = p.flatten(@goalTree)
     for i in [0...flattened.length]
@@ -447,7 +447,7 @@ class Game
       e = new Evaluator
       p = new ExpressionParser
       # TODO separate out and wrap in try catch
-      submissionValue = e.evaluate(p.parse(diceValues))
+      submissionValue = e.evaluate(p.parse(diceValues,false))
       # Ok it does. So add it to the submitted solutions list
       @rightAnswers[playerid] = (@goalValue == submissionValue)
       @submittedSolutions[playerid] = dice
