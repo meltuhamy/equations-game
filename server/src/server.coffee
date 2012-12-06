@@ -8,6 +8,12 @@ DICEFACESYMBOLS = DiceFace.symbols
 {GamesManager} = require './GamesManager.js'
 
 everyone = nowjs.initialize(server)
+everyone.on 'disconnect', ->
+  console.log "in disconnect handler"
+  console.log "clientid: #{this.user.clientId} disconnected."
+
+  if(this.now.gameNumber?)
+    clientLeaveGame(this.user.clientId, this.now.gameNumber)
 
 gamesManager = new GamesManager()
 gamesManager.newGame('Test Game', 2)
@@ -235,14 +241,28 @@ everyone.now.nextRoundReady = ->
     group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())
 
 everyone.now.leaveGame = () ->
+  clientId = this.user.clientId
+  gameNumber = this.now.gameNumber
+  clientLeaveGame(clientId, gameNumber)
+  ###
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
+  console.log "leaveGame now method called."
   playerIndex = game.removeClient(this.user.clientId)
   game.nextTurn( ->
     groupReference.receiveMoveTimeUp()
     groupReference.receiveState(game.state))
   group.now.receivePlayerDisconnect(playerIndex)
   group.now.receiveState(game.state)
+  ###
   
-
-
+clientLeaveGame = (clientId, gameNumber) ->
+  {game, group} = getThisGameGroup(gameNumber)
+  groupReference = group.now
+  console.log "leaveGame now method called."
+  playerIndex = game.removeClient(clientId)
+  game.nextTurn( ->
+    groupReference.receiveMoveTimeUp()
+    groupReference.receiveState(game.state))
+  group.now.receivePlayerDisconnect(playerIndex)
+  group.now.receiveState(game.state)
