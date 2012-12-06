@@ -31,7 +31,7 @@ class DiceFace
     indexCounter = 0
     for d in list
       dataIndex = if (showIndexData) then " data-index='#{indexCounter}'" else ""
-      html += "<li class='dice'" + dataIndex + "><span>#{@faceToHtml(d)}<span></li>" 
+      html += "<li class='dice'" + dataIndex + "><span>#{@faceToHtml(d)}</span></li>" 
       indexCounter++
     return html
 
@@ -49,7 +49,7 @@ class DiceFace
     for i in indices
       face = diceFaces[i]
       dataIndex = if (showIndexData?) then " data-index='#{i}'" else ""
-      html += "<li class='dice'" + dataIndex + "><span>#{@faceToHtml(face)}<span></li>" 
+      html += "<li class='dice'" + dataIndex + "><span>#{@faceToHtml(face)}</span></li>" 
       indexCounter++
     return html
 
@@ -61,9 +61,9 @@ class DiceFace
     for i in indices
       # Add a left bracket, add a right bracket or add a normal number/operator
       if (i == -1)
-        html += "<li class='dot' data-bracket='left'><span>#{@faceToHtml(@symbols.bracketL)}<span></li>"
+        html += "<li class='dot' data-bracket='left'><span>#{@faceToHtml(@symbols.bracketL)}</span></li>"
       else if (i == -2)
-        html += "<li class='dot' data-bracket='right'><span>#{@faceToHtml(@symbols.bracketR)}<span></li>"
+        html += "<li class='dot' data-bracket='right'><span>#{@faceToHtml(@symbols.bracketR)}</span></li>"
       else
         mat = ''
         for x in Game.state.unallocated
@@ -77,6 +77,4 @@ class DiceFace
         html += "<li class='dice' data-index='"+i+"' data-alloc='"+mat+"'><span>"+@faceToHtml(Game.globalDice[i])+"</span></li>"
       indexCounter++
     return html
-  
-
 
