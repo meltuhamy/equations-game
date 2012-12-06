@@ -204,6 +204,15 @@ class Game
   # @return {Boolean} True if it is our turn and false its someone else's/
   @isMyTurn: () -> @state.currentPlayer == @myPlayerId
 
+  @removePlayer: (index) ->
+    for i in [(index + 1) ... @players.length]
+      @players[i].index--
+    @players.splice(index,1)
+    console.log "spliced"
+    if @myPlayerId > index
+      @myPlayerId--
+
+
   ###*
    * Resets all variables
   ###

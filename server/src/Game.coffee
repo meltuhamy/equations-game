@@ -160,6 +160,7 @@ class Game
    * the function that calls this (everyone.now.receiveGoal() in server.coffee) handles any thrown exceptions
    * @param {Integer} dice [description]
   ###
+
   setGoal: (dice, turnEndCallback) ->  
     if @goalHasBeenSet() #if goal already set
       throw "Goal already set"
@@ -239,6 +240,45 @@ class Game
       @playerSocketIds.push(clientid)
       @state.playerScores[newPlayerIndex] = 0
       return newPlayerIndex
+
+  removeClient: (clientid) ->
+    console.log "Removing from client"
+    if @players.length == 2
+      #deal with case where game can no longer continue
+    else #now we need to update players and playersocketIds
+      index = @getPlayerIdBySocket(clientid)
+      @players.splice(index, 1)
+      @playerSocketIds.splice(index,1)
+      @state.playerScores.splice(index, 1)
+      #now we update possiblePlayers, impossiblePlayers and readyForNextRound arrays in state
+      for i in [0...@state.possiblePlayers.length]
+        if @state.possiblePlayers[i] == index
+          @state.possiblePlayers.splice(i,1)
+        if i == @state.possiblePlayers.length - 1
+          break
+        if @state.possiblePlayers[i] > index
+          @state.possiblePlayers[i]--
+
+      for i in [0...@state.impossiblePlayers.length]
+        if @state.impossiblePlayers[i] == index
+          @state.impossiblePlayers.splice(i,1)
+        if i == @state.impossiblePlayers.length - 1
+          break
+        if @state.impossiblePlayers[i] > index
+          @state.impossiblePlayers[i]--
+
+      for i in [0...@state.readyForNextRound.length]
+        if @state.readyForNextRound[i] == index
+          @state.readyForNextRound.splice(i,1)
+        if i == @state.readyForNextRound.length - 1
+          break
+        if @state.readyForNextRound[i] > index
+          @state.readyForNextRound[i]--
+
+      if @state.currentPlayer == index
+        @state.currentPlayer = @players.length
+      return index
+
 
 
   isFull: () -> @players.length == @playerLimit

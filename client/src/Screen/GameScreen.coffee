@@ -66,6 +66,7 @@ class GameScreen extends Screen
     @neutralContext()
     $("#now-button").bind("click", @nowButtonHandler)
     $("#never-button").bind("click", @neverButtonHandler)
+    $("#leave-button").bind("click", @leaveButtonHandler)
 
     ### Sketcher stuf ###
     @initSketcher()
@@ -121,6 +122,10 @@ class GameScreen extends Screen
 
   neverButtonHandler: () ->
     if !Game.challengeMode then Network.sendNeverChallengeRequest()
+
+  leaveButtonHandler: () ->
+    console.log "leaveGame"
+    Network.leaveGame()
 
 
   # When the game state has changed

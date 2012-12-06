@@ -222,4 +222,15 @@ everyone.now.nextRoundReady = ->
     group.now.receiveState(game.state)
     group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())
 
+everyone.now.leaveGame = () ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
+  groupReference = group.now
+  playerIndex = game.removeClient(this.user.clientId)
+  game.nextTurn( ->
+    groupReference.receiveMoveTimeUp()
+    groupReference.receiveState(game.state))
+  group.now.receivePlayerDisconnect(playerIndex)
+  group.now.receiveState(game.state)
+  
+
 

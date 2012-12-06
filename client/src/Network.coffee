@@ -57,6 +57,10 @@ class Network
   @sendNextRoundReady: () ->
     now.nextRoundReady()
 
+  @leaveGame: () ->
+    now.leaveGame()
+    now.core.socketio.disconnect()
+
 
 
 
@@ -161,6 +165,8 @@ now.receiveChallengeRoundEndTurn = (solutions, answerExists, challengePts, decis
 now.receiveNextRoundAllReady = () ->
   Game.nextRound()
 
+now.receivePlayerDisconnect = (playerId) ->
+  Game.removePlayer(playerId)
 
 ###*
  * This is an event triggered by nowjs that says everything's ready to synchronise server/client
