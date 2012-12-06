@@ -241,8 +241,8 @@ class Game
    * @return {Integer} The index of the players array for the newly added player
   ###
   addClient: (clientid) ->
-    if @players.length == @playerLimit
-      throw new Error("Game full")
+    if @players.length == @playerLimit || @started
+      throw new Error("Game full or already started")
     else
       newPlayerIndex = @players.length
       @players.push(new Player(newPlayerIndex, 'James'))

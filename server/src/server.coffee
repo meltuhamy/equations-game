@@ -57,7 +57,7 @@ everyone.now.addClient = (gameNumber) -> #called by client when connected
   # Check that the person isn't already in a group
   notInRoom = !this.now.gameNumber?
 
-  if(notInRoom && !game.isFull())
+  if(notInRoom && !game.isFull() && !game.started)
     # add the player to the nowjs group
     group.addUser(this.user.clientId)
 
@@ -72,7 +72,7 @@ everyone.now.addClient = (gameNumber) -> #called by client when connected
 
     # Now see if the game is full after adding him (i.e see if is the last player)
     # If it is, then tell everyone in this game that its the goal setting turn. 
-    if(game.isFull())
+    if(game.isFull() && !game.started)
       game.goalStart() # TODO: add timer callback
       group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())
   else

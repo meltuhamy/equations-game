@@ -77,6 +77,7 @@ class Network
 now.acceptPlayer = (id, dicefaceSymbols) -> #id is the index
   Game.myPlayerId = id
   DiceFace.symbols = dicefaceSymbols
+  Game.acceptedJoin()
 
 
 ###*
@@ -192,5 +193,3 @@ now.badMove = (serverMessage) ->
 now.badGoal = (parserMessage) ->
   #do something here to show which part of the goal is malformed
   console.warn parserMessage
-
-

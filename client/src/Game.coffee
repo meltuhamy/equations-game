@@ -97,6 +97,8 @@ class Game
     
   @joinGame: (gameNumber) ->
     Network.sendJoinGameRequest(gameNumber)
+
+  @acceptedJoin: () ->
     ScreenSystem.renderScreen(@joinWaitScreenId)
 
 
