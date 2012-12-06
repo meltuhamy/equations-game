@@ -6,7 +6,6 @@ class EndRoundScreen extends Screen
 
   constructor: () ->
 
-  # solutions: []
 
   # json = {solutions: the array of goal dice for possible players}
   init: (json) ->
@@ -45,18 +44,8 @@ class EndRoundScreen extends Screen
     for p in Game.players
       html += '<tr>'
       html += "<td>#{p.name}</td>"
-
-
       agreed = Game.doesPlayerAgreeChallenge(p.index)
-      #if(agreed && )
-
-
-
-      # agreedMessage = 
-        
-
-
-
+  
       # Give the tally of the score
       # ----------------------------
       html += "<td>"
@@ -69,12 +58,18 @@ class EndRoundScreen extends Screen
         else
           html += "<li><span class='scorebubble'>+" + @decisionPts[p.index] + '</span> Didn\'t Agree with Challenge</li>'
 
-        # Points for solutions
-        if(@solutionPts[p.index]? && @solutionPts[p.index] > 0)
-          html += "<li><span class='scorebubble'>+" + @solutionPts[p.index] + '</span> Correct Solution</li>'
-        else if(@answerExists)
-          html += "<li><span class='scorebubble zero'>0</span></span> Incorrect Solution</li>"
+        # Solution points 
+        # Something is broken here
+        #console.log "#{p.index} stuff is here"
+        #console.log "@solutions  is" + @solutions
+        #console.log "@solutionPts is  " + @solutionPts
 
+        if(@solutions[p.index]?)
+          if(@solutionPts[p.index]? && @solutionPts[p.index] > 0)
+            html += "<li><span class='scorebubble'>+" + @solutionPts[p.index] + '</span> Correct Solution</li>'
+          else
+            html += "<li><span class='scorebubble zero'>0</span></span> Incorrect Solution</li>"
+        
         # Challenger bonus points
         if(@challengePts[p.index]? && @challengePts[p.index] > 0)
           html += "<li><span class='scorebubble'>+" + @challengePts[p.index] + '</span> Challenger Bonus</li>'

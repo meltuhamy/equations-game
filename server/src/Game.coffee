@@ -91,7 +91,7 @@ class Game
      * IF YOU CHANGE THIS, CHANGE client/Game.coffee
      * **************
     ###
-    @state=
+    @state =
       unallocated: []
       required: []
       optional: []
@@ -100,7 +100,7 @@ class Game
       currentPlayer: 0
       # What turn number is it? This increments after a turn has been made. 
       # The dice setting has turnNumber = 0. The first turn to move dice has turnNumber = 1. 
-      #turnNumber
+      turnNumber: 0
       # {Number[]} array of indices to player array of the players need to submit a solution
       possiblePlayers: []
       # {Number[]} array of indices to player array of the players are not submitting a solution
@@ -293,12 +293,14 @@ class Game
 
   start: (turnEndCallback) ->
     @state.currentPlayer = (@goalSetter+1)%@players.length
+    @state.turnNumber = 1
     @resetTurnTimer(7, turnEndCallback)
     
     
 
   nextTurn: (turnEndCallback) ->
     @state.currentPlayer = (@state.currentPlayer+1)%@players.length
+    @state.turnNumber += 1
     @resetTurnTimer(7, turnEndCallback)
     
   
@@ -534,6 +536,7 @@ class Game
     @state.currentPlayer = 0
     @state.possiblePlayers = []
     @state.impossiblePlayers = []
+    @state.turnNumber = 0
     @answerExists = false
     @challengePoints = []
     @decisionPoints = []
