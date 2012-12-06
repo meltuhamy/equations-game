@@ -389,6 +389,8 @@ class Game
     if(@allDecisionsMade())
       # Give 40 seconds for the solutions turn
       @resetTurnTimer(40, turnEndCallback)
+      if(@state.possiblePlayers.length == 0)
+        @scoreAdder()
 
 
   checkChallengeDecision:(clientId) ->

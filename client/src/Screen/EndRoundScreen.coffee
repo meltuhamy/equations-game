@@ -47,8 +47,8 @@ class EndRoundScreen extends Screen
       html += "<td>#{p.name}</td>"
 
 
-      #agreed = Game.doesPlayerAgreeChallenge(p.index)
-      #if(agreed && @answerExists)
+      agreed = Game.doesPlayerAgreeChallenge(p.index)
+      #if(agreed && )
 
 
 
@@ -62,14 +62,20 @@ class EndRoundScreen extends Screen
       html += "<td>"
       html += "<ul class='score-tally'>"
       if(@decisionPts[p.index]? && @decisionPts[p.index] > 0)
+
+        # Decision points
         if(agreed)
           html += "<li><span class='scorebubble'>+" + @decisionPts[p.index] + '</span> Agreed with Challenge</li>'
         else
           html += "<li><span class='scorebubble'>+" + @decisionPts[p.index] + '</span> Didn\'t Agree with Challenge</li>'
+
+        # Points for solutions
         if(@solutionPts[p.index]? && @solutionPts[p.index] > 0)
           html += "<li><span class='scorebubble'>+" + @solutionPts[p.index] + '</span> Correct Solution</li>'
-        else
+        else if(@answerExists)
           html += "<li><span class='scorebubble zero'>0</span></span> Incorrect Solution</li>"
+
+        # Challenger bonus points
         if(@challengePts[p.index]? && @challengePts[p.index] > 0)
           html += "<li><span class='scorebubble'>+" + @challengePts[p.index] + '</span> Challenger Bonus</li>'
       else

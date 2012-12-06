@@ -187,7 +187,16 @@ everyone.now.challengeDecision = (agree) ->
       game.submitImpossible(this.user.clientId, callback)
     group.now.receiveState(game.state)
     if(game.allDecisionsMade())
-      group.now.receiveChallengeSolutionsTurn()
+      if(game.state.possiblePlayers.length == 0)
+        group.now.receiveChallengeRoundEndTurn(
+          game.getSubmittedSolutions(), 
+          game.getAnswerExists(),
+          game.getRoundChallengePoints(),
+          game.getRoundDecisionPoints(),
+          game.getRoundSolutionPoints()
+        )
+      else
+        group.now.receiveChallengeSolutionsTurn()
 
   catch e
     this.now.badMove(e)
