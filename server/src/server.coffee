@@ -25,6 +25,9 @@ everyone.on 'disconnect', ->
     group.now.receivePlayerDisconnect(playerIndex)
     group.now.receiveState(game.state)
 
+everyone.on 'connect', ->
+  gamesManager.cleanGames()
+
 gamesManager = new GamesManager()
 gamesManager.newGame('Test Game', 2)
 gamesManager.newGame('Some Game', 3)
@@ -43,7 +46,6 @@ getThisGameGroup = (gameNumber) =>
   group = nowjs.getGroup(game.nowJsGroupName)
   return {game: game, group: group}
     
-
 
 everyone.now.createGame = (name, numPlayers) ->
   gameNumber = gamesManager.newGame(name, numPlayers)
