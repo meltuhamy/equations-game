@@ -78,6 +78,8 @@ class Game
     @challenger= undefined
     @submittedSolutions= []
 
+    @started = false
+
     @rightAnswers = []
     @answerExists = false
     @challengePoints = []
@@ -91,7 +93,7 @@ class Game
      * IF YOU CHANGE THIS, CHANGE client/Game.coffee
      * **************
     ###
-    @state=
+    @state =
       unallocated: []
       required: []
       optional: []
@@ -100,7 +102,7 @@ class Game
       currentPlayer: 0
       # What turn number is it? This increments after a turn has been made. 
       # The dice setting has turnNumber = 0. The first turn to move dice has turnNumber = 1. 
-      #turnNumber
+      turnNumber: 0
       # {Number[]} array of indices to player array of the players need to submit a solution
       possiblePlayers: []
       # {Number[]} array of indices to player array of the players are not submitting a solution
@@ -134,6 +136,13 @@ class Game
   getPlayerSocketById: (id) -> @playerSocketIds[id]
 
 
+  throwError: (errorNumber, jsonParams, errorMessage) ->
+    error = new Error(errorMessage)
+    error.number = errorNumber
+    if(jsonParams?) then error.params = jsonParams
+    error.emsg = errorMessage
+    throw error
+
   ###*
    * Spawns the global array. Uses a random distribution to work out the dice for the game.
   ###
@@ -160,6 +169,7 @@ class Game
    * the function that calls this (everyone.now.receiveGoal() in server.coffee) handles any thrown exceptions
    * @param {Integer} dice [description]
   ###
+
   setGoal: (dice, turnEndCallback) ->  
     if @goalHasBeenSet() #if goal already set
       throw "Goal already set"
@@ -211,7 +221,7 @@ class Game
 
     # Finally, check that the expression in the dice parses as an expression.
     p = new ExpressionParser()
-    @goalTree = p.parse(diceValues)
+    @goalTree = p.parse(diceValues, true)
     result = []
     flattened = p.flatten(@goalTree)
     for i in [0...flattened.length]
@@ -231,14 +241,56 @@ class Game
    * @return {Integer} The index of the players array for the newly added player
   ###
   addClient: (clientid) ->
-    if @players.length == @playerLimit
-      throw new Error("Game full")
+    if @players.length == @playerLimit || @started
+      throw new Error("Game full or already started")
     else
       newPlayerIndex = @players.length
       @players.push(new Player(newPlayerIndex, 'James'))
       @playerSocketIds.push(clientid)
       @state.playerScores[newPlayerIndex] = 0
       return newPlayerIndex
+
+  removeClient: (clientid) ->
+    console.log "Removing from client"
+    console.log @players.length
+    if @players.length == 2
+      @restartGame()
+    else #now we need to update players and playersocketIds
+      index = @getPlayerIdBySocket(clientid)
+      @players.splice(index, 1)
+      @playerSocketIds.splice(index,1)
+      @state.playerScores.splice(index, 1)
+      @submittedSolutions.splice(index, 1)
+      @rightAnswers.splice(index,1)
+      #now we update possiblePlayers, impossiblePlayers and readyForNextRound arrays in state
+      for i in [0...@state.possiblePlayers.length]
+        if @state.possiblePlayers[i] == index
+          @state.possiblePlayers.splice(i,1)
+        if i == @state.possiblePlayers.length - 1
+          break
+        if @state.possiblePlayers[i] > index
+          @state.possiblePlayers[i]--
+
+      for i in [0...@state.impossiblePlayers.length]
+        if @state.impossiblePlayers[i] == index
+          @state.impossiblePlayers.splice(i,1)
+        if i == @state.impossiblePlayers.length - 1
+          break
+        if @state.impossiblePlayers[i] > index
+          @state.impossiblePlayers[i]--
+
+      for i in [0...@state.readyForNextRound.length]
+        if @state.readyForNextRound[i] == index
+          @state.readyForNextRound.splice(i,1)
+        if i == @state.readyForNextRound.length - 1
+          break
+        if @state.readyForNextRound[i] > index
+          @state.readyForNextRound[i]--
+
+      if @state.currentPlayer == index
+        @state.currentPlayer = @players.length
+      return index
+
 
 
   isFull: () -> @players.length == @playerLimit
@@ -286,13 +338,18 @@ class Game
 
   start: (turnEndCallback) ->
     @state.currentPlayer = (@goalSetter+1)%@players.length
+    @state.turnNumber = 1
     @resetTurnTimer(7, turnEndCallback)
     
     
 
   nextTurn: (turnEndCallback) ->
-    @state.currentPlayer = (@state.currentPlayer+1)%@players.length
-    @resetTurnTimer(7, turnEndCallback)
+    if @started
+      @state.currentPlayer = (@state.currentPlayer+1)%@players.length
+      @state.turnNumber += 1
+      @resetTurnTimer(7, turnEndCallback)
+    else
+      clearInterval(@turnTimer)
     
   
 
@@ -302,28 +359,34 @@ class Game
    * @param  {Function} endOfTurnTimeFunc This function is called when the time is up.
   ###
   resetTurnTimer: (turnSeconds, turnEndCallback) ->
-    @state.turnStartTime = Date.now()
-    @state.turnDuration = turnSeconds
-    clearInterval(@turnTimer)
-    # Has the player completed his turn BEFORE end of time?
-    thisReference = this
-    @turnTimer = setInterval(->
-      thisReference.handleTimeOut(turnEndCallback)
-      if(turnEndCallback?) then turnEndCallback() else console.log "TURN OVER"
-    , turnSeconds*1000)
+    if @started
+      @state.turnStartTime = Date.now()
+      @state.turnDuration = turnSeconds
+      clearInterval(@turnTimer)
+      # Has the player completed his turn BEFORE end of time?
+      thisReference = this
+      @turnTimer = setInterval(->
+        thisReference.handleTimeOut(turnEndCallback)
+        if(turnEndCallback?) then turnEndCallback() else console.log "TURN OVER"
+      , turnSeconds*1000)
+    else
+      clearInterval(@turnTimer)
 
 
   handleTimeOut: (turnEndCallback) ->
-    if(@challengeMode)
-      # Move players into the option that makes them submit a solution
-      if(!@allDecisionsMade())
-        console.log "NOT EVERYONE MADE DECISION"
-        for p in @players
-          index = p.index
-          if((index not in @state.possiblePlayers) and (index not in @state.impossiblePlayers))
-            @submitPossible(@getPlayerSocketById(index))
+    if @started
+      if @challengeMode
+        # Move players into the option that makes them submit a solution
+        if(!@allDecisionsMade())
+          console.log "NOT EVERYONE MADE DECISION"
+          for p in @players
+            index = p.index
+            if((index not in @state.possiblePlayers) and (index not in @state.impossiblePlayers))
+              @submitPossible(@getPlayerSocketById(index))
+      else
+        @nextTurn(turnEndCallback)
     else
-      @nextTurn(turnEndCallback)
+      clearInterval(@turnTimer)
 
 
 
@@ -389,13 +452,15 @@ class Game
     if(@allDecisionsMade())
       # Give 40 seconds for the solutions turn
       @resetTurnTimer(40, turnEndCallback)
+      if(@state.possiblePlayers.length == 0)
+        @scoreAdder()
 
 
   checkChallengeDecision:(clientId) ->
     if !@challengeMode
-      throw "Can't submit opinion, not currently challenge mode"
+      @throwError(0, {}, "Can't submit opinion, not currently challenge mode")
     if (clientId in @state.possiblePlayers) || (clientId in @state.impossiblePlayers)
-      throw "Already stated your opinion"
+      @throwError(0, {}, "Already stated your opinion")
 
 
   # Check if everyone has submitted their decisions for the decision making turn
@@ -403,21 +468,16 @@ class Game
 
 
 
-
   ###*
-   * @param  {[type]} clientId      [description]
-   * @param  {[type]} dice An array of indices to the globalArray for the answer.
+   * @param  {Integer} socketId      The nowjs socket of the player
+   * @param  {Integer[]} dice An array of indices to the globalArray for the answer we need to check.
   ###
   submitSolution: (socketId, dice) ->
-    console.log "submitSolution called"
     if !@challengeMode then throw "Not in challenge mode"
     playerid = @getPlayerIdBySocket(socketId)
-    #console.log "Player #{playerid} trying to submit solution #{dice}, clientid = #{socketId}"
-    #console.log @submittedSolutions
-    # If he hasn't already submitted a solution..
-    # console.log @submittedSolutions[playerid]
     if (playerid in @state.possiblePlayers)
-      if (@submittedSolutions[playerid]?) then throw "Player #{socketId} already submitted solution which is: #{@submittedSolutions[playerid]}"
+      # If he hasn't already submitted a solution..
+      if (@submittedSolutions[playerid]?) then throw @throwError(0, {}, "Player #{socketId} already submitted solution which is: #{@submittedSolutions[playerid]}")
       # Check if the solution submitted is valid
 
       diceValues = []
@@ -426,35 +486,34 @@ class Game
       numGlobalDice = @globalDice.length
       for i in [0 ... dice.length]
         for j in [i+1 ... dice.length]
-          if (dice[i] < -2  || dice[i] >= numGlobalDice) then throw "Solution has out of bounds array index"
-          if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then throw "Solution uses duplicate dice"
+          if (dice[i] < -2  || dice[i] >= numGlobalDice) then throw @throwError(0, {}, "Solution has out of bounds array index")
+          if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then throw @throwError(0, {}, "Solution uses duplicate dice")
+
         if dice[i] == -1
           diceValues.push(DICEFACESYMBOLS.bracketL)
         else if dice[i] == -2
           diceValues.push(DICEFACESYMBOLS.bracketR)
         else
           diceValues.push(@globalDice[dice[i]])
-        if(dice[i] in @state.forbidden) then throw "Solution uses dice from forbidden"
+        if(dice[i] in @state.forbidden) then throw @throwError(0, {}, "Solution uses dice from forbidden")
         if(dice[i] in @state.required) then numRequiredInAns++
         if(dice[i] in @state.unallocated) then numUnallocatedInAns++
 
-      if(numRequiredInAns < @state.required.length) then throw "Solution doesn't use all dice from required"
-      if(numUnallocatedInAns > 1 && @challengeModeNow) then throw "Solution doesn't use one dice from unallocated"
+      if(numRequiredInAns < @state.required.length) then @throwError(0, {}, "Solution doesn't use all dice from required")
+      if(numUnallocatedInAns > 1 && @challengeModeNow) then throw @throwError(0, {}, "Solution doesn't use one dice from unallocated")
 
       # Everything ok-doky index wise. Now let's check it parses and gives the same value.
       e = new Evaluator
       p = new ExpressionParser
       # TODO separate out and wrap in try catch
-      submissionValue = e.evaluate(p.parse(diceValues))
+      submissionValue = e.evaluate(p.parse(diceValues,false))
       # Ok it does. So add it to the submitted solutions list
       @rightAnswers[playerid] = (@goalValue == submissionValue)
       @submittedSolutions[playerid] = dice
-      console.log "Player #{playerid} Submitted solution";
       
     else
       playerid = @getPlayerIdBySocket(socketId)
-      throw "Client not in 'possible' list"
-    console.log "here"
+      @throwError(0, {}, "Client not in 'possible' list")
     if(@allSolutionsSent()) then @scoreAdder()
 
   allSolutionsSent: () ->
@@ -524,13 +583,14 @@ class Game
     @submittedSolutions = []
     @rightAnswers = []
     @state.unallocated = []
-    @state.playerScores = []
+    @state.playerScores = [] #don't we wan't to keep track of scores as games progress?
     @state.required = []
     @state.optional = []
     @state.forbidden = []
     @state.currentPlayer = 0
     @state.possiblePlayers = []
     @state.impossiblePlayers = []
+    @state.turnNumber = 0
     @answerExists = false
     @challengePoints = []
     @decisionPoints = []
@@ -539,6 +599,15 @@ class Game
     @goalStart()
     @allocate()
 
+  restartGame: ->
+    @constructor(@gameNumber, @name, @gameSize)
+    ###
+    @nextRound()
+    @state.playerScores = []
+    @players = []
+    @started = false
+    @playerSocketIds = []
+    ###
 
 
   module.exports.Game = Game

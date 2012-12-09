@@ -57,6 +57,9 @@ class Network
   @sendNextRoundReady: () ->
     now.nextRoundReady()
 
+  @leaveGame: () ->
+    location.reload()
+
 
 
 
@@ -74,6 +77,7 @@ class Network
 now.acceptPlayer = (id, dicefaceSymbols) -> #id is the index
   Game.myPlayerId = id
   DiceFace.symbols = dicefaceSymbols
+  Game.acceptedJoin()
 
 
 ###*
@@ -161,6 +165,8 @@ now.receiveChallengeRoundEndTurn = (solutions, answerExists, challengePts, decis
 now.receiveNextRoundAllReady = () ->
   Game.nextRound()
 
+now.receivePlayerDisconnect = (playerId) ->
+  Game.removePlayer(playerId)
 
 ###*
  * This is an event triggered by nowjs that says everything's ready to synchronise server/client
@@ -170,10 +176,12 @@ now.receiveNextRoundAllReady = () ->
 
 
 
+now.receiveError = (errorObject) ->
+  console.log "ERROR HANDLE"
+  console.warn(errorObject)
 
 
 
-  
 
 
 ### Fire these events on server ###
@@ -185,5 +193,3 @@ now.badMove = (serverMessage) ->
 now.badGoal = (parserMessage) ->
   #do something here to show which part of the goal is malformed
   console.warn parserMessage
-
-

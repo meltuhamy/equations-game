@@ -32,7 +32,7 @@ class GamesManager
   ###
   getGamesListJson: () ->
     gamesList = [] 
-    for g in @games
+    for g in @games when g?
       gamesList.push
         # the string of the room used by nowjs for unique identification
         nowjsname: g.nowJsGroupName,
@@ -43,5 +43,11 @@ class GamesManager
         playerLimit: g.playerLimit,
         started: g.started
     return gamesList
+
+  cleanGames: () ->
+    for i in [2...@games.length]
+      if @games[i]? && @games[i].players.length == 0
+        @games[i] = undefined
+
 
 module.exports.GamesManager = GamesManager

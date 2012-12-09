@@ -3,13 +3,6 @@ Equations Game Group Project
 
 This is an implementation to the game "Equations" found here: http://www.academicgames.org/games/equations/index.html
     
-User Stories and requirements
-=============================
-This is done in trello.
-
-1. Go to https://trello.com/equationsgroupproject
-2. Create an account and tell me to add you.
-
 (NEW!) Using iMacros to speed up testing
 ----------------------------------------
 1. Make sure you're using Google Chrome

@@ -8,6 +8,25 @@ DICEFACESYMBOLS = DiceFace.symbols
 {GamesManager} = require './GamesManager.js'
 
 everyone = nowjs.initialize(server)
+everyone.on 'disconnect', ->
+  console.log "in disconnect handler"
+  console.log "clientid: #{this.user.clientId} disconnected."
+
+  if(this.now.gameNumber?)
+    clientId = this.user.clientId
+    gameNumber = this.now.gameNumber
+    {game, group} = getThisGameGroup(gameNumber)
+    groupReference = group.now
+    console.log "leaveGame now method called."
+    playerIndex = game.removeClient(clientId)
+    game.nextTurn( ->
+      groupReference.receiveMoveTimeUp()
+      groupReference.receiveState(game.state))
+    group.now.receivePlayerDisconnect(playerIndex)
+    group.now.receiveState(game.state)
+
+everyone.on 'connect', ->
+  gamesManager.cleanGames()
 
 gamesManager = new GamesManager()
 gamesManager.newGame('Test Game', 2)
@@ -28,7 +47,6 @@ getThisGameGroup = (gameNumber) =>
   return {game: game, group: group}
     
 
-
 everyone.now.createGame = (name, numPlayers) ->
   gameNumber = gamesManager.newGame(name, numPlayers)
   this.now.addClient(gameNumber)
@@ -41,7 +59,7 @@ everyone.now.addClient = (gameNumber) -> #called by client when connected
   # Check that the person isn't already in a group
   notInRoom = !this.now.gameNumber?
 
-  if(notInRoom && !game.isFull())
+  if(notInRoom && !game.isFull() && !game.started)
     # add the player to the nowjs group
     group.addUser(this.user.clientId)
 
@@ -56,7 +74,7 @@ everyone.now.addClient = (gameNumber) -> #called by client when connected
 
     # Now see if the game is full after adding him (i.e see if is the last player)
     # If it is, then tell everyone in this game that its the goal setting turn. 
-    if(game.isFull())
+    if(game.isFull() && !game.started)
       game.goalStart() # TODO: add timer callback
       group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())
   else
@@ -87,8 +105,11 @@ everyone.now.receiveGoal = (goalArray) ->
     group.now.receiveGoalTurnEnd(game.goalArray)
     group.now.receiveState(game.state)
   catch e #catches when parser returns error for goal
-    console.log e.message
-    this.now.badGoal(e.message)
+    #console.log e.message
+    #this.now.badGoal(e.message)
+    testError = new Error('TestJames')
+    testError.value = 5
+    this.now.badGoal(testError)
 
 
 # put this in everyone's pocket. Server calls this when a player took too long.
@@ -187,7 +208,16 @@ everyone.now.challengeDecision = (agree) ->
       game.submitImpossible(this.user.clientId, callback)
     group.now.receiveState(game.state)
     if(game.allDecisionsMade())
-      group.now.receiveChallengeSolutionsTurn()
+      if(game.state.possiblePlayers.length == 0)
+        group.now.receiveChallengeRoundEndTurn(
+          game.getSubmittedSolutions(), 
+          game.getAnswerExists(),
+          game.getRoundChallengePoints(),
+          game.getRoundDecisionPoints(),
+          game.getRoundSolutionPoints()
+        )
+      else
+        group.now.receiveChallengeSolutionsTurn()
 
   catch e
     this.now.badMove(e)
@@ -208,7 +238,7 @@ everyone.now.challengeSolution = (answer) ->
         game.getRoundSolutionPoints()
       )
   catch e
-    this.now.badMove(e.message)
+    this.now.receiveError(e)
     console.log e
 
 
@@ -221,5 +251,6 @@ everyone.now.nextRoundReady = ->
     game.nextRound()
     group.now.receiveState(game.state)
     group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())
-
-
+  
+clientLeaveGame = (clientId, gameNumber) ->
+  

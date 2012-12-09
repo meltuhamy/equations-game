@@ -66,6 +66,7 @@ class GameScreen extends Screen
     @neutralContext()
     $("#now-button").bind("click", @nowButtonHandler)
     $("#never-button").bind("click", @neverButtonHandler)
+    $("#leave-button").bind("click", @leaveButtonHandler)
 
     ### Sketcher stuf ###
     @initSketcher()
@@ -121,6 +122,10 @@ class GameScreen extends Screen
 
   neverButtonHandler: () ->
     if !Game.challengeMode then Network.sendNeverChallengeRequest()
+
+  leaveButtonHandler: () ->
+    console.log "leaveGame"
+    Network.leaveGame()
 
 
   # When the game state has changed
@@ -233,7 +238,7 @@ class GameScreen extends Screen
           $('#turn-notification').attr('data-attention', 'off')
           $('#turn-notification').html('<p>Please wait for other players to submit solutions</p>')
         else
-          @changeToContext(@Contexts.Neutral, @neutralContextChange)
+          @addAddAnsDiceContext()
           $('#turn-notification').attr('data-attention', 'on')
           $('#turn-notification').html('<p>Please submit your solution.</p>')
           $('#answer-submit-btn').show()
