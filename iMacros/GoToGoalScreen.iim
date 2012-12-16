@@ -6,6 +6,10 @@ TAB T=2
 URL GOTO=http://localhost:8080/
 TAB T=1
 TAG POS=1 TYPE=TR ATTR=data-gamenumber:0
+TAG POS=1 TYPE=INPUT:TEXT ATTR=ID:enterNameInputId CONTENT=player1
+TAG POS=1 TYPE=SPAN ATTR=ID:joinGameWithName
 TAB T=2
 TAG POS=1 TYPE=TR ATTR=data-gamenumber:0
+TAG POS=1 TYPE=INPUT:TEXT ATTR=ID:enterNameInputId CONTENT=player2
+TAG POS=1 TYPE=SPAN ATTR=ID:joinGameWithName
 TAB T=1

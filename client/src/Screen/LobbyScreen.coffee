@@ -85,11 +85,17 @@ class LobbyScreen extends Screen
     $('#' + labelId + ' span.form-error').html('')
       
 
+  ###*
+   * Creates a bootstrap modal dialogue
+   * @param  {Number} gameNumber The game number the player wants to join.
+  ###
   joinGameDialog: (gameNumber) ->
-    #Game.joinGame(gameNumber)
 
+    # delete the modal dialog if it already exists.
     modalsAlreadyOpen = $('#enterNameModal')
     if modalsAlreadyOpen.length isnt 0 then $('#enterNameModal').remove()
+
+    # create the modal dialog
     enterNameDialogHtml = '<div id="enterNameModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                             <div class="modal-header">
                               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -103,6 +109,7 @@ class LobbyScreen extends Screen
                               <span id="joinGameWithName" class="grey-button">Join Game</span>
                             </div>
                           </div>'
+    # Once the modal dialog HTML is ready, bind click listeners and show the modal
     $(enterNameDialogHtml).appendTo('body').ready ->
       $('#joinGameWithName').click ->
         nameEntered = $('#enterNameInputId').val()
