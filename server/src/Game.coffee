@@ -318,8 +318,18 @@ class Game
   ###
   getGoalSetterPlayerId: () ->
     if !@goalSetter?
-      @goalSetter = if Settings.DEBUG then 0 else Math.floor(Math.random() * @players.length) #set a random goalSetter
+      @setGoalSetterPlayerId()
     @goalSetter
+    
+  ###
+    Sets the goal setter to forceId. If no parameter given, chooses random goalSetter.
+  ###
+  setGoalSetterPlayerId: (forceId) ->
+    if(!forceId?)
+      #set a random goalSetter
+      @goalSetter = if Settings.DEBUG then 0 else Math.floor(Math.random() * @players.length) 
+    else
+      @goalSetter = forceId
 
 
   ###*
@@ -337,6 +347,8 @@ class Game
   goalStart: (turnEndCallback) ->
     @started = true
     # TODO: add callback for timer
+    @state.turnNumber = 0
+    @resetTurnTimer(Settings.goalSeconds, turnEndCallback)
 
 
   start: (turnEndCallback) ->
@@ -385,6 +397,9 @@ class Game
             index = p.index
             if((index not in @state.possiblePlayers) and (index not in @state.impossiblePlayers))
               @submitPossible(@getPlayerSocketById(index))
+      else if @state.turnNumber == 0
+        #Time ran out on goal setting screen. Choose new player to set goal
+        @setGoalSetterPlayerId()
       else
         @nextTurn(turnEndCallback)
     else
