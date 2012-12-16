@@ -4,7 +4,7 @@ DICEFACESYMBOLS = DiceFace.symbols
 {ExpressionParser, Node} = require './Parser.js'
 {Player} = require './Player.js'
 {Evaluator} = require './Evaluator.js'
-DEBUG = false
+{Settings} = require './Settings.js'
 
 
 class Game
@@ -147,9 +147,9 @@ class Game
    * Spawns the global array. Uses a random distribution to work out the dice for the game.
   ###
   allocate: ->
-    if DEBUG
+    if Settings.DEBUG
       # TODO move this ugly thing to a settings file
-      @globalDice = [1, DICEFACESYMBOLS.plus, 2, DICEFACESYMBOLS.minus, 3, 4, 5, 6, 7, 8, 9, 0, DICEFACESYMBOLS.divide, 9, 9, 1, 2, 9, 4, 5, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.plus, 2, 4]
+      @globalDice = Settings.DEBUGDICE
     else
       ops = 0
       @globalDice = []  #clear the array first
