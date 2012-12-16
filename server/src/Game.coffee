@@ -318,7 +318,7 @@ class Game
   ###
   getGoalSetterPlayerId: () ->
     if !@goalSetter?
-      @goalSetter = if DEBUG then 0 else Math.floor(Math.random() * @players.length) #set a random goalSetter
+      @goalSetter = if Settings.DEBUG then 0 else Math.floor(Math.random() * @players.length) #set a random goalSetter
     @goalSetter
 
 
@@ -342,15 +342,14 @@ class Game
   start: (turnEndCallback) ->
     @state.currentPlayer = (@goalSetter+1)%@players.length
     @state.turnNumber = 1
-    @resetTurnTimer(7, turnEndCallback)
-    
+    @resetTurnTimer(Settings.turnSeconds, turnEndCallback)
     
 
   nextTurn: (turnEndCallback) ->
     if @started
       @state.currentPlayer = (@state.currentPlayer+1)%@players.length
       @state.turnNumber += 1
-      @resetTurnTimer(7, turnEndCallback)
+      @resetTurnTimer(Settings.turnSeconds, turnEndCallback)
     else
       clearInterval(@turnTimer)
     
@@ -432,7 +431,7 @@ class Game
     @challengeModeNow = true
     @challenger = @getPlayerIdBySocket(clientId)
     @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
-    @resetTurnTimer(9, turnEndCallback)
+    @resetTurnTimer(Settings.challengeDecisionTurnSeconds, turnEndCallback)
 
 
   neverChallenge: (clientId, turnEndCallback) ->
@@ -440,21 +439,21 @@ class Game
     @challengeModeNow = false
     @challenger = @getPlayerIdBySocket(clientId)
     @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
-    @resetTurnTimer(9, turnEndCallback)
+    @resetTurnTimer(Settings.challengeDecisionTurnSeconds, turnEndCallback)
 
   submitPossible: (clientId, turnEndCallback) ->
     @checkChallengeDecision()
     @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
     if(@allDecisionsMade())
       # Give 40 seconds for the solutions turn
-      @resetTurnTimer(40, turnEndCallback)
+      @resetTurnTimer(Settings.submitTurnSeconds, turnEndCallback)
 
   submitImpossible: (clientId, turnEndCallback) ->
     @checkChallengeDecision()
     @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
     if(@allDecisionsMade())
       # Give 40 seconds for the solutions turn
-      @resetTurnTimer(40, turnEndCallback)
+      @resetTurnTimer(Settings.submitTurnSeconds, turnEndCallback)
       if(@state.possiblePlayers.length == 0)
         @scoreAdder()
 
