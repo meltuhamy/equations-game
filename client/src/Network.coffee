@@ -8,9 +8,9 @@ class Network
   @sendGameListRequest: () ->
     now.getGames()
 
-  @sendCreateGameRequest: (gameName, numberPlayers) ->
+  @sendCreateGameRequest: (gameName, numberPlayers, playerName) ->
     ScreenSystem.renderScreen(Game.joinWaitScreenId)
-    now.createGame(gameName, numberPlayers)
+    now.createGame(gameName, numberPlayers, playerName)
     
 
   @sendJoinGameRequest: (gameNumber, screenName) ->

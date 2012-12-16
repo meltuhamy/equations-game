@@ -13,13 +13,22 @@
 
 
     <form id="new-game" action="">
+      <!-- The name of the player -->
+      <p>
+        <label id="newgame-player-name-label">
+          <span class="form-title">Your nickname</span> <span class="form-error"></span>
+          <span>The name that will be displayed to other players.</span>
+        </label>
+        <input id="newgame-player-name" type="text" placeholder="Type your nickname" />
+      </p>
+
       <!-- The name of the game -->
       <p>
         <label id="newgame-name-label">
           <span class="form-title">Name of Game</span> <span class="form-error"></span>
           <span>The name of the game will be shown in lobby.</span>
         </label>
-        <input id="newgame-name" type="text" />
+        <input id="newgame-name" type="text" placeholder="Type game name" />
       </p>
 
       <!-- The number of playes in the game -->

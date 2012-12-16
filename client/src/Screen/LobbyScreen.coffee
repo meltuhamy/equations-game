@@ -47,6 +47,7 @@ class LobbyScreen extends Screen
     $('#add-game-btn').unbind 'click'
     $('#add-game-btn').bind 'click', (event) ->
       gameName = $('#newgame-name').val()
+      playerName = $('#newgame-player-name').val()
       numPlayers = parseInt($('#newgame-numplayers').val())
       difficulty = $('#newgame-difficulty').val()
 
@@ -56,6 +57,10 @@ class LobbyScreen extends Screen
       thisReference.removeError('newgame-difficulty-label')
       @formErrorNum = 0
 
+      # Validate the player name
+      condition = (!playerName? || playerName == "" || playerName.length == 0)
+      thisReference.handleError(condition, 'newgame-player-name-label', 'Your nickname can\'t be empty.')
+      
       # Validate the game name
       condition = (!gameName? || gameName == "" || gameName.length == 0)
       thisReference.handleError(condition, 'newgame-name-label', 'The name of the game can\'t be empty.')
@@ -70,7 +75,7 @@ class LobbyScreen extends Screen
       condition = (!difficulty? || (difficulty != 'easy' && difficulty != 'hard'))
       thisReference.handleError(condition, 'newgame-difficulty-label', 'Please select either Easy or Hard')
 
-      if(@formErrorNum == 0) then Network.sendCreateGameRequest(gameName, numPlayers)
+      if(@formErrorNum == 0) then Network.sendCreateGameRequest(gameName, numPlayers, playerName)
 
       return false # this return false prevents the form being submitted (causing page refresh)
    
