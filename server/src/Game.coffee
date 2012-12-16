@@ -4,7 +4,7 @@ DICEFACESYMBOLS = DiceFace.symbols
 {ExpressionParser, Node} = require './Parser.js'
 {Player} = require './Player.js'
 {Evaluator} = require './Evaluator.js'
-DEBUG = true
+DEBUG = false
 
 
 class Game
@@ -152,6 +152,8 @@ class Game
       @globalDice = [1, DICEFACESYMBOLS.plus, 2, DICEFACESYMBOLS.minus, 3, 4, 5, 6, 7, 8, 9, 0, DICEFACESYMBOLS.divide, 9, 9, 1, 2, 9, 4, 5, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.plus, 2, 4]
     else
       ops = 0
+      @globalDice = []  #clear the array first
+      #console.log(@globalDice) 
       for x in [1..24]  #24 dice rolls
         rand = Math.random()  #get a random number
         if rand < 2/3  #first we decide if the roll yields an operator or a digit
@@ -161,6 +163,7 @@ class Game
           ops++ #we keep track of the number of operators generated so that later we can check if there are enough
         @globalDice.push(rand)  #here we add the die to the global dice array
       if (ops < 2) || (ops > 21)  #if there are too few or too many operators, we must roll again
+        #@globalDice = [] #clear the array first
         @allocate()  #do the allocation again
 
 
