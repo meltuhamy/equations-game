@@ -95,8 +95,8 @@ class Game
     ScreenSystem.getCurrentScreen().onUpdatedGameList(@gameList)
     
     
-  @joinGame: (gameNumber) ->
-    Network.sendJoinGameRequest(gameNumber)
+  @joinGame: (gameNumber, screenName) ->
+    Network.sendJoinGameRequest(gameNumber, screenName)
 
   @acceptedJoin: () ->
     ScreenSystem.renderScreen(@joinWaitScreenId)

@@ -13,8 +13,8 @@ class Network
     now.createGame(gameName, numberPlayers)
     
 
-  @sendJoinGameRequest: (gameNumber) ->
-    now.addClient(gameNumber)
+  @sendJoinGameRequest: (gameNumber, screenName) ->
+    now.addClient(gameNumber, screenName)
 
   ###*
    * Sends the goal array to the server

@@ -53,7 +53,7 @@ everyone.now.createGame = (name, numPlayers) ->
   everyone.now.getGames()
 
 
-everyone.now.addClient = (gameNumber) -> #called by client when connected
+everyone.now.addClient = (gameNumber, playerName) -> #called by client when connected
   {game, group} = getThisGameGroup(gameNumber)
   
   # Check that the person isn't already in a group
@@ -67,7 +67,7 @@ everyone.now.addClient = (gameNumber) -> #called by client when connected
     this.now.gameNumber = gameNumber
 
     # add the player to the game, tell him he was accepted and give him his playerId (i.e. index) for the game
-    this.now.acceptPlayer(game.addClient(this.user.clientId), DICEFACESYMBOLS)
+    this.now.acceptPlayer(game.addClient(this.user.clientId, playerName), DICEFACESYMBOLS)
 
     # tell everyone about the new gamesList state
     everyone.now.getGames()

@@ -240,12 +240,12 @@ class Game
    * @param {Integer} clientid The nowjs unique id of the player
    * @return {Integer} The index of the players array for the newly added player
   ###
-  addClient: (clientid) ->
+  addClient: (clientid, playerName) ->
     if @players.length == @playerLimit || @started
       throw new Error("Game full or already started")
     else
       newPlayerIndex = @players.length
-      @players.push(new Player(newPlayerIndex, 'James'))
+      @players.push(new Player(newPlayerIndex, playerName))
       @playerSocketIds.push(clientid)
       @state.playerScores[newPlayerIndex] = 0
       return newPlayerIndex

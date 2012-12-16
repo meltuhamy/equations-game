@@ -33,7 +33,7 @@ class LobbyScreen extends Screen
     gamesList.unbind 'click'
     gamesList.bind 'click', (event) ->
       gameNumber = $(this).data('gamenumber')
-      Game.joinGame(gameNumber)
+      thisReference.joinGameDialog(gameNumber)
 
     $('#show-add-game-btn').unbind 'click'
     $('#show-add-game-btn').bind 'click', (event) ->
@@ -85,7 +85,33 @@ class LobbyScreen extends Screen
     $('#' + labelId + ' span.form-error').html('')
       
 
-      
+  joinGameDialog: (gameNumber) ->
+    #Game.joinGame(gameNumber)
+
+    modalsAlreadyOpen = $('#enterNameModal')
+    if modalsAlreadyOpen.length isnt 0 then $('#enterNameModal').remove()
+    enterNameDialogHtml = '<div id="enterNameModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                              <h3 id="myModalLabel">Enter your name</h3>
+                            </div>
+                            <div class="modal-body">
+                              <p>Please enter your nickname below.<br /></p>
+                              <input type="text" id="enterNameInputId" placeholder="Enter nickname here" />
+                            <div class="modal-footer">
+                              <span data-dismiss="modal" aria-hidden="true" class="grey-button">Cancel</span>
+                              <span id="joinGameWithName" class="grey-button">Join Game</span>
+                            </div>
+                          </div>'
+    $(enterNameDialogHtml).appendTo('body').ready ->
+      $('#joinGameWithName').click ->
+        nameEntered = $('#enterNameInputId').val()
+        #TODO: Validation
+        Game.joinGame(gameNumber, nameEntered)
+        $('#enterNameModal').modal('hide')
+        $('#enterNameModal').remove()
+      $('#enterNameModal').modal('show')
+
 
 
   ###*
