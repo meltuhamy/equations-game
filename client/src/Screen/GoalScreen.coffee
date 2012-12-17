@@ -27,12 +27,25 @@ class GoalScreen extends Screen
     # We received the array of dice that we will use to form the goal.
     # This method takes in the array of dice numbers to displays them in the dom. 
     $("#notadded-goal").html(DiceFace.listToHtml(@globalDice, true))
+    timeToDoGoal = json.timerDuration - 2
     thisReference = this
     resourceList = $('#notadded-goal li.dice')
     resourceList.bind 'click', (event) ->
       thisReference.addDiceToGoal($(this).data('index'));
     $('#sendgoal').bind 'click', (event) ->
       Network.sendGoal(thisReference.createGoalArray())
+
+    currentCounter = 0
+    toDoGoalTimer = setInterval -> 
+      currentCounter++
+      if(currentCounter >= timeToDoGoal)
+        clearInterval(toDoGoalTimer)
+      left = timeToDoGoal - currentCounter
+      if left == 15 then $('#secondstomakegoal').parent().addClass('glow')
+      s = if left == 1 then '' else 's'
+      $('#secondstomakegoal').html("#{left} second#{s}")
+    , 1000
+    
 
 
   ###*

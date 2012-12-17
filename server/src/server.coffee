@@ -6,6 +6,7 @@ DICEFACESYMBOLS = DiceFace.symbols
 {Game} = require './Game.js'
 {Player} = require './Player.js'
 {GamesManager} = require './GamesManager.js'
+{Settings} = require './Settings.js'
 
 everyone = nowjs.initialize(server)
 everyone.on 'disconnect', ->
@@ -75,8 +76,8 @@ everyone.now.addClient = (gameNumber, playerName) -> #called by client when conn
     # Now see if the game is full after adding him (i.e see if is the last player)
     # If it is, then tell everyone in this game that its the goal setting turn. 
     if(game.isFull() && !game.started)
-      game.goalStart(-> group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())) # TODO: add timer callback
-      group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())
+      game.goalStart(-> group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)) # TODO: add timer callback
+      group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)
   else
     # else the game is already full, so tell him - tough luck
 

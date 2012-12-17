@@ -117,7 +117,7 @@ class Game
    * @param  {Integer[]} globalDice The global dice for the game.
    * @param  {Integer} firstTurnPlayerId The index to players array of the player who is setting goal.
   ###
-  @goalTurn: (players, globalDice, firstTurnPlayerId) ->
+  @goalTurn: (players, globalDice, firstTurnPlayerId, timerDuration) ->
     # Set some state variables used for the first turn and will 
     # be updated accordingly on subsequent turns.
     @players = players
@@ -127,9 +127,9 @@ class Game
     # Am I the player chosen to set the goal? 
     # Yes: show goal setting screen. No: show goal wait screen.
     if (Game.myPlayerId == firstTurnPlayerId) 
-      ScreenSystem.renderScreen(Game.goalScreenId, {globalDice: globalDice})
+      ScreenSystem.renderScreen(Game.goalScreenId, {globalDice: globalDice, timerDuration: timerDuration})
     else
-      ScreenSystem.renderScreen(Game.gameWaitScreenId)
+      ScreenSystem.renderScreen(Game.gameWaitScreenId, {timerDuration: timerDuration})
 
   ###*
    * Time for the players to choose if they agree with challenge.

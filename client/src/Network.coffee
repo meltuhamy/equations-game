@@ -101,8 +101,8 @@ now.receiveMoveTimeUp = () ->
  * @param  {Number[]} resources             Array of dicefaces reperesenting the resources dicefaces
  * @param  {Number} goalSetterIndex      The index to this.players that specifies the goal setter
 ###
-now.receiveGoalTurn = (players, resources, goalSetterIndex) ->
-  Game.goalTurn(players, resources, goalSetterIndex)
+now.receiveGoalTurn = (players, resources, goalSetterIndex, timerDuration) ->
+  Game.goalTurn(players, resources, goalSetterIndex, timerDuration)
   
 
 
