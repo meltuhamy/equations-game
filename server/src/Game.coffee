@@ -310,8 +310,6 @@ class Game
   # If we want to get his socket id instead of the player array index
   getFirstTurnPlayerSocketId: () -> @getPlayerSocketById(@getFirstTurnPlayerId())
 
-
-
   ###*
    * Return the index of the player who will set the goal
    * @return {[Integer} An index to the players array
@@ -320,16 +318,33 @@ class Game
     if !@goalSetter?
       @setGoalSetterPlayerId()
     @goalSetter
-    
+
+  ###*
+   * Gets a random player id (index).
+   * @param  {Number[]} exceptions If this is provided, the "random" player number will not include anything in this array.
+   * @return {Number}            A player id (index)
   ###
-    Sets the goal setter to forceId. If no parameter given, chooses random goalSetter.
+  randomPlayerId: (exceptions) ->
+    e = [].concat(exceptions)
+    newNumber = Math.floor(Math.random() * @players.length)
+    newNumber = Math.floor(Math.random() * @players.length) while newNumber in e
+    return newNumber
+
+  ###*
+   * Sets the goal setter to forceId. If no parameter given, chooses random goalSetter.
+   * @param {Number} forceId If provided, will give the goal setter this id, otherwise a random.
   ###
   setGoalSetterPlayerId: (forceId) ->
     if(!forceId?)
       #set a random goalSetter
-      @goalSetter = if Settings.DEBUG then 0 else Math.floor(Math.random() * @players.length) 
+      if Settings.DEBUG
+        @goalSetter = 0
+      else
+        exceptions = if @goalSetter? then @goalSetter else []
+        @goalSetter = @randomPlayerId(exceptions)
     else
       @goalSetter = forceId
+
 
 
   ###*
