@@ -38,6 +38,7 @@ class LobbyScreen extends Screen
     $('#show-add-game-btn').unbind 'click'
     $('#show-add-game-btn').bind 'click', (event) ->
       $('#new-game-form-ctnr').slideToggle("fast")
+      $('#newgame-player-name').focus() #Focus on the first input element to make user know he has to do something
 
     $('#new-game').submit (event) -> event.preventDefault()
 
@@ -114,16 +115,23 @@ class LobbyScreen extends Screen
                               <span id="joinGameWithName" class="grey-button">Join Game</span>
                             </div>
                           </div>'
+    thisReference = this
     # Once the modal dialog HTML is ready, bind click listeners and show the modal
     $(enterNameDialogHtml).appendTo('body').ready ->
       $('#joinGameWithName').click ->
-        nameEntered = $('#enterNameInputId').val()
-        #TODO: Validation
-        Game.joinGame(gameNumber, nameEntered)
-        $('#enterNameModal').modal('hide')
-        $('#enterNameModal').remove()
+        thisReference.nameEnteredFromJoinGameDialog(gameNumber)
+      $('#enterNameModal').on 'shown', ->
+        $('#enterNameInputId').focus() #focus on the text box so you can start typing.
+        $('#enterNameInputId').keyup (e) ->
+          thisReference.nameEnteredFromJoinGameDialog(gameNumber) if e.keyCode is 13 # 13 means ENTER key
       $('#enterNameModal').modal('show')
 
+  nameEnteredFromJoinGameDialog: (gameNumber) ->
+    nameEntered = $('#enterNameInputId').val()
+    #TODO: Validation
+    Game.joinGame(gameNumber, nameEntered)
+    $('#enterNameModal').modal('hide')
+    $('#enterNameModal').remove()
 
 
   ###*
