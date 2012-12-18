@@ -1,3 +1,6 @@
+###*
+ * class Game
+###
 class Game
 
   # {Player[]} The array of players currently in the game

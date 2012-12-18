@@ -1,5 +1,6 @@
-
-
+###*
+ * class Network
+###
 class Network
   @initialise: ->
     now.ready ->

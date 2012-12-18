@@ -1,4 +1,6 @@
-
+###*
+ * class EquationBuilder
+###
 class EquationBuilder
 
   # {Number} How many dice has the user currently put in the added-to-goal area

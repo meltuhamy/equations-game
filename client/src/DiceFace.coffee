@@ -1,3 +1,6 @@
+###*
+ * class DiceFace
+###
 class DiceFace
   
   # {Json} A json that maps names to DiceFace magic numbers

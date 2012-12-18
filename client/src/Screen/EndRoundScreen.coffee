@@ -1,3 +1,6 @@
+###*
+ * class EndRoundScreen extends Screen
+###
 class EndRoundScreen extends Screen
   
   # {String} The filename of the html file to load the screen.

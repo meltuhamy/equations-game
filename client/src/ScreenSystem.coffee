@@ -1,3 +1,6 @@
+###*
+ * class ScreenSystem
+###
 class ScreenSystem
 
   # {Number} The total number of screens that have finished loaded

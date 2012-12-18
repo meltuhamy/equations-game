@@ -1,3 +1,6 @@
+###*
+ * class LobbyScreen extends Screen
+###
 class LobbyScreen extends Screen
   
   # {String} The filename of the html file to load the screen.

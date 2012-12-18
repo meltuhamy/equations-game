@@ -1,4 +1,6 @@
-
+###*
+ * class GoalScreen extends Screen
+###
 class GoalScreen extends Screen
   
   # {String} The filename of the html file to load the screen.

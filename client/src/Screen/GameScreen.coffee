@@ -1,3 +1,6 @@
+###*
+ * class GameScreen extends Screen
+###
 class GameScreen extends Screen
   
   # {String} The filename of the html file to load the screen.
