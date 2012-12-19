@@ -9,7 +9,7 @@ myJnode  = config.JASMINE
 fs = require 'fs'
 
 {print} = require 'sys'
-spawn = require('child_process').spawn
+{spawn} = require('./server/win-spawn.js')
 
 server = (callback) ->
   coffee = spawn myCoffee, ['-b', '-c', '-o', './', 'server/src/']
