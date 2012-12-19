@@ -10,8 +10,7 @@ DICEFACESYMBOLS = DiceFace.symbols
 
 everyone = nowjs.initialize(server)
 everyone.on 'disconnect', ->
-  console.log "in disconnect handler"
-  console.log "clientid: #{this.user.clientId} disconnected."
+  console.log "DISCONNECT: #{this.user.clientId}"
 
   if(this.now.gameNumber?)
     clientId = this.user.clientId
@@ -27,6 +26,7 @@ everyone.on 'disconnect', ->
     group.now.receiveState(game.state)
 
 everyone.on 'connect', ->
+  console.log "CONNECT: #{this.user.clientId}"
   gamesManager.cleanGames()
 
 gamesManager = new GamesManager()

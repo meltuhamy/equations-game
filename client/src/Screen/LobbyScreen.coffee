@@ -57,9 +57,11 @@ class LobbyScreen extends Screen
 
       # Reset the erros and see if they occur
       thisReference.removeError('newgame-name-label')
+      thisReference.removeError('newgame-player-name-label')
       thisReference.removeError('newgame-numplayers-label')
       thisReference.removeError('newgame-difficulty-label')
-      @formErrorNum = 0
+
+      thisReference.formErrorNum = 0
 
       # Validate the player name
       condition = (!playerName? || playerName == "" || playerName.length == 0)
@@ -79,18 +81,19 @@ class LobbyScreen extends Screen
       condition = (!difficulty? || (difficulty != 'easy' && difficulty != 'hard'))
       thisReference.handleError(condition, 'newgame-difficulty-label', 'Please select either Easy or Hard')
 
-      if(@formErrorNum == 0) then Network.sendCreateGameRequest(gameName, numPlayers, playerName)
+      if thisReference.formErrorNum is 0 then Network.sendCreateGameRequest(gameName, numPlayers, playerName)
 
       return false # this return false prevents the form being submitted (causing page refresh)
    
 
   handleError: (errCondition, labelId, errMessage) ->
-    theHtml = if(errCondition) then errMessage; @errors++
-    $('#' + labelId + ' span.form-error').html(theHtml)
-    @formErrorNum++
+    theHtml = null
+    if errCondition
+      theHtml = if errMessage? then errMessage else 'Error'
+      $('#' + labelId + ' span.form-error').html(theHtml)
+      @formErrorNum++
 
   removeError: (labelId) ->
-    @formErrorNum++
     $('#' + labelId + ' span.form-error').html('')
       
 
