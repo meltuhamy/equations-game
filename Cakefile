@@ -110,7 +110,7 @@ watch = () ->
 
 setupNpmDependencies = (callback) ->
   dependencies = ['install', 'coffee-script', 'express', 'socket.io', 'stylus', 'jasmine-node', 'node-inspector', 'nib', 'soda']
-  if require('os').type() is 'Windows_NT' then dependencies.push 'now'
+  if require('os').type() isnt 'Windows_NT' then dependencies.push 'now'
   npmInstaller = spawn 'npm', dependencies
   npmInstaller.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
