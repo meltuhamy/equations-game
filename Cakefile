@@ -110,7 +110,7 @@ watch = () ->
 
 setupNpmDependencies = (callback) ->
   dependencies = ['install', 'coffee-script', 'express', 'socket.io', 'stylus', 'jasmine-node', 'node-inspector', 'nib', 'soda']
-  if require('os').type() is 'Windows_NT' then dependencies = dependencies.push 'now'
+  if require('os').type() is 'Windows_NT' then dependencies.push 'now'
   npmInstaller = spawn 'npm', dependencies
   npmInstaller.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
@@ -136,6 +136,7 @@ task 'setup', 'Set up dependencies', ->
     console.log '    alias node-inspector "~/node_modules/node-inspector/bin/inspector.js --web-port=8081"'
     console.log "\n-> To test that everything is working, run the tests"
     console.log "    cake test"
+
   )
 
 task 'build', 'Compile everything', ->
