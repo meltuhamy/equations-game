@@ -115,7 +115,7 @@ class LobbyScreen extends Screen
                             </div>
                             <div class="modal-body">
                               <p>Please enter your nickname below.<br /></p>
-                              <input type="text" id="enterNameInputId" placeholder="Enter nickname here" />
+                              <input type="text" id="enterNameInputId" placeholder="Enter nickname here" /> <span class="form-error" id="nickname-error"></span>
                             <div class="modal-footer">
                               <span data-dismiss="modal" aria-hidden="true" class="grey-button">Cancel</span>
                               <span id="joinGameWithName" class="grey-button">Join Game</span>
@@ -134,10 +134,13 @@ class LobbyScreen extends Screen
 
   nameEnteredFromJoinGameDialog: (gameNumber) ->
     nameEntered = $('#enterNameInputId').val()
-    #TODO: Validation
-    Game.joinGame(gameNumber, nameEntered)
-    $('#enterNameModal').modal('hide')
-    $('#enterNameModal').remove()
+    if (!nameEntered? || nameEntered == "" || nameEntered.length == 0)
+      $('#nickname-error').html('Your nickname cannot be blank.')
+    else 
+      Game.joinGame(gameNumber, nameEntered)
+      $('#enterNameModal').modal('hide')
+      $('#enterNameModal').remove()
+
 
 
   ###*
