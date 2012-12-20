@@ -10,9 +10,7 @@ class Network
     now.getGames()
 
   @sendCreateGameRequest: (gameName, numberPlayers, playerName) ->
-    ScreenSystem.renderScreen(Game.joinWaitScreenId)
     now.createGame(gameName, numberPlayers, playerName)
-    
 
   @sendJoinGameRequest: (gameNumber, screenName) ->
     now.addClient(gameNumber, screenName)
@@ -22,10 +20,8 @@ class Network
    * @param  {Number[]} goalArray An array of indices to the global dice array.
   ###
   @sendGoal: (goalArray) ->
-    try
-      now.receiveGoal(goalArray) #calls the server function receiveGoal, which parses it and stores it in the server-side game object
-    catch e #Catches when wrong client tries to send goal
-      console.warn e
+    now.receiveGoal(goalArray) #calls the server function receiveGoal, which parses it and stores it in the server-side game object
+
 
   ###*
    * Tell the server that we want to move a dice from unallocated to required
@@ -48,7 +44,6 @@ class Network
   @sendNeverChallengeRequest: () ->
     now.neverChallengeRequest()
 
-
   @sendChallengeDecision: (agree) ->
     now.challengeDecision(agree)
 
@@ -58,8 +53,6 @@ class Network
   @sendNextRoundReady: () ->
     now.nextRoundReady()
 
-  @leaveGame: () ->
-    location.reload()
 
 
 

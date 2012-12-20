@@ -127,8 +127,7 @@ class GameScreen extends Screen
     if !Game.challengeMode then Network.sendNeverChallengeRequest()
 
   leaveButtonHandler: () ->
-    console.log "leaveGame"
-    Network.leaveGame()
+    window.location.reload()
 
 
   # When the game state has changed

@@ -81,7 +81,9 @@ class LobbyScreen extends Screen
       condition = (!difficulty? || (difficulty != 'easy' && difficulty != 'hard'))
       thisReference.handleError(condition, 'newgame-difficulty-label', 'Please select either Easy or Hard')
 
-      if thisReference.formErrorNum is 0 then Network.sendCreateGameRequest(gameName, numPlayers, playerName)
+      if thisReference.formErrorNum is 0
+        ScreenSystem.renderScreen(Game.joinWaitScreenId)
+        Network.sendCreateGameRequest(gameName, numPlayers, playerName)
 
       return false # this return false prevents the form being submitted (causing page refresh)
    
