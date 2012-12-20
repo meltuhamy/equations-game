@@ -254,8 +254,6 @@ class Game
       return newPlayerIndex
 
   removeClient: (clientid) ->
-    console.log "Removing from client"
-    console.log @players.length
     if @players.length == 2
       @restartGame()
     else #now we need to update players and playersocketIds
