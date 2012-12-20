@@ -63,11 +63,6 @@ class Network
 
 
 
-
-
-
-
-
 ### Handle events fired by the server ###
 
 ###*
@@ -89,8 +84,6 @@ now.acceptPlayer = (id, dicefaceSymbols) -> #id is the index
 now.receiveGameList = (gameListJson) ->
   # TODO: fix this
   Game.updateGameList(gameListJson)
-
-
 
 now.receiveMoveTimeUp = () ->
   Game.receiveMoveTimeUp()
@@ -137,16 +130,9 @@ now.receiveNowChallengeDecideTurn = (challengerId) ->
   Game.receiveNowChallengeDecideTurn(challengerId)
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
 
-
-###*
- * 
-###
 now.receiveNeverChallengeDecideTurn = (challengerId) ->
   Game.receiveNeverChallengeDecideTurn(challengerId)
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
-
-
-
 
 
 ###*
@@ -156,7 +142,6 @@ now.receiveNeverChallengeDecideTurn = (challengerId) ->
 now.receiveChallengeSolutionsTurn = ->
   Game.receiveChallengeSolutionsTurn()
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
-
 
 
 now.receiveChallengeRoundEndTurn = (solutions, answerExists, challengePts, decisionPts, solutionPts) ->
@@ -169,24 +154,9 @@ now.receiveNextRoundAllReady = () ->
 now.receivePlayerDisconnect = (playerId) ->
   Game.removePlayer(playerId)
 
-###*
- * This is an event triggered by nowjs that says everything's ready to synchronise server/client
-###
-
-
-
-
-
 now.receiveError = (errorObject) ->
   console.log "ERROR HANDLE"
   console.warn(errorObject)
-
-
-
-
-
-### Fire these events on server ###
-
 
 now.badMove = (serverMessage) ->
   console.warn(serverMessage)
