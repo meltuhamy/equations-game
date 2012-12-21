@@ -3,7 +3,7 @@
 ###
 $(document).ready(->
   Game.onDocumentReady()
-  ScreenSystem.loadAllScreens(->Network.initialise())
+  ScreenSystem.loadAllScreens(->network.initialise())
 )
 
 currentScreen = -> ScreenSystem.getCurrentScreen()

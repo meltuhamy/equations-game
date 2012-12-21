@@ -35,7 +35,7 @@ class GoalScreen extends Screen
     resourceList.bind 'click', (event) ->
       thisReference.addDiceToGoal($(this).data('index'));
     $('#sendgoal').bind 'click', (event) ->
-      Network.sendGoal(thisReference.createGoalArray())
+      network.sendGoal(thisReference.createGoalArray())
 
     currentCounter = 0
     toDoGoalTimer = setInterval -> 

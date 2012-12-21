@@ -89,7 +89,7 @@ class Game
 
 
   @onConnection: () ->
-    Network.sendGameListRequest()
+    network.sendGameListRequest()
     ScreenSystem.renderScreen(@lobbyScreenId)
 
   # Update the gamelist json - the list of info about all games in lobby.
@@ -99,7 +99,7 @@ class Game
     
     
   @joinGame: (gameNumber, screenName) ->
-    Network.sendJoinGameRequest(gameNumber, screenName)
+    network.sendJoinGameRequest(gameNumber, screenName)
 
   @acceptedJoin: () ->
     ScreenSystem.renderScreen(@joinWaitScreenId)

@@ -121,10 +121,10 @@ class GameScreen extends Screen
 
 
   nowButtonHandler: () ->
-    if !Game.challengeMode then Network.sendNowChallengeRequest()
+    if !Game.challengeMode then network.sendNowChallengeRequest()
 
   neverButtonHandler: () ->
-    if !Game.challengeMode then Network.sendNeverChallengeRequest()
+    if !Game.challengeMode then network.sendNeverChallengeRequest()
 
   leaveButtonHandler: () ->
     window.location.reload()
@@ -225,11 +225,11 @@ class GameScreen extends Screen
           $('#turn-notification').html(html)
           $('#challenge-agree-btn').unbind 'click'
           $('#challenge-agree-btn').bind 'click', (event) ->
-            Network.sendChallengeDecision(true)
+            network.sendChallengeDecision(true)
             thisReference.submittedDecision = true
           $('#challenge-disagree-btn').unbind 'click'
           $('#challenge-disagree-btn').bind 'click', (event) ->
-            Network.sendChallengeDecision(false)
+            network.sendChallengeDecision(false)
             thisReference.submittedDecision = false
       else 
         $('#turn-notification').html('<p>Please wait for other players to decide.</p>')
@@ -360,9 +360,9 @@ class GameScreen extends Screen
     #In general, remove the allocation menu one someone clicks any of the buttons
     $("#move-allocation-menu span").click((event) =>@removeAllocationMoveMenu(); event.stopPropagation())
     #Add event listener for each of the "required" "optional" and "forbidden" buttons inside the menu
-    $("#mamenu-required-btn").click(=>Network.moveToRequired($('#unallocated li').index($(clickedOn))))
-    $("#mamenu-optional-btn").click(=>Network.moveToOptional($('#unallocated li').index($(clickedOn))))
-    $("#mamenu-forbidden-btn").click(=>Network.moveToForbidden($('#unallocated li').index($(clickedOn))))
+    $("#mamenu-required-btn").click(=>network.moveToRequired($('#unallocated li').index($(clickedOn))))
+    $("#mamenu-optional-btn").click(=>network.moveToOptional($('#unallocated li').index($(clickedOn))))
+    $("#mamenu-forbidden-btn").click(=>network.moveToForbidden($('#unallocated li').index($(clickedOn))))
     borderOffset = parseInt($(clickedOn).css('border-width'), 10) 
     $('#move-allocation-menu').css(
       left: $(clickedOn).position().left + ($(clickedOn).width()-borderOffset)/2
@@ -452,7 +452,7 @@ class GameScreen extends Screen
   submitAnswer: () ->
     answer = @equationBuilder.getIndicesToGlobalDice()
     @submittedSolution = true
-    Network.sendChallengeSolution(answer)
+    network.sendChallengeSolution(answer)
     $('#answer-submit-btn').hide()
     $('#answer-add-dice-btn').hide()
     @neutralContext()

@@ -3,24 +3,24 @@
  * Calls now.js functions on the server.
 ###
 class Network
-  @initialise: ->
+  initialise: ->
     now.ready ->
       Game.onConnection()
       
-  @sendGameListRequest: () ->
+  sendGameListRequest: () ->
     now.getGames()
 
-  @sendCreateGameRequest: (gameName, numberPlayers, playerName) ->
+  sendCreateGameRequest: (gameName, numberPlayers, playerName) ->
     now.createGame(gameName, numberPlayers, playerName)
 
-  @sendJoinGameRequest: (gameNumber, screenName) ->
+  sendJoinGameRequest: (gameNumber, screenName) ->
     now.addClient(gameNumber, screenName)
 
   ###*
    * Sends the goal array to the server
    * @param  {Number[]} goalArray An array of indices to the global dice array.
   ###
-  @sendGoal: (goalArray) ->
+  sendGoal: (goalArray) ->
     now.receiveGoal(goalArray) #calls the server function receiveGoal, which parses it and stores it in the server-side game object
 
 
@@ -28,33 +28,35 @@ class Network
    * Tell the server that we want to move a dice from unallocated to required
    * @param  {Integer} The index of the diceface within the unallocated array
   ###
-  @moveToRequired: (index) ->
+  moveToRequired: (index) ->
     now.moveToRequired(index)
 
-  @moveToOptional: (index) ->
+  moveToOptional: (index) ->
     now.moveToOptional(index)
 
-  @moveToForbidden: (index) ->
+  moveToForbidden: (index) ->
     now.moveToForbidden(index)
 
   # It wasn't our turn previously. Tell the server we want to make a now challenge
-  @sendNowChallengeRequest: () ->
+  sendNowChallengeRequest: () ->
     now.nowChallengeRequest()
 
   # It wasn't our turn previously. Tell the server we want to make a never challenge
-  @sendNeverChallengeRequest: () ->
+  sendNeverChallengeRequest: () ->
     now.neverChallengeRequest()
 
-  @sendChallengeDecision: (agree) ->
+  sendChallengeDecision: (agree) ->
     now.challengeDecision(agree)
 
-  @sendChallengeSolution: (answer) ->
+  sendChallengeSolution: (answer) ->
     now.challengeSolution(answer)
 
-  @sendNextRoundReady: () ->
+  sendNextRoundReady: () ->
     now.nextRoundReady()
 
 ###
 # LOOKING FOR now.js listener events? 
 # -> Go to nowListener.coffee
 ###
+
+network = new Network()

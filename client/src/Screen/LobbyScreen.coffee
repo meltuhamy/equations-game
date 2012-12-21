@@ -83,7 +83,7 @@ class LobbyScreen extends Screen
 
       if thisReference.formErrorNum is 0
         ScreenSystem.renderScreen(Game.joinWaitScreenId)
-        Network.sendCreateGameRequest(gameName, numPlayers, playerName)
+        network.sendCreateGameRequest(gameName, numPlayers, playerName)
 
       return false # this return false prevents the form being submitted (causing page refresh)
    

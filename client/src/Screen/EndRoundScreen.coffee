@@ -24,7 +24,7 @@ class EndRoundScreen extends Screen
 
   addReadyButtonListener: () ->
     $('#next-round-ready-btn').bind 'click', ->
-      Network.sendNextRoundReady()
+      network.sendNextRoundReady()
 
 
 
