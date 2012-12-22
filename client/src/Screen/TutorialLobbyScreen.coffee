@@ -3,6 +3,7 @@
 ###
 class TutorialLobbyScreen extends LobbyScreen
   init: (json) ->
+    window.tutorial = true
     window.network = new TutorialNetwork()
-    roomlistroomlist = [{"nowjsname":"game0","gameName":"Test Game","gameNumber":0,"playerCount":0,"playerLimit":2,"started":false},{"nowjsname":"game1","gameName":"Some Game","gameNumber":1,"playerCount":0,"playerLimit":3,"started":false}]
+    roomlistroomlist = [{"nowjsname":"game0","gameName":"Join me!","gameNumber":0,"playerCount":1,"playerLimit":2,"started":false}]
     @onUpdatedGameList(roomlistroomlist)
