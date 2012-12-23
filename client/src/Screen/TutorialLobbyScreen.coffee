@@ -7,3 +7,5 @@ class TutorialLobbyScreen extends LobbyScreen
     window.network = new TutorialNetwork()
     roomlistroomlist = [{"nowjsname":"game0","gameName":"Join me!","gameNumber":0,"playerCount":1,"playerLimit":2,"started":false}]
     @onUpdatedGameList(roomlistroomlist)
+    Tutorial.init()
+    Tutorial.show()
