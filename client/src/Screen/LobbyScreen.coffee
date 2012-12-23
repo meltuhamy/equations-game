@@ -43,6 +43,10 @@ class LobbyScreen extends Screen
       $('#new-game-form-ctnr').slideToggle("fast")
       $('#newgame-player-name').focus() #Focus on the first input element to make user know he has to do something
 
+    $('#tutorial-game-btn').unbind 'click'
+    $('#tutorial-game-btn').bind 'click', (event) ->
+      ScreenSystem.renderScreen(Game.tutorialLobbyScreenId)
+
     $('#new-game').submit (event) -> event.preventDefault()
 
 
