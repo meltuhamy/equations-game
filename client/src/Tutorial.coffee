@@ -1,9 +1,13 @@
 class Tutorial
   @window: undefined
   @windowOptions = undefined
+  @steps = undefined
+  @stepIds = undefined
+  @nextStepIndex = 0
   @init : ->
     if $('#tutorial-window').length > 0 then $('#tutorial-window').remove()
-    
+    @steps = []
+    @stepIds = []
     @windowOptions = 
       backdrop: false
       keyboard: false
@@ -37,3 +41,24 @@ class Tutorial
   @show: -> $(@window).modal('show')
   @hide: -> $(@window).modal('hide')
   @toggle: -> $(@window).modal('toggle')
+
+  @addStep: ({id, header, content, tipselector, tipmessage, modal}) ->
+    index = @steps.push {id: id, header: header, content: content, tipselector: tipselector, tipmessage: tipmessage, modal: modal}
+    if id? then @stepIds[id] = index - 1
+
+  @doStep: (stepId) ->
+    nextIndex = if stepId? then @stepIds[stepId] else @nextStepIndex
+    theStep = @steps[nextIndex]
+    if theStep?
+      {id, header, content, tipselector, tipmessage, modal} = theStep
+      if header? then @changeHeader(header)
+      if content? then @changeContent(content)
+      if tipselector?
+        # TODO: The element needs to be selected
+        $(tipselector).addClass('glow')
+        # TODO: The message needs to be displayed
+        if tipmessage? then alert tipmessage
+      if modal?
+        if modal then @show() else @hide()
+      @steps[nextIndex] = undefined
+      @nextStepIndex++ until @steps[@nextStepIndex]? or @nextStepIndex is @steps.length
