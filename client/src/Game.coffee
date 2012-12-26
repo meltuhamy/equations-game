@@ -24,6 +24,7 @@ class Game
   
   @gameWaitScreenId : undefined
   @tutorialLobbyScreenId: undefined
+  @tutorialGoalScreenId: undefined
 
   # {Number} The dice that will be used throughout the game. An array of diceface magic numbers.
   @globalDice: []
@@ -90,6 +91,7 @@ class Game
 
     # Tutorial screens
     @tutorialLobbyScreenId = ScreenSystem.addScreen(new TutorialLobbyScreen)
+    @tutorialGoalScreenId = ScreenSystem.addScreen(new TutorialGoalScreen)
 
 
   @onConnection: () ->

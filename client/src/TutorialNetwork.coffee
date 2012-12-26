@@ -19,19 +19,38 @@ class TutorialNetwork extends Network
     # Emulate the server firing these events
     now.acceptPlayer(id, dicefaceSymbols)
     players = [{"index":Game.myPlayerId,"name":screenName},{"index":1,"name":"Richard Lionheart"}]
-    globalDice = [0, 0, -1, -1, -3, 9, 9, 0, -3, 7, -2, 2, 5, 1, 2, 5, 3, 4, 4, 4, 1, -1, -4, -2]
+    globalDice = [1, 2, 3, 0, -2, 1, -3, -4, -4, 1, 1, 2, 2, 5, 7, 9, 9, -1, -3, 2, 4, -1, 6, -2]
     goalSetterId = Game.myPlayerId
     goalSeconds = 120 # Two minutes to set the goal
     now.receiveGoalTurn(players, globalDice, goalSetterId, goalSeconds)
-    alert "Great, you joined a game! Now you must set the goal, #{screenName}"
-
+    ScreenSystem.renderScreen(Game.tutorialGoalScreenId, {globalDice: globalDice, timerDuration: goalSeconds})
 
   ###*
    * Sends the goal array to the server
    * @param  {Number[]} goalArray An array of indices to the global dice array.
   ###
   sendGoal: (goalArray) ->
-    now.receiveGoal(goalArray) #calls the server function receiveGoal, which parses it and stores it in the server-side game object
+    screen = currentScreen()
+    if screen instanceof TutorialGoalScreen and screen.nextTargetIndex is screen.allowedIndices.length
+      goalArray = screen.allowedIndices
+      myunallocated = []
+      allindices = [1..23]
+      myunallocated.push i for i in allindices when not (i in screen.allowedIndices)
+      state =
+        unallocated: myunallocated
+        required: []
+        optional: []
+        forbidden: []
+        currentPlayer: 0 # Because it's the tutorial, let him play first.
+        turnNumber: 1    # First turn
+        possiblePlayers: []
+        impossiblePlayers: []
+        turnStartTime: Date.now()
+        turnDuration: 120 
+        playerScores: [0,0]
+        readyForNextRound: []
+      now.receiveGoalTurnEnd(goalArray)
+      now.receiveState(state)
 
 
   ###*
