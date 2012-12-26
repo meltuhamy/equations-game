@@ -8,4 +8,4 @@ class TutorialLobbyScreen extends LobbyScreen
     roomlistroomlist = [{"nowjsname":"game0","gameName":"Join me!","gameNumber":0,"playerCount":1,"playerLimit":2,"started":false}]
     @onUpdatedGameList(roomlistroomlist)
     Tutorial.init()
-    Tutorial.show()
+    Tutorial.doStep()
