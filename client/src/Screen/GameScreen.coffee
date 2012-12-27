@@ -343,6 +343,7 @@ class GameScreen extends Screen
     #Create the new allocation menu
     html = '<span id="mamenu-required-btn">Required</span><span id="mamenu-optional-btn">Optional</span><span id="mamenu-forbidden-btn">Forbidden</span>'
     $(clickedOn).qtip 
+      id: 'move-allocation'
       content:
         text: html
         title:
@@ -352,11 +353,15 @@ class GameScreen extends Screen
         my: 'top center'
         at: 'bottom center'
         viewport: $(window)
+        adjust:
+          y: -5
       show:
         event: 'click'
         button: true 
         ready: true
       hide: false
+      style:
+        classes: 'qtip-shadow qtip-light qtip-rounded'
       events: 
         render: (event, api) ->
           #Add event listener for each of the "required" "optional" and "forbidden" buttons inside the menu
