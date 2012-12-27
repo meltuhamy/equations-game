@@ -137,7 +137,6 @@ class Tutorial
   @doStep: (stepId) ->
     nextIndex = if stepId? then @stepIds[stepId] else @nextStepIndex
     theStep = @steps[nextIndex]
-    $('.jquerybubblepopup').remove() # Remove all existing popups
     if theStep?
       {id, header, content, tipselector, tipmessage, tipheading, tipnext, modal} = theStep
       if header? then @changeHeader(header)
@@ -149,15 +148,14 @@ class Tutorial
           position: 
             my: 'top center'
             at: 'bottom center'
-            target: tipselector
             viewport: $(window)
           show:
             event: false
             ready: true  
-          hide: (event, api) -> api.destroy()
+          hide: false
           events: 
             render: (event, api) ->
-              $('.tutorial-next-button').bind 'click', ->
+              if tipnext then $('.tutorial-next-button').bind 'click', ->
                 api.hide()
                 Tutorial.doStep()
       if modal?

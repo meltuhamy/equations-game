@@ -50,6 +50,7 @@ class TutorialNetwork extends Network
         playerScores: [0,0]
         readyForNextRound: []
       now.receiveGoalTurnEnd(goalArray)
+      ScreenSystem.renderScreen(Game.tutorialGameScreenId)
       now.receiveState(state)
 
 

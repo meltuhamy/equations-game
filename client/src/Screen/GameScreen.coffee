@@ -299,24 +299,14 @@ class GameScreen extends Screen
         thisReference.allocMenuContext(this)
         event.stopPropagation()
 
-      # If the user clicks outside the menu then close it
-      exitMenuHandler  = (e) -> 
-        menu = $("#move-allocation-menu")
-        position = $(menu).position()
-        height = $(menu).height()
-        width = $(menu).width()
-        mouseXisInside = (e.clientX > position.left and e.clientX < position.left + width)
-        mouseYisInside = (e.clientY > position.top and e.clientY < position.left + height)
-        #if(!mouseXisInside || !mouseYisInside) then thisReference.changeToContext(thisReference.Contexts.Neutral)
-        thisReference.changeToContext(thisReference.Contexts.Neutral)
       # Change the context to say the menu is now open
-      @changeToContext(@Contexts.AllocMenu, @allocMenuContextChange, exitMenuHandler)
+      @changeToContext(@Contexts.AllocMenu, @allocMenuContextChange)
       @drawAllocationMoveMenu(element)
      
 
 
-
-
+  removeAllocationMoveMenu: () ->
+    if @allocationMoveMenuOn? then $(@allocationMoveMenuOn).qtip('hide')
 
   allocMenuContextChange: () ->
     @removeAllocationMoveMenu()
@@ -349,35 +339,34 @@ class GameScreen extends Screen
    * @param  {HMTLLiEntity} clickedOn The html li element (diceface) they clicked on
   ###
   drawAllocationMoveMenu: (clickedOn) ->
-    @removeAllocationMoveMenu() # Need to remove the menu to create a new one.
+    @allocationMoveMenuOn = clickedOn
     #Create the new allocation menu
-    html = '<div id="move-allocation-menu">
-      <span id="mamenu-required-btn">Required</span>
-      <span id="mamenu-optional-btn">Optional</span>
-      <span id="mamenu-forbidden-btn">Forbidden</span>
-      </div>'
-    $('#container').append(html)
-    #In general, remove the allocation menu one someone clicks any of the buttons
-    $("#move-allocation-menu span").click((event) =>@removeAllocationMoveMenu(); event.stopPropagation())
-    #Add event listener for each of the "required" "optional" and "forbidden" buttons inside the menu
-    $("#mamenu-required-btn").click(=>network.moveToRequired($('#unallocated li').index($(clickedOn))))
-    $("#mamenu-optional-btn").click(=>network.moveToOptional($('#unallocated li').index($(clickedOn))))
-    $("#mamenu-forbidden-btn").click(=>network.moveToForbidden($('#unallocated li').index($(clickedOn))))
-    borderOffset = parseInt($(clickedOn).css('border-width'), 10) 
-    $('#move-allocation-menu').css(
-      left: $(clickedOn).position().left + ($(clickedOn).width()-borderOffset)/2
-      top: $(clickedOn).position().top + $(clickedOn).height() + borderOffset
-    )
+    html = '<span id="mamenu-required-btn">Required</span><span id="mamenu-optional-btn">Optional</span><span id="mamenu-forbidden-btn">Forbidden</span>'
+    $(clickedOn).qtip 
+      content:
+        text: html
+        title:
+          text: ''
+          button: true
+      position: 
+        my: 'top center'
+        at: 'bottom center'
+        viewport: $(window)
+      show:
+        event: 'click'
+        button: true 
+        ready: true
+      hide: false
+      events: 
+        render: (event, api) ->
+          #Add event listener for each of the "required" "optional" and "forbidden" buttons inside the menu
+          clickedIndex = $('#unallocated li').index($(clickedOn))
+          $("#mamenu-required-btn").click -> network.moveToRequired(clickedIndex)
+          $("#mamenu-optional-btn").click -> network.moveToOptional(clickedIndex)
+          $("#mamenu-forbidden-btn").click -> network.moveToForbidden(clickedIndex)
 
-
-
-  ###*
-   * Deletes the bubble-tip menu if it exists
-  ###
-  removeAllocationMoveMenu: ()->
-    allocMenu = $('#move-allocation-menu')
-    $('#move-allocation-menu').remove() if allocMenu.length > 0
-
+          #In general, remove the allocation menu one someone clicks any of the buttons
+          $("#move-allocation-menu span").click (event) -> api.hide()
 
 
   ###*

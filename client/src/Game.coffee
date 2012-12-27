@@ -92,6 +92,7 @@ class Game
     # Tutorial screens
     @tutorialLobbyScreenId = ScreenSystem.addScreen(new TutorialLobbyScreen)
     @tutorialGoalScreenId = ScreenSystem.addScreen(new TutorialGoalScreen)
+    @tutorialGameScreenId = ScreenSystem.addScreen(new TutorialGameScreen)
 
 
   @onConnection: () ->
