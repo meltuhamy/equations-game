@@ -97,6 +97,33 @@ class Tutorial
       content: "We've finally started playing the game. Let me now show you arround."
     @doStepWhenScreen GameScreen, "game"
 
+    @addStep
+      modal: false
+      tipselector: '#goal-ctnr'
+      tipmessage: 'This is the goal.'
+      tipnext: true
+
+    @addStep
+      tipselector: '#dice_container'
+      tipmessage: 'These are the dice. We must use these to either proove that the goal is possible to achieve using these or impossible.'
+      tipnext: true
+
+    @addStep
+      tipselector: '#player-list'
+      tipmessage: 'This shows you the players who are in the game. The player highlighted in orange is the player whose turn it is.'
+      tipnext: true
+
+    @addStep
+      tipselector: '#timer-knob-ctnr'
+      tipmessage: 'This is the turn timer. A player must make a move on the dice within this time if it is their turn.'
+      tipnext: true
+
+    @addStep
+      tipselector: '#rough-area-board'
+      tipmessage: 'This is your personal rough area. Feel free to take notes and do rough working here.'
+      tipnext: true
+
+
 
 
   @show: -> $(@window).modal('show')
@@ -116,13 +143,23 @@ class Tutorial
       if header? then @changeHeader(header)
       if content? then @changeContent(content)
       if tipselector?
-        theHtml = tipmessage+(if tipnext then '<span class="grey-button" id="tutorial-next-button">Next &rarr;</span>' else '')
-        $(tipselector).CreateBubblePopup 
-          innerHtml: theHtml
-          themePath: 'lib/bubble/jquerybubblepopup-themes'
-        $(tipselector).ShowBubblePopup()
-        $(tipselector).FreezeBubblePopup()
-        if tipnext then $('')
+        theHtml = tipmessage+(if tipnext then '<span class="grey-button tutorial-next-button">Next &rarr;</span>' else '')
+        $(tipselector).qtip 
+          content: theHtml
+          position: 
+            my: 'top center'
+            at: 'bottom center'
+            target: tipselector
+            viewport: $(window)
+          show:
+            event: false
+            ready: true  
+          hide: (event, api) -> api.destroy()
+          events: 
+            render: (event, api) ->
+              $('.tutorial-next-button').bind 'click', ->
+                api.hide()
+                Tutorial.doStep()
       if modal?
         if modal then @show() else @hide()
       @steps[nextIndex] = undefined
