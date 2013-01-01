@@ -123,6 +123,30 @@ class Tutorial
       tipmessage: 'This is your personal rough area. Feel free to take notes and do rough working here.'
       tipnext: true
 
+    @addStep
+      modal: true
+      header: "It's your turn"
+      content: "We must now make a move. Try clicking on one of the dice to move it to another area of the mat."
+
+    @addStep
+      modal: false
+
+    @addStep
+      modal: true
+      header: "Forbidden, required and optional"
+      content: "As you can see, in a move, you can move a die to one of three areas of the board:
+      <ul>
+      <li>Forbidden: The forbidden section includes all dice that can not be used when forming a solution to the goal.</li> 
+      <li>Optional: You can use any number of optional dice to form the goal.</li>
+      <li>Required: You must use ALL of these dice when forming the goal.</li>
+      The idea is that when someone makes a 'challenge', you must use a combination of NONE of the forbidden dice, ANY of the optional dice and ALL of the required dice to form your solution to the goal.
+      </ul>
+      "
+
+    @addStep
+      modal: false
+      
+
 
 
 
