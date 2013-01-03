@@ -57,6 +57,7 @@ class LobbyScreen extends Screen
       gameName = $('#newgame-name').val()
       playerName = $('#newgame-player-name').val()
       numPlayers = parseInt($('#newgame-numplayers').val())
+      numRounds = parseInt($('#newgame-numrounds').val())
       difficulty = $('#newgame-difficulty').val()
 
       # Reset the erros and see if they occur
@@ -64,6 +65,7 @@ class LobbyScreen extends Screen
       thisReference.removeError('newgame-player-name-label')
       thisReference.removeError('newgame-numplayers-label')
       thisReference.removeError('newgame-difficulty-label')
+      thisReference.removeError('newgame-numrounds-label')
 
       thisReference.formErrorNum = 0
 
@@ -81,13 +83,18 @@ class LobbyScreen extends Screen
       condition = (!numPlayers? || numPlayers < 0 || numPlayers > 5)
       thisReference.handleError(condition, 'newgame-numplayers-label', 'Please select 2 to 5 players')
 
+      # Validate the number of rounds 
+      condition = (!numRounds? || numRounds < 0 || numRounds > 10)
+      thisReference.handleError(condition, 'newgame-numrounds-label', 'Please select 2 to 10 players')
+
+
       # Validate the difficult mode
       condition = (!difficulty? || (difficulty != 'easy' && difficulty != 'hard'))
       thisReference.handleError(condition, 'newgame-difficulty-label', 'Please select either Easy or Hard')
 
       if thisReference.formErrorNum is 0
         ScreenSystem.renderScreen(Game.joinWaitScreenId)
-        network.sendCreateGameRequest(gameName, numPlayers, playerName)
+        network.sendCreateGameRequest(gameName, numPlayers, playerName, numRounds)
 
       return false # this return false prevents the form being submitted (causing page refresh)
    

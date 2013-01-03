@@ -22,8 +22,8 @@ class GamesManager
   ###*
    * Add a new game to the game manager.
   ###
-  newGame: (name, numplayers) ->
-    @games.push(new Game(@games.length, name, numplayers))-1
+  newGame: (name, numplayers, numRounds) ->
+    @games.push(new Game(@games.length, name, numplayers, numRounds))-1
 
 
   ###*

@@ -76,6 +76,10 @@ class Game
     # {Number} The duration of the current turn in seconds
     turnDuration: undefined
     playerScores: []
+    # {Number} The current round
+    currentRound: undefined
+    # {Number} The total number of rounds
+    numRounds: undefined
 
 
   ###*

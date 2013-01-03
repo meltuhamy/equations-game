@@ -49,6 +49,12 @@ class Game
   # {Number} the index of the player array for the challenger
   challenger: undefined
 
+  # {Number} The number of rounds in the game
+  numRounds: 2
+
+  # {Number} The current round number out of a total of @numRounds
+  currentRound: 1
+
   
 
   submittedSolutions: []
@@ -65,7 +71,7 @@ class Game
 
 
   
-  constructor: (@gameNumber, @name, gameSize) ->
+  constructor: (@gameNumber, @name, gameSize, numRounds) ->
     # Initalise all variables so that they're object (not prototype) specfific
     @goalTree = undefined
     @goalArray = []
@@ -85,6 +91,8 @@ class Game
     @challengePoints = []
     @decisionPoints = []
     @solutionPoints = []
+    @numRounds = numRounds
+    @currentRound = 1
 
 
     ###*
@@ -114,6 +122,10 @@ class Game
       playerScores: []
       # The player array indices of players who ready-ed themselves for the next round.
       readyForNextRound: []
+      # {Number} The current round
+      currentRound: @currentRound
+      # {Number} The total number of rounds
+      numRounds: @numRounds
     
 
 

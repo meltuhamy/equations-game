@@ -10,8 +10,8 @@ class Network
   sendGameListRequest: () ->
     now.getGames()
 
-  sendCreateGameRequest: (gameName, numberPlayers, playerName) ->
-    now.createGame(gameName, numberPlayers, playerName)
+  sendCreateGameRequest: (gameName, numberPlayers, playerName, numRounds) ->
+    now.createGame(gameName, numberPlayers, playerName, numRounds)
 
   sendJoinGameRequest: (gameNumber, screenName) ->
     now.addClient(gameNumber, screenName)
