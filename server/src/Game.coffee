@@ -49,11 +49,8 @@ class Game
   # {Number} the index of the player array for the challenger
   challenger: undefined
 
-  # {Number} The number of rounds in the game
-  numRounds: 2
-
-  # {Number} The current round number out of a total of @numRounds
-  currentRound: 1
+  # {Boolean} Has the game ended?
+  endOfGame: false
 
   
 
@@ -91,8 +88,6 @@ class Game
     @challengePoints = []
     @decisionPoints = []
     @solutionPoints = []
-    @numRounds = numRounds
-    @currentRound = 1
 
 
     ###*
@@ -123,9 +118,9 @@ class Game
       # The player array indices of players who ready-ed themselves for the next round.
       readyForNextRound: []
       # {Number} The current round
-      currentRound: @currentRound
+      currentRound: 1
       # {Number} The total number of rounds
-      numRounds: @numRounds
+      numRounds: numRounds
     
 
 
@@ -641,15 +636,17 @@ class Game
     @goalStart()
     @allocate()
 
+    # check if it's the last round and update the current round
+    if @state.currentRound > @state.numRounds then @endGame() else @state.currentRound++
+
+
+  endGame: ->
+    @endOfGame = true
+
+  isGameOver: -> @endOfGame or @state.currentRound > @state.numRounds
+
   restartGame: ->
-    @constructor(@gameNumber, @name, @gameSize)
-    ###
-    @nextRound()
-    @state.playerScores = []
-    @players = []
-    @started = false
-    @playerSocketIds = []
-    ###
+    @constructor(@gameNumber, @name, @gameSize, @state.numRounds, @endOfGameCallback)
 
 
   module.exports.Game = Game

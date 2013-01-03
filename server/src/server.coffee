@@ -30,10 +30,8 @@ everyone.on 'connect', ->
   gamesManager.cleanGames()
 
 gamesManager = new GamesManager()
-gamesManager.newGame('Test Game', 2)
-gamesManager.newGame('Some Game', 3)
-gamesManager.newGame('The Game', 2)
-gamesManager.newGame('One Game', 5)
+gamesManager.newGame('Test Game', 2, 2)
+gamesManager.newGame('Some Game', 3, 2)
 
 
 ###*
@@ -195,13 +193,22 @@ everyone.now.challengeDecision = (agree) ->
   callback = ->
     groupReference.receiveMoveTimeUp()
     groupReference.receiveState(game.state)
-    group.now.receiveChallengeRoundEndTurn(
-      game.getSubmittedSolutions(), 
-      game.getAnswerExists(),
-      game.getRoundChallengePoints(),
-      game.getRoundDecisionPoints(),
-      game.getRoundSolutionPoints()
-    )
+    if game.isGameOver()
+      group.now.receiveChallengeRoundEndTurn(
+        game.getSubmittedSolutions(),
+        game.getAnswerExists(),
+        game.getRoundChallengePoints(),
+        game.getRoundDecisionPoints(),
+        game.getRoundSolutionPoints()
+      )
+    else
+      group.now.receiveChallengeRoundEndTurn(
+        game.getSubmittedSolutions(),
+        game.getAnswerExists(),
+        game.getRoundChallengePoints(),
+        game.getRoundDecisionPoints(),
+        game.getRoundSolutionPoints()
+      )
   try
     if((agree && game.challengeModeNow) || (!agree && !game.challengeModeNow))
       game.submitPossible(this.user.clientId, callback)
@@ -210,13 +217,22 @@ everyone.now.challengeDecision = (agree) ->
     group.now.receiveState(game.state)
     if(game.allDecisionsMade())
       if(game.state.possiblePlayers.length == 0)
-        group.now.receiveChallengeRoundEndTurn(
-          game.getSubmittedSolutions(), 
-          game.getAnswerExists(),
-          game.getRoundChallengePoints(),
-          game.getRoundDecisionPoints(),
-          game.getRoundSolutionPoints()
-        )
+        if game.isGameOver()
+          group.now.receiveChallengeRoundEndTurn(
+            game.getSubmittedSolutions(),
+            game.getAnswerExists(),
+            game.getRoundChallengePoints(),
+            game.getRoundDecisionPoints(),
+            game.getRoundSolutionPoints()
+          )
+        else
+          group.now.receiveChallengeRoundEndTurn(
+            game.getSubmittedSolutions(),
+            game.getAnswerExists(),
+            game.getRoundChallengePoints(),
+            game.getRoundDecisionPoints(),
+            game.getRoundSolutionPoints()
+          )
       else
         group.now.receiveChallengeSolutionsTurn()
 
@@ -231,13 +247,22 @@ everyone.now.challengeSolution = (answer) ->
   try
     game.submitSolution(this.user.clientId, answer)
     if(game.allSolutionsSent())
-      group.now.receiveChallengeRoundEndTurn(
-        game.getSubmittedSolutions(),
-        game.getAnswerExists(),
-        game.getRoundChallengePoints(),
-        game.getRoundDecisionPoints(),
-        game.getRoundSolutionPoints()
-      )
+      if game.isGameOver()
+        group.now.receiveChallengeRoundEndTurn(
+          game.getSubmittedSolutions(),
+          game.getAnswerExists(),
+          game.getRoundChallengePoints(),
+          game.getRoundDecisionPoints(),
+          game.getRoundSolutionPoints()
+        )
+      else
+        group.now.receiveChallengeRoundEndTurn(
+          game.getSubmittedSolutions(),
+          game.getAnswerExists(),
+          game.getRoundChallengePoints(),
+          game.getRoundDecisionPoints(),
+          game.getRoundSolutionPoints()
+        )
   catch e
     this.now.receiveError(e)
     console.log e

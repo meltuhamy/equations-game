@@ -21,6 +21,7 @@ class Game
   @gameScreenId: undefined
   @goalScreenId: undefined
   @endRoundScreenId: undefined
+  @endGameScreenId: undefined
   
   @gameWaitScreenId : undefined
   @tutorialLobbyScreenId: undefined
@@ -92,6 +93,7 @@ class Game
     @goalScreenId = ScreenSystem.addScreen(new GoalScreen())
     @gameWaitScreenId = ScreenSystem.addScreen(new GoalWaitScreen())
     @endRoundScreenId = ScreenSystem.addScreen(new EndRoundScreen())
+    @endGameScreenId = ScreenSystem.addScreen(new EndGameScreen())
 
     # Tutorial screens
     @tutorialLobbyScreenId = ScreenSystem.addScreen(new TutorialLobbyScreen)
@@ -170,13 +172,23 @@ class Game
 
   @receiveChallengeRoundEndTurn: (solutions, answerExists, challengePts, decisionPts, solutionPts) ->
     @currentChallengeStage = @ChallengeStages.ChallengeEnd
-    ScreenSystem.renderScreen @endRoundScreenId,
+    if @state.currentRound >= @state.numRounds
+      @receiveEndGame(solutions, answerExists, challengePts, decisionPts, solutionPts)
+    else 
+      ScreenSystem.renderScreen @endRoundScreenId,
+        solutions: solutions
+        answerExists:answerExists
+        challengePts:challengePts
+        decisionPts:decisionPts
+        solutionPts: solutionPts
+
+  @receiveEndGame: (solutions, answerExists, challengePts, decisionPts, solutionPts) ->
+    ScreenSystem.renderScreen @endGameScreenId,
       solutions: solutions
       answerExists:answerExists
       challengePts:challengePts
       decisionPts:decisionPts
       solutionPts: solutionPts
-    
 
   ###*
    * Set the goal locally. The server has told us the goal-setter has set the goal.
