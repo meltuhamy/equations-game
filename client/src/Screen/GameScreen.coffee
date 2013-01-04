@@ -402,13 +402,15 @@ class GameScreen extends Screen
   drawAllocationMoveMenu: (clickedOn) ->
     @allocationMoveMenuOn = clickedOn
     #Create the new allocation menu
-    html = '<span id="mamenu-required-btn">Required</span><span id="mamenu-optional-btn">Optional</span><span id="mamenu-forbidden-btn">Forbidden</span>'
+    html = '<br /><span id="mamenu-required-btn" class="mamenu-button">Required</span>
+            <span id="mamenu-optional-btn" class="mamenu-button">Optional</span>
+            <span id="mamenu-forbidden-btn" class="mamenu-button">Forbidden</span>'
     $(clickedOn).qtip 
       id: 'move-allocation'
       content:
         text: html
         title:
-          text: ''
+          text: 'Move dice to...'
           button: true
       position: 
         my: 'top center'
@@ -419,10 +421,15 @@ class GameScreen extends Screen
       show:
         event: 'click'
         button: true 
+        effect: -> $(this).fadeIn(400)
         ready: true
-      hide: false
+      hide:
+        event: false
+        effect: -> $(this).fadeOut(100)
       style:
         classes: 'qtip-shadow qtip-light qtip-rounded'
+        width: '230px'
+        height: '70px'
       events: 
         render: (event, api) ->
           #Add event listener for each of the "required" "optional" and "forbidden" buttons inside the menu

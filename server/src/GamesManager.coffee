@@ -1,4 +1,5 @@
 {Game} = require './Game.js'
+{Settings} = require './Settings.js'
 class GamesManager
 
 
@@ -47,7 +48,8 @@ class GamesManager
     return gamesList
 
   cleanGames: () ->
-    for i in [2...@games.length]
+    startCleanupOn = if Settings.DEBUG then 2 else 0
+    for i in [startCleanupOn...@games.length]
       if @games[i]? && @games[i].players.length == 0
         @games[i] = undefined
 

@@ -1,4 +1,4 @@
-{app, server, nowjs} = require './ServerListener.js'
+{app, server, nowjs, debugmode} = require './ServerListener.js'
 
 {DiceFace}  = require './DiceFace.js'
 DICEFACESYMBOLS = DiceFace.symbols
@@ -10,6 +10,8 @@ ERRORCODES = ErrorManager.codes
 {Player} = require './Player.js'
 {GamesManager} = require './GamesManager.js'
 {Settings} = require './Settings.js'
+
+Settings.DEBUG = debugmode
 
 everyone = nowjs.initialize(server)
 everyone.on 'disconnect', ->
@@ -33,8 +35,9 @@ everyone.on 'connect', ->
   gamesManager.cleanGames()
 
 gamesManager = new GamesManager()
-gamesManager.newGame('Test Game', 2, 2)
-gamesManager.newGame('Some Game', 3, 2)
+if Settings.DEBUG
+  gamesManager.newGame('Test Game', 2, 2)
+  gamesManager.newGame('Some Game', 3, 2)
 
 
 ###*
@@ -276,7 +279,7 @@ everyone.now.nextRoundReady = ->
     group.now.receiveNextRoundAllReady()
     game.nextRound()
     group.now.receiveState(game.state)
-    group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())
+    group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)
   
 clientLeaveGame = (clientId, gameNumber) ->
   

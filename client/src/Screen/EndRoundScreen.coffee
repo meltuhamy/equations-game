@@ -25,6 +25,11 @@ class EndRoundScreen extends Screen
   addReadyButtonListener: () ->
     $('#next-round-ready-btn').bind 'click', ->
       network.sendNextRoundReady()
+      $('#ready-round-cntr').fadeOut -> 
+        $(this).html('')
+        html = '<p>&#10004; Waiting for other players...</p>'
+        $(html).appendTo(this)
+        $(this).fadeIn()
 
 
   ###*

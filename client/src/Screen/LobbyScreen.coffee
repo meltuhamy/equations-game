@@ -161,18 +161,21 @@ class LobbyScreen extends Screen
    * @return {String} The html container the table for the list of rooms
   ###
   renderRoomList: () ->
-    html = '<table id="gameslist">'
-    for g in @games
-      html += '<tr data-gamenumber="' + g.gameNumber + '">'
-      html += "<td><a href='#'>#{g.gameName}</a></td>"
-      html += "<td>#{g.playerCount} / #{g.playerLimit} </td>"
-      html += "<td>#{g.numRounds} Rounds</td>"
-      if(g.started)
-        html += "<td>Currently playing!</td>"
-      else
-        html += "<td>Waiting for players...</td>"
-      html += '</tr>'  
-    html += '</table>'
+    if @games.length > 0
+      html = '<table id="gameslist">'
+      for g in @games
+        html += '<tr data-gamenumber="' + g.gameNumber + '">'
+        html += "<td><a href='#'>#{g.gameName}</a></td>"
+        html += "<td>#{g.playerCount} / #{g.playerLimit} </td>"
+        html += "<td>#{g.numRounds} Rounds</td>"
+        if(g.started)
+          html += "<td>Currently playing!</td>"
+        else
+          html += "<td>Waiting for players...</td>"
+        html += '</tr>'  
+      html += '</table>'
+    else
+      html = '<p class="lobby-empty-notice">Looks like the lobby is empty :( <br />Go on, add your own game and invite your friends! :D</p>'
     $('#gameslist-ctnr').html(html)
 
 

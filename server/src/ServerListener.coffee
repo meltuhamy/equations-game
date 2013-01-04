@@ -19,6 +19,10 @@ else
   server.listen(8080)
 console.log "Listening"
 
+isDebug = 'debug' in process.argv
+if isDebug then console.warn "DEBUG MODE IS ON"
+
 module.exports.app = app
 module.exports.server = server
 module.exports.nowjs = nowjs
+module.exports.debugmode = isDebug
