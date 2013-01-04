@@ -34,11 +34,15 @@ class Game
   @gameList: []
 
 
-  # {Boolean} the index of the player array for the challenger
+  # {Number} the index of the player array for the challenger
+  @challengerId: undefined
+
+  # {Boolean} has a challenge been declared yet for the current round?
   @challengeMode: false
   @currentChallengeStage: undefined
   @ChallengeStages: {ChallengeOff: 0, ChallengeDecide:1, ChallengeSolution:2, ChallengeCheck:3, ChallengeEnd: 4}
-  @challengerId: undefined
+  
+  # Is the challenge a now challenge or a never challenge? Assumes challengeMode = true
   @challengeModeNow = undefined
   @getChallengeName: () ->
     if(!@challengeMode) then return ''
@@ -50,6 +54,7 @@ class Game
   @isChallengeSolutionTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeSolution
   @isChallengeCheckTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeCheck
   @agreesWithChallenge: () -> (@myPlayerId in @state.possiblePlayers && @challengeModeNow) || (@myPlayerId in @state.impossiblePlayers && !@challengeModeNow)
+  @hasPlayerDecided: (index) -> (index in @state.possiblePlayers || index in @state.impossiblePlayers)
   @doesPlayerAgreeChallenge: (index) -> (index in @state.possiblePlayers && @challengeModeNow) || (index in @state.impossiblePlayers && !@challengeModeNow)
 
   @isChallenger: () -> @myPlayerId == @challengerId

@@ -37,6 +37,7 @@ class GamesManager
         # the string of the room used by nowjs for unique identification
         nowjsname: g.nowJsGroupName,
         gameName: g.name
+        numRounds: g.numRounds
         # index to the games array
         gameNumber: g.gameNumber,
         playerCount: g.getNumPlayers(),

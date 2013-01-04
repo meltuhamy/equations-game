@@ -12,7 +12,7 @@ $font-list = "Helvetica Neue","Hevletica","Arial","DejaVu Sans","Kozuka Gothic P
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 
 html, body
-  height: 100%;
+  //height: 100%;
   font-family: $font-list
   user-select(none)
   cursor: default
@@ -21,16 +21,21 @@ ul
   list-style: none
 
 body
-  background:#2066a0
-  background: linear-gradient(top, #2681CC 0%, #206FB0 100%)
+  background: #2681CC
+  background: linear-gradient(top, #2681CC 0%, #206FB0 100%) fixed
   min-height: 100%
+  background-size: 100% 100%
+
+div#container-displacer
+  padding-top:15px
+  padding-bottom:15px
+  
 
 div#container,
 div#container[data-glow='off']
   margin: 0 auto
   width: 80%
   padding: 15px
-  margin-top: 20px
   background: rgba(255, 255, 255, 0.2)
   border: 1px solid rgba(255, 255, 255, 0.3)
   border-radius(5px)
@@ -187,5 +192,24 @@ ul#main-columns > li
   color: #F3C141
   text-shadow: rgba(0, 0, 0, 0.75) 0px 1px 0px
 
+
+#bottom-toolbar
+  position: fixed
+  bottom: 0px
+  right: 0px
+  z-index: 200
+  a
+    text-decoration: none
+    font-size: 12px
+    font-weight: bold
+    text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 0px
+    padding: 10px 20px
+    color: #FFFFFF
+    background: rgba(0, 78, 129, 0.7)
+    display: inline-block
+  a:hover
+    background: #D88A00
+
 p#initial-loading
   text-align:center
+

@@ -124,7 +124,7 @@ class Game
     
 
 
-
+    @numRounds = numRounds
     @gameNumber = gameNumber
     @name = name
     @gameSize = gameSize

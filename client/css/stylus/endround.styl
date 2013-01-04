@@ -14,12 +14,38 @@ div#endround
     color: #FFFFFF
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
     margin-bottom: 5px
-  p
-    color: #7D879B
+  > p
+    color: #D9DFEC
+    margin-bottom: 5px
+  p#end-of-round-baby
+    margin-bottom: 10px
+
 
   div#round-goal
-    padding: 2px
-    border-radius(5px)
+    background: #0082DD
+    padding: 15px 20px 2px 20px
+    p
+      padding: 0px 0px 12px 0px
+
+    span#challenge-title
+      color: white
+      text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 0px
+      font-weight: bold
+      background: #004E81
+      padding: 4px 32px
+      border-radius(3px)
+    span#challenge-success-title
+      color: white
+      text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 0px
+      font-weight: bold
+      background: #004E81
+      padding: 4px 32px
+      border-radius(3px)
+    span#challenge-success-title.successful
+      background: #0C9200
+    span#challenge-success-title.failure
+      background: #922900
+
 
   ul#goal-dice-ctnr
     display: block
@@ -41,15 +67,16 @@ div#endround
         line-height: $dicewidth;
   div#round-results-ctnr
     margin-bottom: 10px
+    background: #0078CD
+    padding: 15px
     table#resultslist 
       text-align: left
       //width: 100%
       td
         color: #87C2EB
-        text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
-        padding: 15px
-      tr:nth-child(2n+1)
-        background: #0071C0
+        text-shadow: rgba(0, 0, 0, .45) 0px 1px 0px
+        padding: 10px 40px      
+        background: #0066AD
       a
         color: #A4D2D6
         text-decoration: none
@@ -76,16 +103,27 @@ ul.solution
   li.dice[data-alloc='forbidden']
     background: red
 
+p.no-solution
+  font-size: 13px
+  text-align: center
+
 ul.score-tally 
   li
-    padding: 2px
+    padding: 2px 10px
     font-size: 13px
-  span
-    display: inline-block
-    padding: 4px
-    color: white
-    background: #E46D00
-    border-radius(3px)
+    color: #8FCE86
+    span.scorebubble
+      display: inline-block
+      padding: 4px 8px
+      margin-right: 5px
+      color: white
+      background: #0C9200
+      border-radius(3px)
+  li.bad
+    color: #BDBDBD
+    span
+      color: #FFFFFF
+      background: #922900
 
 li.dice[data-alloc='forbidden']
     background: red

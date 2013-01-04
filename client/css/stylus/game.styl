@@ -68,6 +68,7 @@ div#top-ctnr
         font-size: 13px
         font-weight: bold
         margin-right: 10px
+        min-width: 35px
         /*text-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px*/
         box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px;
       li.current-turn-player
@@ -327,19 +328,25 @@ span#mamenu-forbidden-btn
 
 #turn-notification 
   display: block
-  background: #0081D6
+  background: #0090F0
   border-radius(0px 0px 5px 5px)
   margin-bottom: 10px
   p
     text-align: left
     margin-left 20px
-    padding: 8px 0
+    padding: 4px 0
     color: white
-    font-size: 15px
+    font-size: 13px
     text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 0px;
 
 #turn-notification[data-attention="on"]
-  background: #CF8A4C
+  background: #D88A00
+
+div#allocation_container[data-attention="on"] 
+  ul#unallocated li.dice,
+    border-color: #D88A00
+
+/*div#answer-area[data-attention="on"] background: #FFC257*/
   
 
 
@@ -364,8 +371,19 @@ span#mamenu-forbidden-btn
       display: inline-block
       width: 20px
 
+div#answer-area
+  padding-top: 1px
+  width:100%
+  div#answer-dice
+    border: 2px dotted rgba(0, 0, 0, 0.25)
+    margin: 10px
+    min-height: 100px
+    padding-left: 10px
+
+
 ul#answers 
   margin-left: -5px
+  margin-bottom:5px
   li.dice
     color: #FFFFFF
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
@@ -384,6 +402,18 @@ ul#answers
 li.dice[data-alloc='forbidden']
     background: red
 
+
+p.answer-dice-notice
+  color: #98B9FF
+  font-size: 13px
+  text-shadow: rgba(0, 0, 0, 0.45) 0px 1px 0px
+  padding: 2px 5px 0px 5px
+
+
+p#answer-forbidden-notice,
+p#answer-required-notice,
+p#answer-submit-notice
+  color:#F0C94F
 
 /*************************************************************/
 /*********************  SKETCH AREA    ***********************/
