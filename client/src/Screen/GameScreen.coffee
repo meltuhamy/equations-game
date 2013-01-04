@@ -162,6 +162,7 @@ class GameScreen extends Screen
     $('#timer-knob').val(timeElapsed).trigger('change')
     value = ref.getKnobFaceTime()
     $('#timer-text-ctnr').html("#{value}")
+    if value<=0 then clearInterval(@turnTimer)
 
   getKnobFaceTime: () -> Math.round(Game.state.turnDuration - (Math.floor((Date.now() - Game.state.turnStartTime)))/1000)
 
