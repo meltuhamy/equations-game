@@ -497,25 +497,24 @@ class GameScreen extends Screen
    * on what dice are in the answer area and what mat each answer dice is in.
   ###
   writeAnswerAreaNotices: () ->
-    $('#answer-empty-notice').html('x')
+    $('#answer-empty-notice').html('')
     $('#answer-submit-notice').html('')
-    $('#answer-forbidden-notice').html('')
+    $('#answer-required-notice').html('')
     $('#answer-forbidden-notice').html('')
 
     # Giving a notice saying they have no dice.
     if(@answerAreaDice.length == 0)
       $('#answer-empty-notice').html('You have no dice added.')
 
-    if(Game.isChallengeSolutionTurn && Game.solutionRequired())
-      if(!@submittedSolution)
-        # Giving a notice saying they need to submit their solution for a challenge
-        $('#answer-submit-notice').html('You need to submit a solution for the challenge.')
-        # Giving a notice saying they haven't used all the required dice
-        if(@answerRequiredDiceCount < Game.state.required.length)
-          $('#answer-required-notice').html('You have not used all the required dice.')
-        # Giving a notice saying the have used at least one forbidden dice
-        if(@answerForbiddenDiceCount > 0)
-          $('#answer-forbidden-notice').html('Your answer has #{@answerForbiddenDiceCount} forbidden dice.')
+    if(Game.isChallengeSolutionTurn() && Game.solutionRequired() && !@submittedSolution)
+      # Giving a notice saying they need to submit their solution for a challenge
+      $('#answer-submit-notice').html('You need to submit a solution for the challenge.')
+      # Giving a notice saying they haven't used all the required dice
+      if(@answerRequiredDiceCount < Game.state.required.length)
+        $('#answer-required-notice').html('You have not used all the required dice.')
+      # Giving a notice saying the have used at least one forbidden dice
+      if(@answerForbiddenDiceCount > 0)
+        $('#answer-forbidden-notice').html('Your answer has #{@answerForbiddenDiceCount} forbidden dice.')
       
 
 
