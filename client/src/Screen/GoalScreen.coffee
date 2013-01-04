@@ -75,10 +75,10 @@ class GoalScreen extends Screen
       html = "<li class='dice' data-index='" + index + "'><span>#{diceFace}<span></li>"
       
       # Remove the dice from the top
-      $('#notadded-goal li.dice[data-index='+index+']').remove()
-
+      $('#notadded-goal li.dice[data-index='+index+']').hide 300, ->
+        $(this).remove()
       # Add it to the bottom
-      $(@equationBuilder.addDiceToEnd(html)).bind 'click', (event) ->
+      $(thisReference.equationBuilder.addDiceToEnd(html)).bind 'click', (event) ->
         thisReference.removeDiceFromGoal($(this).data('index'));
 
 
@@ -93,7 +93,7 @@ class GoalScreen extends Screen
     if(removedElement isnt false)
       # Add the dice back to the top
       thisReference = this   
-      $(removedElement).appendTo("#notadded-goal").bind 'click', (event) ->
+      $(removedElement).hide().appendTo("#notadded-goal").show(300).bind 'click', (event) ->
           thisReference.addDiceToGoal($(this).data('index'));
 
 

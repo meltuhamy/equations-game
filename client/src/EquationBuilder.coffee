@@ -38,7 +38,7 @@ class EquationBuilder
       $(@containerSelector + ' li.dot:last-child').remove()
 
     # Add a dice and dot in pairs
-    theDice = $(html).appendTo(@containerSelector)
+    theDice = $(html).hide().appendTo(@containerSelector).show(300)
     @addDot(true, @containerSelector)
 
     # Then adjust the counters to say we added a new dice and dot
@@ -93,14 +93,14 @@ class EquationBuilder
   ###
   addDot: (appendPrepend, element) -> 
     @numberDots++
-    theHtml = "<li class='dot' data-bracket='none'><span></span></li>"
+    theHtml = "<li class='dot' data-bracket='none' style='display:none'><span></span></li>"
     thisReference = this
     # Either add a dot to the beginning or the end of element, then add the listener
     if(appendPrepend)
-      $(theHtml).appendTo(element).bind 'click', (event) ->
+      $(theHtml).appendTo(element).fadeIn().bind 'click', (event) ->
         thisReference.dotListener(this)
     else
-      $(theHtml).prependTo(element).bind 'click', (event) ->
+      $(theHtml).prependTo(element).fadeIn().bind 'click', (event) ->
         thisReference.dotListener(this)
 
   ###*
