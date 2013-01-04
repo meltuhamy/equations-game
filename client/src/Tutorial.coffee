@@ -66,7 +66,7 @@ class Tutorial
       id: "goal"
       modal: true
       header: "Goal setting"
-      content: "Great, we're in a game! You've been choosen to be the goal setter. Let's make the goal '1+2'."
+      content: "Great, we're in a game! You've been chosen to be the goal setter. Let's make the goal '1+2'."
 
     @doStepWhenScreen GoalScreen, "goal"
 
@@ -78,7 +78,7 @@ class Tutorial
     @addStep
       modal: false
       tipselector: 'li.dice[data-index="4"]'
-      tipmessage: 'Cool, we can see that "1" has been added below. Now let\'s add "+"'
+      tipmessage: 'Cool, we can see that "1" has been added below. Now let\'s add "+".'
 
     @addStep
       modal: false
@@ -94,7 +94,7 @@ class Tutorial
       id: "game"
       modal: true
       header: "We're in!"
-      content: "We've finally started playing the game. Let me now show you arround."
+      content: "We've finally started playing the game. Let me now show you around."
     @doStepWhenScreen GameScreen, "game"
 
     @addStep
@@ -105,12 +105,12 @@ class Tutorial
 
     @addStep
       tipselector: '#dice_container'
-      tipmessage: 'These are the dice. We must use these to either proove that the goal is possible to achieve using these or impossible.'
+      tipmessage: 'These are the dice. We must use these to either prove that the goal is possible to achieve using these dice or impossible.'
       tipnext: true
 
     @addStep
       tipselector: '#player-list'
-      tipmessage: 'This shows you the players who are in the game. The player highlighted in orange is the player whose turn it is.'
+      tipmessage: 'This shows you the players who are in the game. The player highlighted in orange is the player whose turn it currently is.'
       tipnext: true
 
     @addStep
