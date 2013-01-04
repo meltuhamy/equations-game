@@ -77,9 +77,9 @@ class GoalScreen extends Screen
       # Remove the dice from the top
       $('#notadded-goal li.dice[data-index='+index+']').hide 300, ->
         $(this).remove()
-        # Add it to the bottom
-        $(thisReference.equationBuilder.addDiceToEnd(html)).bind 'click', (event) ->
-          thisReference.removeDiceFromGoal($(this).data('index'));
+      # Add it to the bottom
+      $(thisReference.equationBuilder.addDiceToEnd(html)).bind 'click', (event) ->
+        thisReference.removeDiceFromGoal($(this).data('index'));
 
 
   ###*
