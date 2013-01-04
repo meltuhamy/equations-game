@@ -1,6 +1,9 @@
 {DiceFace} = require './DiceFace.js'
 DICEFACESYMBOLS = DiceFace.symbols
 
+{ErrorManager}  = require './ErrorManager.js'
+ERRORCODES = ErrorManager.codes
+
 {ExpressionParser, Node} = require './Parser.js'
 {Player} = require './Player.js'
 {Evaluator} = require './Evaluator.js'
@@ -205,7 +208,9 @@ class Game
       if (dice[i] >= 0)
         dices++
       i++
-    if (dices > 6) then throw "Goal uses more than six dice"
+    if (dices > 6)
+      ErrorManager.throw(ERRORCODES.goalTooLarge, {}, "Goal uses more than six dice")
+
     # Now check that there are not duplicates. We can't use the same dice twice.
     # Also, we check that the indices are in bounds. We can use dice that don't exist.
     numGlobalDice = @globalDice.length

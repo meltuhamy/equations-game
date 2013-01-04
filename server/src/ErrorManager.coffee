@@ -2,7 +2,9 @@ class ErrorManager
 
   @codes: 
 	  goalEmpty   : 0
-	  goalNotParse: 1
+	  goalTooLarge: 1
+	  goalNotParse: 2
+
 
   @throw: (errorCode, jsonParams, errorMessage) ->
     error = new Error(errorMessage)
