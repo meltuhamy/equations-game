@@ -38,7 +38,7 @@ class EquationBuilder
       $(@containerSelector + ' li.dot:last-child').remove()
 
     # Add a dice and dot in pairs
-    theDice = $(html).appendTo(@containerSelector)
+    theDice = $(html).hide().appendTo(@containerSelector).show(300)
     @addDot(true, @containerSelector)
 
     # Then adjust the counters to say we added a new dice and dot
