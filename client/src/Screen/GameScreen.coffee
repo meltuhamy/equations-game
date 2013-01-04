@@ -503,19 +503,20 @@ class GameScreen extends Screen
     $('#answer-forbidden-notice').html('')
 
     # Giving a notice saying they have no dice.
-    if(@answerAreaDice.length == 0)
-      $('#answer-empty-notice').html('You have no dice added.')
-
     if(Game.isChallengeSolutionTurn() && Game.solutionRequired() && !@submittedSolution)
       # Giving a notice saying they need to submit their solution for a challenge
       $('#answer-submit-notice').html('You need to submit a solution for the challenge.')
-      # Giving a notice saying they haven't used all the required dice
       if(@answerRequiredDiceCount < Game.state.required.length)
+        # Giving a notice saying they haven't used all the required dice
         $('#answer-required-notice').html('You have not used all the required dice.')
-      # Giving a notice saying the have used at least one forbidden dice
-      if(@answerForbiddenDiceCount > 0)
-        $('#answer-forbidden-notice').html('Your answer has #{@answerForbiddenDiceCount} forbidden dice.')
-      
+      else if(@answerForbiddenDiceCount > 0)
+        # Giving a notice saying the have used at least one forbidden dice
+        $('#answer-forbidden-notice').html("Your answer has #{@answerForbiddenDiceCount} forbidden dice.")
+    else if(Game.isChallengeSolutionTurn() && !Game.solutionRequired())
+      $('#answer-empty-notice').html("You can't submit a solution for the challenge.")
+    else if(@answerAreaDice.length == 0)
+      $('#answer-empty-notice').html('You have no dice added.')
+
 
 
   addDiceToAnswerArea: (index) ->
@@ -544,6 +545,7 @@ class GameScreen extends Screen
     # Now remove the dice from the answer area
     @answerAreaDice.splice(pos, 1)
     removedElement = @equationBuilder.removeDiceByIndex(index)
+    @recolorAnswerDice()
 
 
   submitAnswer: () ->
