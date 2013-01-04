@@ -130,7 +130,7 @@ class GameScreen extends Screen
     window.location.reload()
 
 
-  # When the game state has changed
+  # When the game state has changed on the server do this...
   onUpdatedState:() ->
     @neutralContext()
     $('#timer-knob').trigger 'configure', {min: 0, max: Game.state.turnDuration * 1000/@knobInterval}
@@ -169,21 +169,43 @@ class GameScreen extends Screen
 
 
   ###*
-   * When the turn has changed, update the player information.
+   * When the turn has changed, update the player list (with whose turn it is).
   ###
   drawPlayerList: () ->
     html = '<ul>'
+    # Go through the list of players and draw them.
     for p in Game.players
-      # See whether we need to this player because its his turn
-      currentHtml = if(Game.state.currentPlayer is p.index) then " class='current-turn-player'" else ""
+      # For each player, draw their name with an icon. 
+      # By default there is no tag below their name. By default they are not highlighted.
+      tag = ''
+      isHighlighted = false
+      # If it's not challenge mode, if it's the players current turn, then highlight his icon
+      if(!Game.challengeMode)
+        if(Game.state.currentPlayer is p.index) then isHighlighted = true
+      else
+        # If it's challenge mode, add tags below the players to show if they are
+        # the challenger/agree/disagree/havent decided. Highlight them if they have't decided.
+        if(!Game.hasPlayerDecided(p.index))
+          tag = "Not Decided"
+        else if(p.index == Game.challengerId)
+          tag = "Challenger"
+        else if(Game.doesPlayerAgreeChallenge(p.index))
+          tag = "Agreed"
+        else if(!Game.doesPlayerAgreeChallenge(p.index))
+          tag = "Disagreed"
+        isHighlighted = !Game.hasPlayerDecided(p.index)
+      # See whether we need to highlight this player's icon orange 
+      highlightHtml = if isHighlighted then " class='current-turn-player'" else ""
       # See if we need to add a "(You)" to the persons name because this player *is* you!
-      nameHtml = if(Game.myPlayerId is p.index) then p.name + ' (You)' else p.name
-      html += '<li' + currentHtml + '>' + nameHtml + '</li>'
+      nameHtml = p.name
+      if(Game.myPlayerId is p.index) then nameHtml += ' (You)'
+      # Add the player to the list
+      html += '<li' + highlightHtml + '>' + nameHtml
+      if(tag != '') then html += "<br/><span class='challenge-tag'>#{tag}</span>"
+      html += "</li>"
     html += '</ul>'
     $('#player-list').html(html)
-    # If it is our turn, then make the container glow else don't make it glow
-    glowOnOff = if(Game.isMyTurn()) then 'on' else 'off'
-    $('#container').attr('data-glow', glowOnOff)
+    
 
 
 
@@ -200,10 +222,16 @@ class GameScreen extends Screen
   ###
 
   drawCommentaryForAllocating: () ->
+    # If it's our turn for allocating, highlight the allocations area orange and give a message
+    # to say its our turn. If it's somebody else's turn, make it unhighlighted + write a different msg.
     if(Game.isMyTurn())
-      $('#turn-notification').attr('data-attention', 'on')
-      $('#turn-notification').html('<p>It\'s your turn! Choose a dice from unallocated to move to another mat.</p>')
+      $('#container').attr('data-glow', 'on')
+      $('div#allocation_container').attr('data-attention', 'on')
+      $('div#turn-notification').attr('data-attention', 'on')
+      $('div#turn-notification').html('<p>It\'s your turn! Choose a dice from unallocated to move to another mat.</p>')
     else
+      $('#container').attr('data-glow', 'off')
+      $('div#allocation_container').attr('data-attention', 'off')
       $('#turn-notification').attr('data-attention', 'off')
       name = Game.getCurrentTurnPlayerName()
       $('#turn-notification').html('<p>It is ' + name + '\'s turn to move a dice from unallocated to another mat.</p>')
@@ -215,40 +243,62 @@ class GameScreen extends Screen
     # We have a now/never challenge. Draw the buttons to let him agree/disagree
     buttonsHtml = '<span id="challenge-agree-btn">Agree</span> <span id="challenge-disagree-btn">Disagree</span>'
     thisReference = this
+
+    # De-highlight the area for allocating dice. We're done with all that now. It's challenge time.
+    $('div#allocation_container').attr('data-attention', 'off')
+
+    # Right now, people are choosing to agree/disagree with challenge. Have we decided yet?
     if(Game.isChallengeDecideTurn())
+      # We haven't decided yet. Highlight the notification area orange and add buttons to let us decide.
       if(!Game.isChallenger() && !@submittedDecision)
+          # Highlight the notification area orange
           $('#turn-notification').attr('data-attention', 'on')
+          # Html for the buttons
           html = if(Game.challengeModeNow) then "Now Challenge! " else "Never Challenge! "
           html += "Please select if you agree: "
           html += buttonsHtml
           html = '<p>' + html + '</p>'
           $('#turn-notification').html(html)
+          # Event Handler for agreeing
           $('#challenge-agree-btn').unbind 'click'
           $('#challenge-agree-btn').bind 'click', (event) ->
             network.sendChallengeDecision(true)
             thisReference.submittedDecision = true
+          # Event Handler for disagreeing
           $('#challenge-disagree-btn').unbind 'click'
           $('#challenge-disagree-btn').bind 'click', (event) ->
             network.sendChallengeDecision(false)
             thisReference.submittedDecision = false
-      else 
+      else
+        # We have decided. Make the notification area say that we are waiting.
         $('#turn-notification').html('<p>Please wait for other players to decide.</p>')
         $('#turn-notification').attr('data-attention', 'off')
     else if(Game.isChallengeSolutionTurn())
+      # Right now, people are submitting solutions. 
+      # Do we need to submit a solution? Have we submitted a solution yet?
       if(Game.solutionRequired())
         if(@submittedSolution)
+          # We submitted a required solution. Make the notification area say that we are waiting.
           $('#turn-notification').attr('data-attention', 'off')
-          $('#turn-notification').html('<p>Please wait for other players to submit solutions</p>')
+          $('#answer-area').attr('data-attention', 'off')
+          $('#turn-notification').html('<p>Please wait for other players to submit their solutions</p>')
         else
+          # We have't submitted a required solution. Make notification area say we need to submit a solution.
+          # Force the menu context mode to adding dice
           @addAddAnsDiceContext()
+          # Highlight the notification area and the dice answer area. Add msg to notification area.
           $('#turn-notification').attr('data-attention', 'on')
+          $('#answer-area').attr('data-attention', 'on')
           $('#turn-notification').html('<p>Please submit your solution.</p>')
+          # Show the button for submitting a solution and bind it to a submission event
           $('#answer-submit-btn').show()
           $('#answer-submit-btn').unbind 'click'
           $('#answer-submit-btn').bind 'click', (event) ->
             thisReference.submitAnswer()
       else
+        # We didn't need to sumit a solution. Make the notification area say that we are waiting.
         $('#turn-notification').attr('data-attention', 'off')
+        $('#answer-area').attr('data-attention', 'off')
         $('#turn-notification').html('<p>Please wait for other players to submit their solutions.</p>')
     
 

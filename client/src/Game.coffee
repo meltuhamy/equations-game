@@ -50,6 +50,7 @@ class Game
   @isChallengeSolutionTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeSolution
   @isChallengeCheckTurn: () -> @currentChallengeStage == @ChallengeStages.ChallengeCheck
   @agreesWithChallenge: () -> (@myPlayerId in @state.possiblePlayers && @challengeModeNow) || (@myPlayerId in @state.impossiblePlayers && !@challengeModeNow)
+  @hasPlayerDecided: (index) -> (index in @state.possiblePlayers || index in @state.impossiblePlayers)
   @doesPlayerAgreeChallenge: (index) -> (index in @state.possiblePlayers && @challengeModeNow) || (index in @state.impossiblePlayers && !@challengeModeNow)
 
   @isChallenger: () -> @myPlayerId == @challengerId
