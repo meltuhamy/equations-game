@@ -230,8 +230,8 @@ class Game
     @state.unallocated = unallocatedTemp
 
     # Finally, check that the expression in the dice parses as an expression.
-    p = new ExpressionParser()
-    @goalTree = p.parse(diceValues, true)
+    p = new ExpressionParser(true)
+    @goalTree = p.parse(diceValues)
     result = []
     flattened = p.flatten(@goalTree)
     for i in [0...flattened.length]
@@ -541,9 +541,9 @@ class Game
 
       # Everything ok-doky index wise. Now let's check it parses and gives the same value.
       e = new Evaluator
-      p = new ExpressionParser
+      p = new ExpressionParser(false) #we pass in false because it is not goal
       # TODO separate out and wrap in try catch
-      submissionValue = e.evaluate(p.parse(diceValues,false))
+      submissionValue = e.evaluate(p.parse(diceValues))
       # Ok it does. So add it to the submitted solutions list
       @rightAnswers[playerid] = (@goalValue == submissionValue)
       @submittedSolutions[playerid] = dice

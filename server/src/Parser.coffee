@@ -13,13 +13,12 @@ class Node
 module.exports.Node = Node
 
 class ExpressionParser
-  constructor: ()->
-    @isGoal = undefined
+  constructor: (goal)->
+    @isGoal = goal
 
-  parse:(expr, isGoal) ->
+  parse:(expr) ->
     @expr = expr           # expr is an array of tokens
     @idx  = 0              # start at token 0
-    @isGoal = isGoal
     this.handleAddMinus()  # Start with minus because it has lowest precedence
 
   handleAddMinus: () ->
@@ -107,11 +106,18 @@ class ExpressionParser
     result = []
     numMatched = 0
     result.push @expr[@idx++] while !this.atEnd() and matchFn(@expr[@idx]) and ++numMatched <=2
-    if(numMatched >2 && @isGoal)
-      throw "Can't have more than two digits, maytey"
-    else if (numMatched >1)
+    if @isGoal
+      if (numMatched > 2)
+        throw "Can't have more than two digits, maytey"
+    else if (numMatched > 1)
       throw "Can't have more than one digit, maytey"
     result
+    #if(numMatched >2 && @isGoal)
+      #throw "Can't have more than two digits, maytey"
+    #else if (numMatched >1)
+      #console.log @isGoal
+      #throw "Can't have more than one digit, maytey"
+    #result
 
   precedence: (node) ->
     if node.type == 'unaryop'

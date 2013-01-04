@@ -55,7 +55,7 @@ describe "game", ->
   it "should add two players to game and one submit a right answer", ->
     game = new Game([],2)
     e = new Evaluator
-    p = new ExpressionParser 
+    p = new ExpressionParser(true) 
     game.challengeMode = true
     game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three]
     game.addClient(31)
@@ -69,7 +69,7 @@ describe "game", ->
   it "should add two players to game anone submit a right answer while the other submits a wrong answer", ->
     game1 = new Game([],2)
     e = new Evaluator
-    p = new ExpressionParser 
+    p = new ExpressionParser(true) 
     game1.challengeMode = true
     game1.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three, DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three]
     game1.addClient(31)
