@@ -38,6 +38,7 @@ class GoalScreen extends Screen
       network.sendGoal(thisReference.createGoalArray())
 
     currentCounter = 0
+    clearInterval toDoGoalTimer
     toDoGoalTimer = setInterval -> 
       currentCounter++
       if(currentCounter >= timeToDoGoal)

@@ -276,7 +276,7 @@ everyone.now.nextRoundReady = ->
     group.now.receiveNextRoundAllReady()
     game.nextRound()
     group.now.receiveState(game.state)
-    group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId())
+    group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)
   
 clientLeaveGame = (clientId, gameNumber) ->
   
