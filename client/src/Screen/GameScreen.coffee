@@ -69,7 +69,13 @@ class GameScreen extends Screen
     @neutralContext()
     $("#now-button").bind("click", @nowButtonHandler)
     $("#never-button").bind("click", @neverButtonHandler)
+    
+
+    # Add the leave button and help button to the bottom right toolbar
+    $('#bottom-toolbar').html('<a href="#" id="leave-button">Leave Game</a> <a href="#">Help</a>')
+    # TODO: make the help button do something (eg. go to a manual - which doesn't current exist)
     $("#leave-button").bind("click", @leaveButtonHandler)
+
 
     ### Sketcher stuf ###
     @initSketcher()

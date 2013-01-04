@@ -343,12 +343,8 @@ span#mamenu-forbidden-btn
   background: #D88A00
 
 div#allocation_container[data-attention="on"] 
-  background: #D88A00
-  ul#required li.dice,
-  ul#optional li.dice,
-  ul#forbidden li.dice,
   ul#unallocated li.dice,
-    border-color: #FCAC1E
+    border-color: #D88A00
 
 /*div#answer-area[data-attention="on"] background: #FFC257*/
   
@@ -376,8 +372,14 @@ div#allocation_container[data-attention="on"]
       width: 20px
 
 div#answer-area
-  padding-top: 5px
+  padding-top: 1px
   width:100%
+  div#answer-dice
+    border: 2px dotted rgba(0, 0, 0, 0.25)
+    margin: 10px
+    min-height: 100px
+    padding-left: 10px
+
 
 ul#answers 
   margin-left: -5px
