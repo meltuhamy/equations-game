@@ -32,8 +32,9 @@ everyone.on 'connect', ->
   gamesManager.cleanGames()
 
 gamesManager = new GamesManager()
-gamesManager.newGame('Test Game', 2, 2)
-gamesManager.newGame('Some Game', 3, 2)
+if Settings.DEBUG
+  gamesManager.newGame('Test Game', 2, 2)
+  gamesManager.newGame('Some Game', 3, 2)
 
 
 ###*
