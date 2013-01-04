@@ -3,6 +3,9 @@
 {DiceFace}  = require './DiceFace.js'
 DICEFACESYMBOLS = DiceFace.symbols
 
+{ErrorManager}  = require './ErrorManager.js'
+ERRORCODES = ErrorManager.codes
+
 {Game} = require './Game.js'
 {Player} = require './Player.js'
 {GamesManager} = require './GamesManager.js'
@@ -66,7 +69,7 @@ everyone.now.addClient = (gameNumber, playerName) -> #called by client when conn
     this.now.gameNumber = gameNumber
 
     # add the player to the game, tell him he was accepted and give him his playerId (i.e. index) for the game
-    this.now.acceptPlayer(game.addClient(this.user.clientId, playerName), DICEFACESYMBOLS)
+    this.now.acceptPlayer(game.addClient(this.user.clientId, playerName), DICEFACESYMBOLS, ERRORCODES)
 
     # tell everyone about the new gamesList state
     everyone.now.getGames()
@@ -104,9 +107,8 @@ everyone.now.receiveGoal = (goalArray) ->
     group.now.receiveGoalTurnEnd(game.goalArray)
     group.now.receiveState(game.state)
   catch e #catches when parser returns error for goal
-    testError = new Error('TestJames')
-    testError.value = 5
-    this.now.receiveError(testError)
+    this.now.receiveError(e)
+
 
 
 # put this in everyone's pocket. Server calls this when a player took too long.

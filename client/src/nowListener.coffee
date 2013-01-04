@@ -7,10 +7,12 @@
  * Called by the server once a player is accepted
  * @param  {String} id The client id returned from the server
  * @param  {Json} diceface The json to tell the client what faces are what numbers
+ * @param  {Json} errorCodes The json to giving the client the meaning of error numbers
 ###
-now.acceptPlayer = (id, dicefaceSymbols) -> #id is the index
+now.acceptPlayer = (id, dicefaceSymbols, errorCodes) -> #id is the index
   Game.myPlayerId = id
   DiceFace.symbols = dicefaceSymbols
+  ErrorManager.codes = errorCodes
   Game.acceptedJoin()
 
 
@@ -98,7 +100,6 @@ now.receivePlayerDisconnect = (playerId) ->
   Game.removePlayer(playerId)
 
 now.receiveError = (errorObject) ->
-  console.log "ERROR HANDLE"
   console.warn(errorObject)
   ScreenSystem.receiveServerError(errorObject)
 

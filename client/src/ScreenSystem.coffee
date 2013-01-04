@@ -101,7 +101,7 @@ class ScreenSystem
   @receiveServerError: (errorObject) ->
     if(@currentScreen?)
       if(@currentScreen.hasLoaded)
-        @currentScreen.receiveServerError()
+        @currentScreen.receiveServerError(errorObject)
 
 
 

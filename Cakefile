@@ -23,7 +23,7 @@ server = (callback) ->
 
 client = (callback) ->
   dostylus(false, ->
-    clientFileNames = ['Settings', 'DiceFace', 'EquationBuilder', 'Game', 'Network', 'TutorialNetwork', 'nowListener', 'Screen', 'Screen/LobbyScreen', 'Screen/JoinWaitScreen', 'Screen/GoalWaitScreen', 'Screen/GoalScreen', 'Screen/GameScreen', 'Screen/EndRoundScreen', 'Screen/EndGameScreen', 'Screen/TutorialLobbyScreen', 'Screen/TutorialGoalScreen', 'Screen/TutorialGameScreen', 'ScreenSystem', 'Tutorial','main']
+    clientFileNames = ['Settings', 'DiceFace', 'ErrorManager', 'EquationBuilder', 'Game', 'Network', 'TutorialNetwork', 'nowListener', 'Screen', 'Screen/LobbyScreen', 'Screen/JoinWaitScreen', 'Screen/GoalWaitScreen', 'Screen/GoalScreen', 'Screen/GameScreen', 'Screen/EndRoundScreen', 'Screen/EndGameScreen', 'Screen/TutorialLobbyScreen', 'Screen/TutorialGoalScreen', 'Screen/TutorialGameScreen', 'ScreenSystem', 'Tutorial','main']
     options = [].concat(['-b', '--join', 'client/build/game.js', '--compile'], (clientFileNames.map (filename) -> 'client/src/' + filename + '.coffee'))
     coffee = spawn myCoffee, options
     coffee.stderr.on 'data', (data) ->

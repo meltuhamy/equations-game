@@ -98,6 +98,9 @@ class GoalScreen extends Screen
 
   receiveServerError: (errorObject) ->
     console.log "Goalscreen Hello Poppet"
+    if(errorObject.code == ErrorManager.codes.goalNotParse)
+      console.log "Goal failed to parse around #{errorObject.params.token}"
+    
 
 
 

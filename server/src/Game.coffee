@@ -151,6 +151,7 @@ class Game
     error.emsg = errorMessage
     throw error
 
+
   ###*
    * Spawns the global array. Uses a random distribution to work out the dice for the game.
   ###
