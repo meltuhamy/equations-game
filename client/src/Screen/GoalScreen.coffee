@@ -97,6 +97,15 @@ class GoalScreen extends Screen
       $(removedElement).hide().appendTo("#notadded-goal").show(300).bind 'click', (event) ->
           thisReference.addDiceToGoal($(this).data('index'));
 
+  receiveServerError: (errorObject) ->
+    console.log "Goalscreen Hello Poppet"
+    if(errorObject.code == ErrorManager.codes.goalNotParse)
+      $("#goalerror").html("Goal failed to parse around dice #{errorObject.params.token}")
+    
+
+
+
+
 
 
   

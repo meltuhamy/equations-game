@@ -2,6 +2,9 @@
 {Evaluator} = require './Evaluator.js'
 DICEFACESYMBOLS = DiceFace.symbols
 
+{ErrorManager}  = require './ErrorManager.js'
+ERRORCODES = ErrorManager.codes
+
 class Node
   type: undefined     # 'number'/'binop'/'unaryop'
   token: []           # The token. Array because [two three] is "23"
@@ -95,7 +98,8 @@ class ExpressionParser
     else if !c?
       throw new Error("You can't finish with an operator")
     else
-      throw new Error("UNEXPECTED TOKEN: #{c}")
+      #throw new Error("UNEXPECTED TOKEN: #{c}")
+      ErrorManager.throw(ERRORCODES.goalNotParse, {token: @idx, diceface:c}, "UNEXPECTED TOKEN: #{c}")
     return node
 
   isNumber : (c) -> c >= DICEFACESYMBOLS.zero 

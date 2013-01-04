@@ -1,6 +1,9 @@
 {DiceFace} = require './DiceFace.js'
 DICEFACESYMBOLS = DiceFace.symbols
 
+{ErrorManager}  = require './ErrorManager.js'
+ERRORCODES = ErrorManager.codes
+
 {ExpressionParser, Node} = require './Parser.js'
 {Player} = require './Player.js'
 {Evaluator} = require './Evaluator.js'
@@ -68,8 +71,9 @@ class Game
 
 
   
-  constructor: (@gameNumber, @name, gameSize, numRounds) ->
+  constructor: (@gameNumber, @name, gameSize, numRounds, throwErrors = true) ->
     # Initalise all variables so that they're object (not prototype) specfific
+    @throwErrors = throwErrors
     @goalTree = undefined
     @goalArray = []
     @goalValue = undefined
@@ -150,6 +154,7 @@ class Game
     error.emsg = errorMessage
     throw error
 
+
   ###*
    * Spawns the global array. Uses a random distribution to work out the dice for the game.
   ###
@@ -203,7 +208,9 @@ class Game
       if (dice[i] >= 0)
         dices++
       i++
-    if (dices > 6) then throw "Goal uses more than six dice"
+    if (dices > 6)
+      ErrorManager.throw(ERRORCODES.goalTooLarge, {}, "Goal uses more than six dice")
+
     # Now check that there are not duplicates. We can't use the same dice twice.
     # Also, we check that the indices are in bounds. We can use dice that don't exist.
     numGlobalDice = @globalDice.length
