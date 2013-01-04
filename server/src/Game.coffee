@@ -237,7 +237,7 @@ class Game
     @state.unallocated = unallocatedTemp
 
     # Finally, check that the expression in the dice parses as an expression.
-    p = new ExpressionParser()
+    p = new ExpressionParser(ERRORCODES.goalNotParse)
     @goalTree = p.parse(diceValues, true)
     result = []
     flattened = p.flatten(@goalTree)

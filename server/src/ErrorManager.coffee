@@ -1,9 +1,15 @@
 class ErrorManager
 
-  @codes: 
-	  goalEmpty   : 0
-	  goalTooLarge: 1
-	  goalNotParse: 2
+  @codes:
+    parseError                  : 0
+    parserTooManyDigits         : 1
+    parserMultBrackWithoutTimes : 2
+    parserUnbalancedBrack       : 3
+    parserSqrtNeg               : 4
+    parserDivByZero             : 5
+    goalEmpty                   : 6
+    goalTooLarge                : 7
+    goalNotParse                : 8
 
 
   @throw: (errorCode, jsonParams, errorMessage) ->
