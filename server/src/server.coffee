@@ -1,4 +1,4 @@
-{app, server, nowjs} = require './ServerListener.js'
+{app, server, nowjs, debugmode} = require './ServerListener.js'
 
 {DiceFace}  = require './DiceFace.js'
 DICEFACESYMBOLS = DiceFace.symbols
@@ -7,6 +7,8 @@ DICEFACESYMBOLS = DiceFace.symbols
 {Player} = require './Player.js'
 {GamesManager} = require './GamesManager.js'
 {Settings} = require './Settings.js'
+
+Settings.DEBUG = debugmode
 
 everyone = nowjs.initialize(server)
 everyone.on 'disconnect', ->
