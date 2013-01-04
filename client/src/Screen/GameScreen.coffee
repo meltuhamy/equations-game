@@ -302,11 +302,15 @@ class GameScreen extends Screen
           $('#answer-submit-btn').bind 'click', (event) ->
             thisReference.submitAnswer()
       else
-        # We didn't need to sumit a solution. Make the notification area say that we are waiting.
+        # We didn't need to submit a solution. Make the notification area say that we are waiting.
         $('#turn-notification').attr('data-attention', 'off')
         $('#answer-area').attr('data-attention', 'off')
         $('#turn-notification').html('<p>Please wait for other players to submit their solutions.</p>')
-    
+  
+
+  #######################################################################
+  ##======================   Contexts   ================================#
+  #######################################################################
 
   neutralContext: () ->
     @changeToContext(@Contexts.Neutral, @neutralContextChange)
@@ -438,18 +442,34 @@ class GameScreen extends Screen
     $("#goal-dice-ctnr").html(DiceFace.listToHtml(Game.getGoalValues()))
 
 
+  #######################################################################
+  ##=====================   Answer Area  ===============================#
+  #######################################################################
 
+
+  ###*
+   * We have dice in our answer area. They need to be recoloured as dice move 
+   * between allocation mats. Naively go through all the dice and colour them appropriately.
+  ###
   recolorAnswerDice: () ->
+    # These two vars are used later in writeAnswerAreaNotices
+    @answerForbiddenDiceCount = 0
+    @answerRequiredDiceCount = 0
+
     for a in @answerAreaDice
       mat = ''
       for x in Game.state.unallocated
         if (a == x) then mat = 'unallocated'
       for x in Game.state.required
-        if (a == x) then mat = 'required'
+        if (a == x)
+          mat = 'required'
+          @answerRequiredDiceCount++
       for x in Game.state.optional
         if (a == x) then mat = 'optional'
       for x in Game.state.forbidden
-        if (a == x) then mat = 'forbidden'
+        if (a == x)
+          mat = 'forbidden'
+          @answerForbiddenDiceCount++
 
       # Store the index to the global dice array
       $("ul#answers li.dice[data-index='#{a}']").attr('data-alloc', mat)
@@ -458,6 +478,8 @@ class GameScreen extends Screen
       #pos = $('ul#' + mat + " li.dice[data-index='{a}']").index('ul#' + mat + ' li')
       #$("ul#answers li.dice[data-index='#{a}']").attr('data-matindex', pos)
       
+      # Add some nice events so that when we hover over the answer dice, the corresponding dice
+      # in the allocation mat glows a bit - so we can see which dice exactly was added to the answer area
       $("ul#answers li.dice[data-index='#{a}']").unbind 'mouseover'
       $("ul#answers li.dice[data-index='#{a}']").bind 'mouseover', (event) ->
         $("ul#" + $(this).attr('data-alloc') + " li.dice[data-index='" + $(this).attr('data-index') + "']").attr('data-anshover', 'on')
@@ -467,8 +489,34 @@ class GameScreen extends Screen
         $("ul#" + $(this).attr('data-alloc')+" li.dice[data-index='" + $(this).attr('data-index') + "']").attr('data-anshover', 'off')
 
       $("ul#" + mat + " li.dice[data-index='"+a+"']").attr('data-usedinans', 'true')
+    @writeAnswerAreaNotices()
 
+  ###*
+   * Called by: recolorAnswerDice
+   * This calculates the notices that should be displayed (e.g. you have a forbidden dice) based 
+   * on what dice are in the answer area and what mat each answer dice is in.
+  ###
+  writeAnswerAreaNotices: () ->
+    $('#answer-empty-notice').html('x')
+    $('#answer-submit-notice').html('')
+    $('#answer-forbidden-notice').html('')
+    $('#answer-forbidden-notice').html('')
 
+    # Giving a notice saying they have no dice.
+    if(@answerAreaDice.length == 0)
+      $('#answer-empty-notice').html('You have no dice added.')
+
+    if(Game.isChallengeSolutionTurn && Game.solutionRequired())
+      if(!@submittedSolution)
+        # Giving a notice saying they need to submit their solution for a challenge
+        $('#answer-submit-notice').html('You need to submit a solution for the challenge.')
+        # Giving a notice saying they haven't used all the required dice
+        if(@answerRequiredDiceCount < Game.state.required.length)
+          $('#answer-required-notice').html('You have not used all the required dice.')
+        # Giving a notice saying the have used at least one forbidden dice
+        if(@answerForbiddenDiceCount > 0)
+          $('#answer-forbidden-notice').html('Your answer has #{@answerForbiddenDiceCount} forbidden dice.')
+      
 
 
   addDiceToAnswerArea: (index) ->
