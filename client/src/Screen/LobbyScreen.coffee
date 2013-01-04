@@ -166,6 +166,7 @@ class LobbyScreen extends Screen
       html += '<tr data-gamenumber="' + g.gameNumber + '">'
       html += "<td><a href='#'>#{g.gameName}</a></td>"
       html += "<td>#{g.playerCount} / #{g.playerLimit} </td>"
+      html += "<td>#{g.numRounds} Rounds</td>"
       if(g.started)
         html += "<td>Currently playing!</td>"
       else
