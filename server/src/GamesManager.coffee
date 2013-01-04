@@ -21,9 +21,10 @@ class GamesManager
 
   ###*
    * Add a new game to the game manager.
+   * @return {Number} The identifer for the game
   ###
   newGame: (name, numplayers, numRounds) ->
-    @games.push(new Game(@games.length, name, numplayers, numRounds))-1
+    @games.push(new Game(@games.length, name, numplayers, numRounds, false))-1
 
 
   ###*

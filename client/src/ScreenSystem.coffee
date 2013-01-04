@@ -92,3 +92,16 @@ class ScreenSystem
             @allLoaded = true
             callback()
         )
+
+
+  ###*
+   * Give the screen an error passed from the server.
+   * @param  {Json} errorObject callback Information about the error.
+  ###
+  @receiveServerError: (errorObject) ->
+    if(@currentScreen?)
+      if(@currentScreen.hasLoaded)
+        @currentScreen.receiveServerError()
+
+
+

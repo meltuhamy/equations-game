@@ -68,8 +68,9 @@ class Game
 
 
   
-  constructor: (@gameNumber, @name, gameSize, numRounds) ->
+  constructor: (@gameNumber, @name, gameSize, numRounds, throwErrors = true) ->
     # Initalise all variables so that they're object (not prototype) specfific
+    @throwErrors = throwErrors
     @goalTree = undefined
     @goalArray = []
     @goalValue = undefined

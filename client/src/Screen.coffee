@@ -16,9 +16,18 @@ class Screen
   constructor: (@file) ->
     @file = @file
     @content = undefined
+
+  # @abstract Event that happens when the state json on server changes
   onUpdatedState: () ->
+
+  # @abstract Event that happens when dice allocating turn it is updated
   onUpdatedPlayerTurn: () ->
+
+  # @abstract Event that happens when the list of rooms is updated (when games added/deleted)
   onUpdatedGameList: (roomlist) ->
+
+  # @abstract Pass a error json (sent from server) to the screen.
+  receiveServerError: (errorObject) ->
 
   ###*
    * This function is called by ScreenSystem once the page has loaded

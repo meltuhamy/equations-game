@@ -104,11 +104,9 @@ everyone.now.receiveGoal = (goalArray) ->
     group.now.receiveGoalTurnEnd(game.goalArray)
     group.now.receiveState(game.state)
   catch e #catches when parser returns error for goal
-    #console.log e.message
-    #this.now.badGoal(e.message)
     testError = new Error('TestJames')
     testError.value = 5
-    this.now.badGoal(testError)
+    this.now.receiveError(testError)
 
 
 # put this in everyone's pocket. Server calls this when a player took too long.
