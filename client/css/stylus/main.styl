@@ -12,7 +12,7 @@ $font-list = "Helvetica Neue","Hevletica","Arial","DejaVu Sans","Kozuka Gothic P
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 
 html, body
-  height: 100%;
+  //height: 100%;
   font-family: $font-list
   user-select(none)
   cursor: default
@@ -21,12 +21,15 @@ ul
   list-style: none
 
 body
-  background:#2066a0
-  background: linear-gradient(top, #2681CC 0%, #206FB0 100%)
+  background: #2681CC
+  background: linear-gradient(top, #2681CC 0%, #206FB0 100%) fixed
   min-height: 100%
+  background-size: 100% 100%
 
 div#container-displacer
   padding-top:15px
+  padding-bottom:15px
+  
 
 div#container,
 div#container[data-glow='off']
