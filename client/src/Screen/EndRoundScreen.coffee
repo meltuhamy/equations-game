@@ -102,7 +102,7 @@ class EndRoundScreen extends Screen
       if(@solutions[p.index]?)
         html += "<td><ul class='solution'>"+DiceFace.drawDiceList(@solutions[p.index])+'</ul></td>'
       else
-        html += "<td>No solution</td>"
+        html += "<td><p class='span.no-solution'>No solution</br>submitted</p></td>"
       html += '</tr>'
     html += '</table>'
     $('#round-results-ctnr').html(html)
