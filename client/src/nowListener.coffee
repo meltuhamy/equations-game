@@ -38,7 +38,7 @@ now.receiveMoveTimeUp = () ->
 ###
 now.receiveGoalTurn = (players, resources, goalSetterIndex, timerDuration) ->
   Game.goalTurn(players, resources, goalSetterIndex, timerDuration)
-  
+  #Commentary.logGoalTurn(goalArray)
 
 
 ###*
@@ -48,17 +48,25 @@ now.receiveGoalTurn = (players, resources, goalSetterIndex, timerDuration) ->
 now.receiveGoalTurnEnd = (goalArray) ->
   Game.setGoal(goalArray)
   ScreenSystem.renderScreen(Game.gameScreenId)
-  #Commentary.logGoalFormed(goalArray)
+  Commentary.logGoalFormed(goalArray)
 
 
 ###*
  * This is when the server is telling the client to update his version of the state when a turn ends.
  * @param  {Json} state A json containing varaibles holding the state of the game.
- *                  Is of the format: {unallocated: [], required: [], 
- *                                     optional: [], forbidden: [], currentPlayer: Integer}
+ *                      See Game.coffee for the format of the json
 ###
 now.receiveState = (state) ->
   Game.updateState(state)
+
+now.receiveMoveToRequired = (moverId, index) ->
+  Commentary.logMoveToRequired(moverId, index)
+
+now.receiveMoveToOptional = (moverId, index) ->
+  Commentary.logMoveToOptional(moverId, index)
+
+now.receiveMoveToForbidden = (moverId, index) ->
+  Commentary.logMoveToForbidden(moverId, index)
 
 
 
@@ -70,7 +78,7 @@ now.receiveState = (state) ->
 now.receiveNowChallengeDecideTurn = (challengerId) ->
   Game.receiveNowChallengeDecideTurn(challengerId)
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
-  #Commentary.logNowChallenge(challengerId)
+  Commentary.logNowChallenge(challengerId)
 
 ###*
  * Tell everyone that the turn taking has ended. It's time for a never challenge.
@@ -80,7 +88,7 @@ now.receiveNowChallengeDecideTurn = (challengerId) ->
 now.receiveNeverChallengeDecideTurn = (challengerId) ->
   Game.receiveNeverChallengeDecideTurn(challengerId)
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
-  #Commentary.logNeverChallenge(challengerId)
+  Commentary.logNeverChallenge(challengerId)
 
 
 ###*

@@ -4,21 +4,55 @@
 class Commentary
 
   # {Json[]} Log Entries. Each entry is a json w/ both a short & long description
-  @log: undefined
+  @log: []
 
   @append: (short, long) ->
     @log.push {short: short, long: long}
 
   @logGoalFormed: (goalArray) ->
-    goalSetterName = Game.getPlayerByName(firstTurnPlayerId)
+    goalSetterName = Game.getPlayerByName(Game.firstTurnPlayerIndex)
     goalString = DiceFace.printFaces(goalArray)
     # A short description
     short = "#{goalSetterName} formed the goal: " + goalString
     # The long explanation
     long = "#{goalSetterName} formed the goal: " + goalString
     long += "Now we take it in turns to change unallocated (grey) to either: Required (orange), Optional (green), Forbidden (red)"
-    long += "If you think you can solve the goal using all the Required dice then click Now"
-    long += "If you don't think you can solve goal click Never"
+    long += "If you think you can solve the goal using all the Required dice then click 'Now'"
+    long += "If you don't think you can solve goal click 'Never'"
+    # Add it to the log
+    @append(short, long)
+
+
+  @logMoveToRequired: (moverId, index) ->
+    moverName = Game.getPlayerByName(moverId)
+    diceMoved = DiceFace.printFace(index)
+    # A short description
+    short = "#{moverName} moved " + diceMoved + " from unallocated to required."
+    # The long explanation
+    long = "#{moverName} moved " + diceMoved + " from unallocated to required."
+    long += "To solve the goal, this dice must be used in the answer."
+    @append(short, long)
+
+  @logMoveToOptional: (moverId, index) ->
+    moverName = Game.getPlayerByName(moverId)
+    diceMoved = DiceFace.printFace(index)
+    # A short description
+    short = "#{moverName} moved " + diceMoved + " from unallocated to optional."
+    # The long explanation
+    long = "#{moverName} moved " + diceMoved + " from unallocated to optional."
+    long += "To solve the goal, this dice may be used in the answer."
+    @append(short, long)
+
+  @logMoveToForbidden: (moverId, index) ->
+    moverName = Game.getPlayerByName(moverId)
+    diceMoved = DiceFace.printFace(index)
+    # A short description
+    short = "#{moverName} moved " + diceMoved + " from unallocated to forbidden."
+    # The long explanation
+    long = "#{moverName} moved " + diceMoved + " from unallocated to forbidden."
+    long += "To solve the goal, this dice must not be used in the answer."
+    @append(short, long)
+
 
 
   @logNowChallenge: (challengerId) ->
@@ -32,6 +66,8 @@ class Commentary
     long += "If you also think we can reach the goal right now, click Agree."
     long += "If you think it's imposssible to get the goal, click Disagree."
     long += "If you click Agree, you'll need to make an equation."
+    # Add it to the log
+    @append(short, long)
 
 
   @logNeverChallenge: (challengerId) ->
@@ -45,4 +81,6 @@ class Commentary
     long += "If you also think it's imposssible to get the goal, click Agree."
     long += "If you think we can reach the goal right now, click Disagree."
     long += "If you click Disagree, you'll need to make an equation."
+    # Add it to the log
+    @append(short, long)
 

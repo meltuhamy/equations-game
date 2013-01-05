@@ -24,6 +24,10 @@ class DiceFace
       else (if face >= 0     then "#{face}")
 
 
+  @printFace: (index) ->
+    if (index == -1) then return @faceToHtml(@symbols.bracketL)
+    if (index == -2) then return @faceToHtml(@symbols.bracketL)
+    if (index >= 0) then return @faceToHtml(Game.globalDice[index])
 
   @printFaces: (indices) ->
     str = ''

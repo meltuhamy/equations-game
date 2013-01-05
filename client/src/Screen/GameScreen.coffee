@@ -66,10 +66,17 @@ class GameScreen extends Screen
     $("#never-button").bind("click", @neverButtonHandler)
     
 
-    # Add the leave button and help button to the bottom right toolbar
-    $('#bottom-toolbar').html('<a href="#" id="leave-button">Leave Game</a> <a href="#">Help</a>')
+    # Add the leave, help and log button to the bottom right floating toolbar
+    # Add the commentary log to the bottom right floating toolbar. Make it hidden
+    toolbarhtml = '<ul id="bottom-log"></ul>'
+    toolbarhtml += '<a href="#" id="log-button">Turns Log</a>'
+    toolbarhtml += ' <a href="#" id="leave-button">Leave Game</a>'
+    toolbarhtml += ' <a href="#">Help</a>'
+    $('#bottom-toolbar').html(toolbarhtml)
+
     # TODO: make the help button do something (eg. go to a manual - which doesn't current exist)
     $("#leave-button").bind("click", @leaveButtonHandler)
+    $("#log-button").bind("click", @logButtonHandler)
 
 
     ### Sketcher stuf ###
@@ -134,6 +141,7 @@ class GameScreen extends Screen
   # When the game state has changed on the server do this...
   onUpdatedState:() ->
     @neutralContext()
+    
     $('#timer-knob').trigger 'configure', {min: 0, max: Game.state.turnDuration * 1000/@knobInterval}
     if(Game.challengeMode)
       $('#container').attr('data-challenge', 'now')
@@ -214,28 +222,34 @@ class GameScreen extends Screen
     
 
 
+  #######################################################################
+  ##==============   Comnmentary and Logs   ============================#
+  #######################################################################
 
-  ###*
-   * Redraw all of the messages in the commentary box (including the now msg)
-  ###
-  ###drawCommentery: () ->
-    now = Game.getNowCommentary
-    nowHtml = '<li class="now-commentary">' + now + '</li>'
-    old = Game.getOldCommentary
-    oldHtml = ''
-    for c in old
-      oldHtml += '<li>' + c + '</li>'
-  ###
+  logButtonHandler: () ->
+    $('#bottom-log').slideToggle("fast")
 
+  updateLog: () ->
+    # The log of events may have changed. this functions redraws the log with all the log-commentary
+    logHtml = '' # rewrite everything from scratch
+    for c in Commentary.log
+      logHtml += '<li>' + c.short + '</li>'
+    $('#bottom-log').html(logHtml)
+
+
+
+
+  # Draw Now-Commentary (commentary in the center of screen) for what's going on during allocation turns
   drawCommentaryForAllocating: () ->
-    # If it's our turn for allocating, highlight the allocations area orange and give a message
-    # to say its our turn. If it's somebody else's turn, make it unhighlighted + write a different msg.
+    # If it's our turn for allocating, 
     if(Game.isMyTurn())
+      # highlight the allocations area orange and give a message to say its our turn.
       $('#container').attr('data-glow', 'on')
       $('div#allocation_container').attr('data-attention', 'on')
       $('div#turn-notification').attr('data-attention', 'on')
       $('span#now-commentary').html('It\'s your turn! Choose a dice from unallocated to move to another mat.')
     else
+      # Somebody else's turn. Make it unhighlighted + write a different msg.
       $('#container').attr('data-glow', 'off')
       $('div#allocation_container').attr('data-attention', 'off')
       $('#turn-notification').attr('data-attention', 'off')
@@ -244,7 +258,7 @@ class GameScreen extends Screen
 
 
 
-
+  # Draw Now-Commentary (commentary in the center of screen) for what's going on during challenges
   drawCommentaryForChallenges: () ->
     # We have a now/never challenge. Draw the buttons to let him agree/disagree
     buttonsHtml = '<span id="challenge-agree-btn">Agree</span> <span id="challenge-disagree-btn">Disagree</span>'
@@ -313,6 +327,7 @@ class GameScreen extends Screen
 
   neutralContext: () ->
     @changeToContext(@Contexts.Neutral, @neutralContextChange)
+
     
     $("#required").html(DiceFace.listToHtmlByIndex(Game.globalDice, Game.getState().required, true))
     $("#optional").html(DiceFace.listToHtmlByIndex(Game.globalDice, Game.getState().optional, true))
@@ -326,6 +341,7 @@ class GameScreen extends Screen
 
 
     # Update commentary box to update progress on challenges and show agree/disagree buttons etc.
+    @updateLog()
     if(Game.challengeMode)
       $('#challenge-title').show()
       $('#challenge-title').html(Game.getChallengeName())

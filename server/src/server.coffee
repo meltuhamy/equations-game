@@ -121,30 +121,38 @@ everyone.now.moveTimeUp = (nextPlayerSocId) ->
   this.now.receiveMoveTimeUp()
   
 
-# client telling the server that he wants to move a dice to required
+# client telling the server that he wants to move a dice from unallocated to required
+# index = index to the unallocated array
 everyone.now.moveToRequired = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
   try
+    globalDiceBeingMoved = game.state.unallocated[index]
     game.moveToRequired(index, this.user.clientId, ->
       groupReference.receiveMoveTimeUp()
       groupReference.receiveState(game.state)
     )
+    group.now.receiveMoveToRequired(game.getPlayerIdBySocket(this.user.clientId), globalDiceBeingMoved)
     group.now.receiveState(game.state)
+    
   catch e
     this.now.badMove(e)
     console.log e
 
-# client telling the server that he wants to move a dice to optional
+# client telling the server that he wants to move a dice from unallocated to optional
+# index = index to the unallocated array
 everyone.now.moveToOptional = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
   try
+    globalDiceBeingMoved = game.state.unallocated[index]
     game.moveToOptional(index, this.user.clientId, ->
       groupReference.receiveMoveTimeUp()
       groupReference.receiveState(game.state)
     )
+    group.now.receiveMoveToOptional(game.getPlayerIdBySocket(this.user.clientId), globalDiceBeingMoved)
     group.now.receiveState(game.state)
+    
   catch e
     this.now.badMove(e)
     console.log e
@@ -154,11 +162,14 @@ everyone.now.moveToForbidden = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
   try
+    globalDiceBeingMoved = game.state.unallocated[index]
     game.moveToForbidden(index, this.user.clientId, ->
       groupReference.receiveMoveTimeUp()
       groupReference.receiveState(game.state)
     )
+    group.now.receiveMoveToForbidden(game.getPlayerIdBySocket(this.user.clientId), globalDiceBeingMoved)
     group.now.receiveState(game.state)
+    
   catch e
     this.now.badMove(e)
     console.log e
