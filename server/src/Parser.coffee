@@ -2,6 +2,9 @@
 {Evaluator} = require './Evaluator.js'
 DICEFACESYMBOLS = DiceFace.symbols
 
+{ErrorManager}  = require './ErrorManager.js'
+ERRORCODES = ErrorManager.codes
+
 class Node
   type: undefined     # 'number'/'binop'/'unaryop'
   token: []           # The token. Array because [two three] is "23"
@@ -13,10 +16,12 @@ class Node
 module.exports.Node = Node
 
 class ExpressionParser
-  constructor: (goal)->
-    @isGoal = goal
+  constructor: (parserErrorCode = ERRORCODES.parseError)->
+    @isGoal = undefined
+    @parserErrorCode = parserErrorCode
 
-  parse:(expr) ->
+  parse:(expr, goalFlag) ->
+    @isGoal = goalFlag
     @expr = expr           # expr is an array of tokens
     @idx  = 0              # start at token 0
     this.handleAddMinus()  # Start with minus because it has lowest precedence
@@ -27,7 +32,8 @@ class ExpressionParser
     c = @expr[@idx]
     while c == DICEFACESYMBOLS.plus or c == DICEFACESYMBOLS.minus
       ++@idx
-      if @expr[@idx] == DICEFACESYMBOLS.bracketR then throw new Error("Invalid value before bracket")
+      if @expr[@idx] == DICEFACESYMBOLS.bracketR
+        ErrorManager.throw(ERRORCODES.parseError, {token: @idx, diceface:c}, "Invalid value before bracket")
       child2 = @handleMultiplyDivide()
       node = new Node(type: "binop", token: [c], children: [child1, child2])
       c = @expr[@idx]
@@ -43,7 +49,8 @@ class ExpressionParser
       child2 = @handlePower()
       if(c == DICEFACESYMBOLS.divide)
         e = new Evaluator
-        if e.evaluate(child2) == 0 then throw new Error("You can't divide by zero you idiot")
+        if e.evaluate(child2) == 0 
+          ErrorManager.throw(ERRORCODES.parserDivByZero, {token: @idx, diceface:c}, "You can't divide by zero you idiot")
       node = new Node(type : "binop", token: [c], children: [ child1, child2 ]);
       c = @expr[@idx]
       child1 = node
@@ -64,11 +71,13 @@ class ExpressionParser
     node = {}
     if c == DICEFACESYMBOLS.minus or c == DICEFACESYMBOLS.plus or c == DICEFACESYMBOLS.sqrt
       ++@idx
-      if @expr[@idx] == DICEFACESYMBOLS.bracketR then throw new Error("Invalid value before bracket")
+      if @expr[@idx] == DICEFACESYMBOLS.bracketR
+        ErrorManager.throw(ERRORCODES.parseError, {token: @idx, diceface:c}, "Invalid value before bracket")
       if c == DICEFACESYMBOLS.sqrt
         temp = @idx
         e = new Evaluator()
-        if e.evaluate(@handleUnaryOps())<0 then throw new Error("You can't square root a negative")
+        if e.evaluate(@handleUnaryOps())<0
+          ErrorManager.throw(ERRORCODES.parserSqrtNeg, {token: @idx, diceface:c}, "You can't square root a negative")
         @idx = temp
       node = new Node(type: "unaryop", token: [c], children: [@handleUnaryOps()])
     else
@@ -78,9 +87,11 @@ class ExpressionParser
     c = @expr[@idx]
     if c == DICEFACESYMBOLS.bracketL
       ++@idx
-      if @expr[@idx] == DICEFACESYMBOLS.multiply || @expr[@idx] == DICEFACESYMBOLS.divide || @expr[@idx] == DICEFACESYMBOLS.power || @expr[@idx] == DICEFACESYMBOLS.bracketR then throw new Error("Invalid value after bracket")
+      if @expr[@idx] == DICEFACESYMBOLS.multiply || @expr[@idx] == DICEFACESYMBOLS.divide || @expr[@idx] == DICEFACESYMBOLS.power || @expr[@idx] == DICEFACESYMBOLS.bracketR
+        ErrorManager.throw(ERRORCODES.parseError, {token: @idx, diceface:c}, "Invalid value before bracket")
       node = @handleAddMinus()
-      if @expr[@idx] != DICEFACESYMBOLS.bracketR then throw new Error("Error Unbalanced Parenthesis")
+      if @expr[@idx] != DICEFACESYMBOLS.bracketR
+        ErrorManager.throw(ERRORCODES.parserUnbalancedBrack, {token: @idx, diceface:c}, "Error Unbalanced Parenthesis")
       ++@idx # move past the '('
     else
       node = @atom()
@@ -88,13 +99,14 @@ class ExpressionParser
   # Handle atomimic bits, numbers and variables
   atom:() ->
     c = @expr[@idx]
-    if @expr[@idx+1]? && @expr[@idx+1] == DICEFACESYMBOLS.bracketL then throw new Error("Invalid syntax. Must use a cross to multiply")
+    if @expr[@idx+1]? && @expr[@idx+1] == DICEFACESYMBOLS.bracketL 
+      ErrorManager.throw(ERRORCODES.parserMultBrackWithoutTimes, {token: @idx, diceface:c}, "Invalid syntax. Must use a cross to multiply")
     if this.isNumber(c)
       node = new Node(type: "number", token: this.matchNumber())
     else if !c?
-      throw new Error("You can't finish with an operator")
+      ErrorManager.throw(ERRORCODES.parseError, {token: @idx, diceface:c}, "You can't finish with an operator")
     else
-      throw new Error("UNEXPECTED TOKEN: #{c}")
+      ErrorManager.throw(ERRORCODES.parseError, {token: @idx, diceface:c}, "UNEXPECTED TOKEN: #{c}")
     return node
 
   isNumber : (c) -> c >= DICEFACESYMBOLS.zero 
@@ -106,11 +118,10 @@ class ExpressionParser
     result = []
     numMatched = 0
     result.push @expr[@idx++] while !this.atEnd() and matchFn(@expr[@idx]) and ++numMatched <=2
-    if @isGoal
-      if (numMatched > 2)
-        throw "Can't have more than two digits, maytey"
-    else if (numMatched > 1)
-      throw "Can't have more than one digit, maytey"
+    if(numMatched >2 && @isGoal)
+      ErrorManager.throw(ERRORCODES.parserTooManyDigits, {token: @idx, diceface:c, maxdigits:2}, "Can't have more than two digits, maytey")
+    else if (numMatched >1)
+      ErrorManager.throw(ERRORCODES.parserTooManyDigits, {token: @idx, diceface:c, maxdigits:1}, "Can't have more than one digit, maytey")
     result
     #if(numMatched >2 && @isGoal)
       #throw "Can't have more than two digits, maytey"

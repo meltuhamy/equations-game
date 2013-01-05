@@ -1,4 +1,5 @@
 {Game} = require './Game.js'
+{Settings} = require './Settings.js'
 class GamesManager
 
 
@@ -21,9 +22,10 @@ class GamesManager
 
   ###*
    * Add a new game to the game manager.
+   * @return {Number} The identifer for the game
   ###
   newGame: (name, numplayers, numRounds) ->
-    @games.push(new Game(@games.length, name, numplayers, numRounds))-1
+    @games.push(new Game(@games.length, name, numplayers, numRounds, false))-1
 
 
   ###*
@@ -46,7 +48,8 @@ class GamesManager
     return gamesList
 
   cleanGames: () ->
-    for i in [2...@games.length]
+    startCleanupOn = if Settings.DEBUG then 2 else 0
+    for i in [startCleanupOn...@games.length]
       if @games[i]? && @games[i].players.length == 0
         @games[i] = undefined
 

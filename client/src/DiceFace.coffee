@@ -1,5 +1,5 @@
 ###*
- * class DiceFace
+ * class DiceFace - converting numbers representing faces to symbols + html
 ###
 class DiceFace
   

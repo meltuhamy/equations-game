@@ -1,6 +1,9 @@
 {DiceFace} = require './DiceFace.js'
 DICEFACESYMBOLS = DiceFace.symbols
 
+{ErrorManager}  = require './ErrorManager.js'
+ERRORCODES = ErrorManager.codes
+
 {ExpressionParser, Node} = require './Parser.js'
 {Player} = require './Player.js'
 {Evaluator} = require './Evaluator.js'
@@ -68,8 +71,9 @@ class Game
 
 
   
-  constructor: (@gameNumber, @name, gameSize, numRounds) ->
+  constructor: (@gameNumber, @name, gameSize, numRounds, throwErrors = true) ->
     # Initalise all variables so that they're object (not prototype) specfific
+    @throwErrors = throwErrors
     @goalTree = undefined
     @goalArray = []
     @goalValue = undefined
@@ -150,6 +154,7 @@ class Game
     error.emsg = errorMessage
     throw error
 
+
   ###*
    * Spawns the global array. Uses a random distribution to work out the dice for the game.
   ###
@@ -203,7 +208,9 @@ class Game
       if (dice[i] >= 0)
         dices++
       i++
-    if (dices > 6) then throw "Goal uses more than six dice"
+    if (dices > 6)
+      ErrorManager.throw(ERRORCODES.goalTooLarge, {}, "Goal uses more than six dice")
+
     # Now check that there are not duplicates. We can't use the same dice twice.
     # Also, we check that the indices are in bounds. We can use dice that don't exist.
     numGlobalDice = @globalDice.length
@@ -230,8 +237,8 @@ class Game
     @state.unallocated = unallocatedTemp
 
     # Finally, check that the expression in the dice parses as an expression.
-    p = new ExpressionParser(true)
-    @goalTree = p.parse(diceValues)
+    p = new ExpressionParser(ERRORCODES.goalNotParse)
+    @goalTree = p.parse(diceValues, true)
     result = []
     flattened = p.flatten(@goalTree)
     for i in [0...flattened.length]
@@ -541,9 +548,9 @@ class Game
 
       # Everything ok-doky index wise. Now let's check it parses and gives the same value.
       e = new Evaluator
-      p = new ExpressionParser(false) #we pass in false because it is not goal
+      p = new ExpressionParser #do we need to pass in anything for error codes etc?
       # TODO separate out and wrap in try catch
-      submissionValue = e.evaluate(p.parse(diceValues))
+      submissionValue = e.evaluate(p.parse(diceValues, false)) #pass in false because not a goal
       # Ok it does. So add it to the submitted solutions list
       @rightAnswers[playerid] = (@goalValue == submissionValue)
       @submittedSolutions[playerid] = dice

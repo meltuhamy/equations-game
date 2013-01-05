@@ -5,6 +5,7 @@ myCoffee = config.COFFEE
 myStylus = config.STYLUS
 myJnode  = config.JASMINE
 
+DEBUGMODE = off
 
 fs = require 'fs'
 
@@ -23,7 +24,7 @@ server = (callback) ->
 
 client = (callback) ->
   dostylus(false, ->
-    clientFileNames = ['Settings', 'DiceFace', 'EquationBuilder', 'Game', 'Network', 'TutorialNetwork', 'nowListener', 'Screen', 'Screen/LobbyScreen', 'Screen/JoinWaitScreen', 'Screen/GoalWaitScreen', 'Screen/GoalScreen', 'Screen/GameScreen', 'Screen/EndRoundScreen', 'Screen/EndGameScreen', 'Screen/TutorialLobbyScreen', 'Screen/TutorialGoalScreen', 'Screen/TutorialGameScreen', 'ScreenSystem', 'Tutorial','main']
+    clientFileNames = ['Settings','Sound', 'DiceFace', 'ErrorManager', 'EquationBuilder', 'Game', 'Network', 'TutorialNetwork', 'nowListener', 'Screen', 'Screen/LobbyScreen', 'Screen/JoinWaitScreen', 'Screen/GoalWaitScreen', 'Screen/GoalScreen', 'Screen/GameScreen', 'Screen/EndRoundScreen', 'Screen/EndGameScreen', 'Screen/TutorialLobbyScreen', 'Screen/TutorialGoalScreen', 'Screen/TutorialGameScreen', 'ScreenSystem', 'Tutorial','main']
     options = [].concat(['-b', '--join', 'client/build/game.js', '--compile'], (clientFileNames.map (filename) -> 'client/src/' + filename + '.coffee'))
     coffee = spawn myCoffee, options
     coffee.stderr.on 'data', (data) ->
@@ -41,7 +42,9 @@ build = (callback) ->
 run = ->
   server( ->
     client(->
-      newNode = spawn 'node', ['server.js']
+      nodeArgs = ['server.js']
+      if DEBUGMODE then nodeArgs.push 'debug'
+      newNode = spawn 'node', nodeArgs
       newNode.stderr.on 'data', (data) ->
         process.stderr.write data.toString()
       newNode.stdout.on 'data', (data) ->
@@ -52,11 +55,13 @@ run = ->
 debug = ->
   server( ->
     client(->
-    newNode = spawn 'node', ['--debug-brk','server.js']
-    newNode.stderr.on 'data', (data) ->
-      process.stderr.write data.toString()
-    newNode.stdout.on 'data', (data) ->
-      print data.toString()
+      nodeArgs = ['--debug-brk','server.js']
+      if DEBUGMODE then nodeArgs.push 'debug'
+      newNode = spawn 'node', nodeArgs
+      newNode.stderr.on 'data', (data) ->
+        process.stderr.write data.toString()
+      newNode.stdout.on 'data', (data) ->
+        print data.toString()
     )
   )
 
@@ -151,7 +156,10 @@ task 'watch', 'Compile client when changes made in client/src/*', ->
 task 'server', 'Compile server code', ->
   server()
 
-task 'run', 'Compile everything and run the server', ->
+option '-d', '--debug', 'Turns debug mode ON. (off by default)'
+
+task 'run', 'Compile everything and run the server', (options) ->
+  if options.debug? then DEBUGMODE = on
   run()
 
 task 'debug', 'Run the server with debugging. Break on line 1', ->

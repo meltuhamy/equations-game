@@ -1,12 +1,17 @@
-{app, server, nowjs} = require './ServerListener.js'
+{app, server, nowjs, debugmode} = require './ServerListener.js'
 
 {DiceFace}  = require './DiceFace.js'
 DICEFACESYMBOLS = DiceFace.symbols
+
+{ErrorManager}  = require './ErrorManager.js'
+ERRORCODES = ErrorManager.codes
 
 {Game} = require './Game.js'
 {Player} = require './Player.js'
 {GamesManager} = require './GamesManager.js'
 {Settings} = require './Settings.js'
+
+Settings.DEBUG = debugmode
 
 everyone = nowjs.initialize(server)
 everyone.on 'disconnect', ->
@@ -30,8 +35,9 @@ everyone.on 'connect', ->
   gamesManager.cleanGames()
 
 gamesManager = new GamesManager()
-gamesManager.newGame('Test Game', 2, 2)
-gamesManager.newGame('Some Game', 3, 2)
+if Settings.DEBUG
+  gamesManager.newGame('Test Game', 2, 2)
+  gamesManager.newGame('Some Game', 3, 2)
 
 
 ###*
@@ -66,7 +72,7 @@ everyone.now.addClient = (gameNumber, playerName) -> #called by client when conn
     this.now.gameNumber = gameNumber
 
     # add the player to the game, tell him he was accepted and give him his playerId (i.e. index) for the game
-    this.now.acceptPlayer(game.addClient(this.user.clientId, playerName), DICEFACESYMBOLS)
+    this.now.acceptPlayer(game.addClient(this.user.clientId, playerName), DICEFACESYMBOLS, ERRORCODES)
 
     # tell everyone about the new gamesList state
     everyone.now.getGames()
@@ -104,11 +110,8 @@ everyone.now.receiveGoal = (goalArray) ->
     group.now.receiveGoalTurnEnd(game.goalArray)
     group.now.receiveState(game.state)
   catch e #catches when parser returns error for goal
-    #console.log e.message
-    #this.now.badGoal(e.message)
-    testError = new Error('TestJames')
-    testError.value = 5
-    this.now.badGoal(testError)
+    this.now.receiveError(e)
+
 
 
 # put this in everyone's pocket. Server calls this when a player took too long.
