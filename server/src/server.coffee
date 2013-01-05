@@ -260,6 +260,7 @@ everyone.now.challengeSolution = (answer) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   try
     game.submitSolution(this.user.clientId, answer)
+    group.now.receiveState(game.state)
     if(game.allSolutionsSent())
       if game.isGameOver()
         group.now.receiveChallengeRoundEndTurn(

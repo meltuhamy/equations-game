@@ -627,7 +627,6 @@ class Game
     @submittedSolutions = []
     @rightAnswers = []
     @state.unallocated = []
-    @state.playerScores = [] #don't we wan't to keep track of scores as games progress?
     @state.required = []
     @state.optional = []
     @state.forbidden = []
