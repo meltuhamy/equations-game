@@ -233,7 +233,7 @@ class GameScreen extends Screen
     # The log of events may have changed. this functions redraws the log with all the log-commentary
     logHtml = '' # rewrite everything from scratch
     for c in Commentary.log
-      logHtml += '<li>' + c.short + '</li>'
+      logHtml = '<li>' + c.short + '</li>' + logHtml
     $('#bottom-log').html(logHtml)
 
 
