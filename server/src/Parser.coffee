@@ -20,10 +20,10 @@ class ExpressionParser
     @isGoal = undefined
     @parserErrorCode = parserErrorCode
 
-  parse:(expr, isGoal) ->
+  parse:(expr, goalFlag) ->
+    @isGoal = goalFlag
     @expr = expr           # expr is an array of tokens
     @idx  = 0              # start at token 0
-    @isGoal = isGoal
     this.handleAddMinus()  # Start with minus because it has lowest precedence
 
   handleAddMinus: () ->
@@ -123,6 +123,12 @@ class ExpressionParser
     else if (numMatched >1)
       ErrorManager.throw(ERRORCODES.parserTooManyDigits, {token: @idx, diceface:c, maxdigits:1}, "Can't have more than one digit, maytey")
     result
+    #if(numMatched >2 && @isGoal)
+      #throw "Can't have more than two digits, maytey"
+    #else if (numMatched >1)
+      #console.log @isGoal
+      #throw "Can't have more than one digit, maytey"
+    #result
 
   precedence: (node) ->
     if node.type == 'unaryop'

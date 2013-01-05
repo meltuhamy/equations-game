@@ -548,9 +548,9 @@ class Game
 
       # Everything ok-doky index wise. Now let's check it parses and gives the same value.
       e = new Evaluator
-      p = new ExpressionParser
+      p = new ExpressionParser #do we need to pass in anything for error codes etc?
       # TODO separate out and wrap in try catch
-      submissionValue = e.evaluate(p.parse(diceValues,false))
+      submissionValue = e.evaluate(p.parse(diceValues, false)) #pass in false because not a goal
       # Ok it does. So add it to the submitted solutions list
       @rightAnswers[playerid] = (@goalValue == submissionValue)
       @submittedSolutions[playerid] = dice

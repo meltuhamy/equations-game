@@ -14,7 +14,7 @@ describe "parser", ->
   it "should parse single digit numbers", ->
     p = new ExpressionParser
 
-    tree = p.parse [DICEFACESYMBOLS.one]
+    tree = p.parse([DICEFACESYMBOLS.one],true)
     expect(tree.type).toEqual "number"
     
     expect(tree.token).toEqual [DICEFACESYMBOLS.one]
@@ -22,19 +22,19 @@ describe "parser", ->
 
   it "should parse two digit numbers", ->
     p = new ExpressionParser
-    tree = p.parse [1,2]   # "12"
+    tree = p.parse([1,2],true)
     expect(tree.type).toEqual "number"
     expect(tree.token).toEqual [1,2]
     expect(tree.children).toEqual []
 
   it "shouldnt pass three ore more digit numbers", ->
     p = new ExpressionParser
-    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.two, DICEFACESYMBOLS.three, DICEFACESYMBOLS.four] # "123"
+    test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.two, DICEFACESYMBOLS.three, DICEFACESYMBOLS.four],true)
     expect(test).toThrow("Can't have more than two digits, maytey")
 
   it "should parse unary operators on single digit numbers", ->
     p = new ExpressionParser
-    tree = p.parse [DICEFACESYMBOLS.minus, DICEFACESYMBOLS.one]   # "-1"
+    tree = p.parse([DICEFACESYMBOLS.minus, DICEFACESYMBOLS.one],true)
     expect(tree.type).toEqual "unaryop"
     expect(tree.token).toEqual [DICEFACESYMBOLS.minus]
     expect(tree.children.length).toEqual 1 #Should only have one child
@@ -46,7 +46,7 @@ describe "parser", ->
 
   it "should parse unary operators on 2 digit numbers", ->
     p = new ExpressionParser
-    tree = p.parse [DICEFACESYMBOLS.minus, DICEFACESYMBOLS.one, DICEFACESYMBOLS.two]   # "-12"
+    tree = p.parse([DICEFACESYMBOLS.minus, DICEFACESYMBOLS.one, DICEFACESYMBOLS.two],true)
     expect(tree.type).toEqual "unaryop"
     expect(tree.token).toEqual [DICEFACESYMBOLS.minus]
     expect(tree.children.length).toEqual 1 #Should only have one child
@@ -58,12 +58,12 @@ describe "parser", ->
 
   it "shouldnt parse unary ops on more than two digiti numbers", ->
     p = new ExpressionParser
-    test = -> p.parse [DICEFACESYMBOLS.minus, DICEFACESYMBOLS.one, DICEFACESYMBOLS.two, DICEFACESYMBOLS.three]   # "-12"
+    test = -> p.parse([DICEFACESYMBOLS.minus, DICEFACESYMBOLS.one, DICEFACESYMBOLS.two, DICEFACESYMBOLS.three],true)
     expect(test).toThrow("Can't have more than two digits, maytey")
 
   it "should parse binary operators on single digits", ->
     p = new ExpressionParser
-    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two]
+    tree = p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two],true)
 
     expect(tree.type).toEqual "binop"
     expect(tree.token).toEqual [DICEFACESYMBOLS.plus]
@@ -81,67 +81,67 @@ describe "parser", ->
 
   it "should parse complex bracketed expressions", ->
     p = new ExpressionParser
-    tree = p.parse [DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.bracketR]
+    tree = p.parse([DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.bracketR],true)
 
   it "should parse", ->
     p = new ExpressionParser
-    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three]
+    tree = p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three],true)
 
   it "should flatten correctly", ->
     p = new ExpressionParser
-    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three] 
+    tree = p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three] ,true)
     flat = p.flatten(tree)
     expect(flat).toEqual([DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three])
 
   it "should remove redundant brackets correctly", ->
     p = new ExpressionParser
-    tree = p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.bracketR] 
+    tree = p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.bracketR] ,true)
     flat = p.flatten(tree)
     expect(flat).toEqual([DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.three])
 
   it "should not parse", ->
     p = new ExpressionParser
-    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.divide, DICEFACESYMBOLS.zero]
+    test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.divide, DICEFACESYMBOLS.zero],true)
     expect(test).toThrow("You can't divide by zero you idiot")
 
   it "should not parse", ->
     p = new ExpressionParser
-    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.divide, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.three, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.bracketR]
+    test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.divide, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.three, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.bracketR],true)
     expect(test).toThrow("You can't divide by zero you idiot")
 
   it "should not parse", ->
     p = new ExpressionParser
-    test = -> p.parse [DICEFACESYMBOLS.sqrt, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR]
+    test = -> p.parse([DICEFACESYMBOLS.sqrt, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR],true)
     expect(test).toThrow("You can't square root a negative")
 
   it "should not parse", ->
     p = new ExpressionParser
-    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.multiply, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.two]
+    test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.multiply, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.two],true)
     expect(test).toThrow("Invalid value before bracket")
 
   it "should not parse", ->
     p = new ExpressionParser
-    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.multiply, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.two]
+    test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.multiply, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.two],true)
     expect(test).toThrow("Invalid value after bracket")
 
   it "should not parse", ->
     p = new ExpressionParser
-    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketL]
+    test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.bracketL],true)
     expect(test).toThrow("You can't finish with an operator")
 
   it "should not parse", ->
     p = new ExpressionParser
-    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR]
+    test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR],true)
     expect(test).toThrow("Invalid syntax. Must use a cross to multiply")
 
   it "should not parse", ->
     p = new ExpressionParser
-    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus]
+    test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus],true)
     expect(test).toThrow("You can't finish with an operator")
 
   it "should not parse", ->
     p = new ExpressionParser
-    test = -> p.parse [DICEFACESYMBOLS.one, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.plus]
+    test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.plus],true)
     expect(test).toThrow("You can't finish with an operator")
 
   #it "should parse combinations of binary and unary operators", ->
