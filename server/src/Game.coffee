@@ -55,11 +55,11 @@ class Game
   # {Boolean} Has the game ended?
   endOfGame: false
 
-  
-
   submittedSolutions: []
 
   rightAnswers: []
+
+  
 
   ###*
    * The game state.
@@ -428,11 +428,41 @@ class Game
         #Time ran out on goal setting screen. Choose new player to set goal
         @setGoalSetterPlayerId()
       else
+        # Move onto the next allocation turn
         @nextTurn(turnEndCallback)
+
+
     else
       clearInterval(@turnTimer)
 
+  ## Penalise a player for taking too long (too often).
+  ## returns true if he should be removed from game for bad behavior.
+  penalisePlayer: () ->
+    missplayer = @state.currentPlayer
+    # Basic system for Penalising player for taking too
+    @players[missplayer].turnMisses += 1
+    @players[missplayer].consecutiveTurnMisses += 1
 
+    # Three Rules (only one rule at a time) for Penalising players:
+    # 1. Two consecutive missed turns. He loses 2 points.
+    # 2. Three consecutive missed turns. He gets kicked out.
+    # 3. If total misses >= total moves played > 3. He gets kicked out.
+    if(@players[missplayer].consecutiveTurnMisses == 2)
+      # First Rule
+      if(@state.playerScores[missplayer] > 2)
+        @state.playerScores[missplayer] -= 2
+    else if(@players[missplayer].consecutiveTurnMisses >= 3)
+      # Second Rule
+      @removeClient(@getPlayerSocketById(missplayer))
+      console.log "BAD PLAYER REMOVED"
+      return true
+    else if(@players[missplayer].turnMisses >= @players[missplayer].movesPlayed)
+      # Third rule
+      if(@players[missplayer].movesPlayed > 3)
+        @removeClient(@getPlayerSocketById(missplayer))
+        console.log "BAD PLAYER REMOVED"
+        return true
+    return true
 
 
   checkValidAllocationMove: (index, clientId) ->
@@ -450,18 +480,21 @@ class Game
     if(@checkValidAllocationMove(index, clientId))
       @state.required.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
+      @players[@getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
       @nextTurn(turnEndCallback)
 
   moveToOptional: (index, clientId, turnEndCallback) ->
    if(@checkValidAllocationMove(index, clientId))
       @state.optional.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
+      @players[@getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
       @nextTurn(turnEndCallback)
 
   moveToForbidden: (index, clientId, turnEndCallback) ->
     if(@checkValidAllocationMove(index, clientId))
       @state.forbidden.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
+      @players[@getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
       @nextTurn(turnEndCallback)
 
   ###*

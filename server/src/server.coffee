@@ -130,6 +130,7 @@ everyone.now.moveToRequired = (index) ->
     globalDiceBeingMoved = game.state.unallocated[index]
     game.moveToRequired(index, this.user.clientId, ->
       groupReference.receiveMoveTimeUp()
+      if(game.penalisePlayer()) then groupReference.receivePlayerDisconnect(game.state.currentPlayer)
       groupReference.receiveState(game.state)
     )
     group.now.receiveMoveToRequired(game.getPlayerIdBySocket(this.user.clientId), globalDiceBeingMoved)
@@ -148,6 +149,7 @@ everyone.now.moveToOptional = (index) ->
     globalDiceBeingMoved = game.state.unallocated[index]
     game.moveToOptional(index, this.user.clientId, ->
       groupReference.receiveMoveTimeUp()
+      if(game.penalisePlayer()) then groupReference.receivePlayerDisconnect(game.state.currentPlayer)
       groupReference.receiveState(game.state)
     )
     group.now.receiveMoveToOptional(game.getPlayerIdBySocket(this.user.clientId), globalDiceBeingMoved)
@@ -165,6 +167,7 @@ everyone.now.moveToForbidden = (index) ->
     globalDiceBeingMoved = game.state.unallocated[index]
     game.moveToForbidden(index, this.user.clientId, ->
       groupReference.receiveMoveTimeUp()
+      if(game.penalisePlayer()) then groupReference.receivePlayerDisconnect(game.state.currentPlayer)
       groupReference.receiveState(game.state)
     )
     group.now.receiveMoveToForbidden(game.getPlayerIdBySocket(this.user.clientId), globalDiceBeingMoved)
@@ -182,7 +185,7 @@ everyone.now.nowChallengeRequest = () ->
   game.nowChallenge(this.user.clientId, ->
     groupReference.receiveMoveTimeUp()
     groupReference.receiveState(game.state)
-    group.now.receiveChallengeSolutionsTurn()
+    group.now.receiveChallengeSolutionsTurn() #group.now or groupReference?
   )
   group.now.receiveNowChallengeDecideTurn(game.getPlayerIdBySocket(this.user.clientId))
   group.now.receiveState(game.state)
@@ -194,7 +197,7 @@ everyone.now.neverChallengeRequest = () ->
   game.neverChallenge(this.user.clientId, ->
     groupReference.receiveMoveTimeUp()
     groupReference.receiveState(game.state)
-    group.now.receiveChallengeSolutionsTurn()
+    group.now.receiveChallengeSolutionsTurn() #group.now or groupReference?
   )
   group.now.receiveNeverChallengeDecideTurn(game.getPlayerIdBySocket(this.user.clientId))
   group.now.receiveState(game.state)
