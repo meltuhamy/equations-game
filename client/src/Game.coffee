@@ -22,10 +22,13 @@ class Game
   @goalScreenId: undefined
   @endRoundScreenId: undefined
   @endGameScreenId: undefined
-  
   @gameWaitScreenId : undefined
   @tutorialLobbyScreenId: undefined
   @tutorialGoalScreenId: undefined
+
+  # {Json[]} A log of all the commentary.
+  @commentaryLog: []
+
 
   # {Number} The dice that will be used throughout the game. An array of diceface magic numbers.
   @globalDice: []
@@ -60,6 +63,7 @@ class Game
   @isChallenger: () -> @myPlayerId == @challengerId
   @solutionRequired: -> (@agreesWithChallenge() && @challengeModeNow) || (!@agreesWithChallenge() && !@challengeModeNow)
 
+  @getPlayerByName: (index) -> @players[index].name
   @getCurrentTurnPlayerName: () -> @players[@state.currentPlayer].name
 
  
@@ -122,6 +126,9 @@ class Game
   @acceptedJoin: () ->
     ScreenSystem.renderScreen(@joinWaitScreenId)
 
+
+  @addCommentaryToLog: (commentaryJson) ->
+    @commentaryLog.push commentaryJson
 
 
   ###*
@@ -263,4 +270,5 @@ class Game
     @currentChallengeStage = undefined
     @challengerId = undefined
     @challengeModeNow = undefined
+    @commentaryLog = []
     

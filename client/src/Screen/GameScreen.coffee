@@ -6,10 +6,6 @@ class GameScreen extends Screen
   # {String} The filename of the html file to load the screen.
   file: 'game.html'
 
-  # {Json[]} An of json for commentary information
-  commentary: []
-
-
   # {EquationBuilder} Used to build the draft answer.
   #equationBuilder: undefined
 
@@ -50,7 +46,6 @@ class GameScreen extends Screen
    * @param {Json} json Empty.
   ###
   init: (json) ->
-    @commentary = []
     @equationBuilder = undefined
     @addingDice = false
     @currentContext = undefined
@@ -146,6 +141,10 @@ class GameScreen extends Screen
       $('#now-button').hide()
       $('#never-button').hide()
 
+    # Update the commentary log link
+    #ifCommentary.log.length > 0)
+      
+
     # Add a setinterval (faster than 1sec) to countdown the timer
     thisReference = this
     $('#timer-knob').val(Game.state.turnDuration).trigger('change');
@@ -235,13 +234,13 @@ class GameScreen extends Screen
       $('#container').attr('data-glow', 'on')
       $('div#allocation_container').attr('data-attention', 'on')
       $('div#turn-notification').attr('data-attention', 'on')
-      $('div#turn-notification').html('<p>It\'s your turn! Choose a dice from unallocated to move to another mat.</p>')
+      $('span#now-commentary').html('It\'s your turn! Choose a dice from unallocated to move to another mat.')
     else
       $('#container').attr('data-glow', 'off')
       $('div#allocation_container').attr('data-attention', 'off')
       $('#turn-notification').attr('data-attention', 'off')
       name = Game.getCurrentTurnPlayerName()
-      $('#turn-notification').html('<p>It is ' + name + '\'s turn to move a dice from unallocated to another mat.</p>')
+      $('span#now-commentary').html('It is ' + name + '\'s turn to move a dice from unallocated to another mat.')
 
 
 
@@ -264,8 +263,7 @@ class GameScreen extends Screen
           html = if(Game.challengeModeNow) then "Now Challenge! " else "Never Challenge! "
           html += "Please select if you agree: "
           html += buttonsHtml
-          html = '<p>' + html + '</p>'
-          $('#turn-notification').html(html)
+          $('span#now-commentary').html(html)
           # Event Handler for agreeing
           $('#challenge-agree-btn').unbind 'click'
           $('#challenge-agree-btn').bind 'click', (event) ->
@@ -278,7 +276,7 @@ class GameScreen extends Screen
             thisReference.submittedDecision = false
       else
         # We have decided. Make the notification area say that we are waiting.
-        $('#turn-notification').html('<p>Please wait for other players to decide.</p>')
+        $('span#now-commentary').html('Please wait for other players to decide.')
         $('#turn-notification').attr('data-attention', 'off')
     else if(Game.isChallengeSolutionTurn())
       # Right now, people are submitting solutions. 
@@ -288,7 +286,7 @@ class GameScreen extends Screen
           # We submitted a required solution. Make the notification area say that we are waiting.
           $('#turn-notification').attr('data-attention', 'off')
           $('#answer-area').attr('data-attention', 'off')
-          $('#turn-notification').html('<p>Please wait for other players to submit their solutions</p>')
+          $('span#now-commentary').html('Please wait for other players to submit their solutions')
         else
           # We have't submitted a required solution. Make notification area say we need to submit a solution.
           # Force the menu context mode to adding dice
@@ -296,7 +294,7 @@ class GameScreen extends Screen
           # Highlight the notification area and the dice answer area. Add msg to notification area.
           $('#turn-notification').attr('data-attention', 'on')
           $('#answer-area').attr('data-attention', 'on')
-          $('#turn-notification').html('<p>Please submit your solution.</p>')
+          $('span#now-commentary').html('Please submit your solution.')
           # Show the button for submitting a solution and bind it to a submission event
           $('#answer-submit-btn').show()
           $('#answer-submit-btn').unbind 'click'
@@ -306,7 +304,7 @@ class GameScreen extends Screen
         # We didn't need to submit a solution. Make the notification area say that we are waiting.
         $('#turn-notification').attr('data-attention', 'off')
         $('#answer-area').attr('data-attention', 'off')
-        $('#turn-notification').html('<p>Please wait for other players to submit their solutions.</p>')
+        $('span#now-commentary').html('Please wait for other players to submit their solutions.')
   
 
   #######################################################################

@@ -25,6 +25,7 @@ now.receiveGameList = (gameListJson) ->
   # TODO: fix this
   Game.updateGameList(gameListJson)
 
+# Turn has moved on because the player whose turn it was took too long
 now.receiveMoveTimeUp = () ->
   Game.receiveMoveTimeUp()
 
@@ -47,7 +48,7 @@ now.receiveGoalTurn = (players, resources, goalSetterIndex, timerDuration) ->
 now.receiveGoalTurnEnd = (goalArray) ->
   Game.setGoal(goalArray)
   ScreenSystem.renderScreen(Game.gameScreenId)
-
+  #Commentary.logGoalFormed(goalArray)
 
 
 ###*
@@ -64,15 +65,22 @@ now.receiveState = (state) ->
 ###*
  * Tell everyone that the turn taking has ended. It's time for a now challenge.
  * In this turn, the players must choose whether they agree or disagree.
- * @param  {Number} challengerId The id if the challenge
+ * @param  {Number} challengerId The id of the challenger
 ###
 now.receiveNowChallengeDecideTurn = (challengerId) ->
   Game.receiveNowChallengeDecideTurn(challengerId)
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
+  #Commentary.logNowChallenge(challengerId)
 
+###*
+ * Tell everyone that the turn taking has ended. It's time for a never challenge.
+ * In this turn, the players must choose whether they agree or disagree.
+ * @param  {Number} challengerId The id of the challenger
+###
 now.receiveNeverChallengeDecideTurn = (challengerId) ->
   Game.receiveNeverChallengeDecideTurn(challengerId)
   ScreenSystem.getScreen(Game.gameScreenId).onUpdatedState()
+  #Commentary.logNeverChallenge(challengerId)
 
 
 ###*

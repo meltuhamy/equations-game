@@ -23,6 +23,21 @@ class DiceFace
       when @symbols.minus    then "-"
       else (if face >= 0     then "#{face}")
 
+
+
+  @printFaces: (indices) ->
+    str = ''
+    for i in indices
+      # Add a left bracket, add a right bracket or add a normal number/operator
+      if (i == -1)
+        str += @faceToHtml(@symbols.bracketL)
+      else if (i == -2)
+        str += @faceToHtml(@symbols.bracketR)
+      else
+        str += @faceToHtml(Game.globalDice[i])
+    return str
+
+
   ###*
    * Turns an array of dicefaces into li's
    * @param  {Number[]} list The array of dicefaces values
