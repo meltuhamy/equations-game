@@ -19,6 +19,7 @@ div#endround
     margin-bottom: 5px
   p#end-of-round-baby
     margin-bottom: 10px
+    font-size: 14px
 
 
   div#round-goal
@@ -65,6 +66,8 @@ div#endround
         color: #BE6B00
         text-shadow: rgba(0, 0, 0, .15) 0px 1px 0px
         line-height: $dicewidth;
+
+
   div#round-results-ctnr
     margin-bottom: 10px
     background: #0078CD
@@ -77,6 +80,14 @@ div#endround
         text-shadow: rgba(0, 0, 0, .45) 0px 1px 0px
         padding: 10px 40px      
         background: #0066AD
+      th
+        text-align: center
+        color: white
+        background: #0066AD
+        font-size: 15px
+        padding: 4px 10px
+        text-shadow: rgba(0, 0, 0, 0.38) 0px 1px 0px
+        border-bottom: 4px solid #0078CD
       a
         color: #A4D2D6
         text-decoration: none
@@ -85,6 +96,24 @@ div#endround
         display: inline-block;
         line-height: 23px
         padding 0px 13px
+
+      span.player-icon
+        color: #9DC8FF
+        background: transparent url('../img/user-blue.png') no-repeat center 5px
+        background-color: $notTurnCol = #0090F0
+        display: inline-block
+        padding: 40px 10px 5px 10px
+        border-radius(5px)
+        font-size: 13px
+        font-weight: bold
+        margin-right: 10px
+        min-width: 35px
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px;
+      span.player-icon span.player-tag
+        background: rgba(122, 79, 62, 0.53)
+        padding: 2px 5px
+        border-radius: 3px
+        line-height: 22px
 
 ul.solution
   margin-left: -5px
@@ -129,6 +158,8 @@ li.dice[data-alloc='forbidden']
     background: red
 
 #ready-round-cntr
-  color: white
+  background: #0082DD;
+  padding: 20px;
   p
+    color: #ADDDFF
     margin-bottom: 10px

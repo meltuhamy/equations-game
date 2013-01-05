@@ -20,6 +20,7 @@ class EndRoundScreen extends Screen
     @drawResultsList()
     @drawGoal()
     @addReadyButtonListener()
+    $('h2#end-round-title').html('End of Round ' + Game.state.currentRound)
 
 
   addReadyButtonListener: () ->
@@ -60,6 +61,15 @@ class EndRoundScreen extends Screen
   ###
   drawResultsList: () ->
     html = '<table id="resultslist">'
+
+    # The header of the results table
+    html += '<tr>'
+    html += '<th>Player</th>'
+    html += '<th>Points this Round</th>'
+    html += '<th>Equation</th>'
+    html += '<th>Total Score</th>'
+    html += '</tr>'
+
     for p in Game.players
       html += '<tr>'
       html += "<td>#{p.name} <!-- player #{p.index} --></td>"
@@ -108,6 +118,13 @@ class EndRoundScreen extends Screen
         html += "<td><ul class='solution'>"+DiceFace.drawDiceList(@solutions[p.index])+'</ul></td>'
       else
         html += "<td><p class='no-solution'>No solution</br>submitted</p></td>"
+      
+      # Show the player's total score
+      # -----------------------------
+      html += "<td>" + Game.state.playerScores[p.index] + " Points</td>"
+      # End of Row
       html += '</tr>'
+
+    # End of Table
     html += '</table>'
     $('#round-results-ctnr').html(html)
