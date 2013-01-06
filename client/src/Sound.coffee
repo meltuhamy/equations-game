@@ -30,9 +30,15 @@ class Sound
       data: 1
       id: "user-yellow"
     ]
+
+    # Use HTML5 (and Flash as a fallback)
+    createjs.SoundJS.registerPlugins [createjs.HTMLAudioPlugin, createjs.FlashPlugin]
+
     @preloader = new createjs.PreloadJS();
     #Install SoundJS as a plugin, then PreloadJS will initialize it automatically.
     @preloader.installPlugin(createjs.SoundJS);
+
+
 
     #Available PreloadJS callbacks
     @preloader.onFileLoad = (event) ->
