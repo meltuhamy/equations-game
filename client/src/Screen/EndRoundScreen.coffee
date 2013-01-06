@@ -21,6 +21,7 @@ class EndRoundScreen extends Screen
     @drawGoal()
     @addReadyButtonListener()
     $('h2#end-round-title').html('End of Round ' + Game.state.currentRound)
+    Sound.play('endOfRound')
 
 
   addReadyButtonListener: () ->

@@ -61,12 +61,15 @@ now.receiveState = (state) ->
 
 now.receiveMoveToRequired = (moverId, index) ->
   Commentary.logMoveToRequired(moverId, index)
+  Sound.play('endOfTurn')
 
 now.receiveMoveToOptional = (moverId, index) ->
   Commentary.logMoveToOptional(moverId, index)
+  Sound.play('endOfTurn')
 
 now.receiveMoveToForbidden = (moverId, index) ->
   Commentary.logMoveToForbidden(moverId, index)
+  Sound.play('endOfTurn')
 
 
 

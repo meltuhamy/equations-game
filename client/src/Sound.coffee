@@ -11,7 +11,11 @@ class Sound
     assetsPath = "img/"
     manifest = [
       src: assetsPath + "R-Damage.mp3|" + assetsPath + "R-Damage.ogg"
-      id: 6
+      id: 'endOfRound'
+      data: 1
+    ,
+      src: assetsPath + "Game-Spawn.mp3|" + assetsPath + "Game-Spawn.ogg"
+      id: 'endOfTurn'
       data: 1
     ,
       src: assetsPath + "spinner.gif"
