@@ -293,39 +293,34 @@ Group Messages - Now.js allows the server to perform the same remote procedure c
 \\
 \\
 Sending the state: The game class stores the state of the game. This is stored as a JSON object holding variables such as whose turn it is and what dice are placed on what mat. This state object is stored in the game class on the server. When server thinks it’s necessary - it uses a group message to send the updated state to all the players in the game. This is usually when a player has taken a turn or when the timer has ran out. We decided to take this approach because sending across the whole instance of the game that is on the server to the client would raise security concerns. For example, some variables are private to the server (such as socket ids) and shouldn’t be exposed to clients. It was also not feasible from a technical point of view due to serialisability issues. We found that sending serialised objects (serialising Javascript prototypes) caused issues - for example handling referencing other server side classes.
+\\
+\\
 Players Authentication - Now, there was an issue with security - what if the player changes their player id so that he can play as someone else? To solve this, we first authenticate the player id with the player’s socket id. In other words, the player ids we send to the client to distinguish between players are different from the socket ids that are actually connecting to the server. The mapping from player id to socket id is only stored on the server and therefore the client could never “pretend” to be someone else.
+\\
+\\
 Concurrent Games -  Our application scales in that it can have several games running concurrently. There are several instances of the game class all managed by a GamesManager class (explained later.) When the player joins a particular game, we store a value that links to their socket id to a specific game id.  The server does some authentication and works out that the client is already registered with an already running game with an id of gameId. Now.js’s groups feature was flexible enough to allow us to group clients by the game that they were in. This meant that we can broadcast messages to all the clients for a particular game id. 
-\\
-Figure \ref{fig:rpc}: Here, the client has set the goal of ‘1+2’ and pressed the submit button. A remote procedure on the server called receiveGoal(‘1+2’) is invoked. 
-The server determines whether this operation is acceptable from this player given the current state of the game. Assuming it is, the server calls a remote procedure on every client in that game called recieveGoalTurnEnd(‘1+2’). 
-Every the client receives this and changes their views to reflect that the goal has been set.
-Note that the equation ‘1+2’  this isn’t stored as string but actually an array of integers. This will be explained next.
-Asynchronous calls - When the client calls remote procedures, it is important to note that this call is asynchronous - meaning that once the call has been made, the client does not wait for a response. This is good because the client doesn’t lock. We wanted this because there are many asynchronous events being fired in the browser such as timing events that would be affected by any locking procedure calls. 
-\\
-\\
 
 % use \ref{fig:rpc} to print figure number
 \begin{figure}[H] 
 \center{\includegraphics[width=\linewidth]{image04}}
-\caption{Remote Procedure Calls}
+\caption{Remote Procedure Calls - Here, the client has set the goal of 1+2 and pressed the submit button. A remote procedure on the server called receiveGoal(1+2) is invoked. The server determines whether this operation is acceptable from this player given the current state of the game. Assuming it is, the server calls a remote procedure on every client in that game called recieveGoalTurnEnd(1+2). Every the client receives this and changes their views to reflect that the goal has been set. Note that the equation 1+2 this isnt stored as string but actually an array of integers. This will be explained next. Asynchronous calls - When the client calls remote procedures, it is important to note that this call is asynchronous - meaning that once the call has been made, the client does not wait for a response. This is good because the client doesnt lock. We wanted this because there are many asynchronous events being fired in the browser such as timing events that would be affected by any locking procedure calls.
+}
 \label{fig:rpc}
 \end{figure}
 
 \subsection{Representing Equations and Dice}
 Dice Faces - To store the dice in our game, we use integers. Each integer represents a particular dice face. However the numbers chosen to represent faces had to be arbitrarily chosen. To avoid scattering our code with unreadable magic numbers, we decided to use variables that maps words to these numbers. So for example, instead of writing face == 17, we can write face == DiceFace.divide when checking a dice face is the divide face. We wrote DiceFace.coffee as a static class that holds the enumerated type.
-Global Dice and Dice Mats - Every dice used in our game is stored in an array which we call the global dice array. This array is an array of integers representing dice face and it randomly created at the very start of the game. These are the dice that are moved between mats and used by players to form solutions. Each mat in the game is an array of indices to the global dice array. The concept is shown in figure x. 
+Global Dice and Dice Mats - Every dice used in our game is stored in an array which we call the global dice array. This array is an array of integers representing dice face and it randomly created at the very start of the game. These are the dice that are moved between mats and used by players to form solutions. Each mat in the game is an array of indices to the global dice array. The concept is shown in figure \ref{fig:james1}.
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{james1}}
+\caption{}
+\label{fig:james1}
+\end{figure}
 Equations - An equation is simple an array of global dice references. However we needed to add parenthesis. The original equations game does not have brackets on dice faces (they were hand-drawn on paper). We decided to reserve -1 and -2 as pseudo-indices to the global dice array. -1 represents a left bracket and -2 represents a right bracket. One of the reasons why decided to use a global dice array is because it makes it easier to check whether an equation don’t use invalid dice or the same dice twice. 
-
+\\
+\\
 \subsection{Equation Builder}
-Inputting equations is needed for both forming the goal and when submitting attempts to solve the goal. We wrote the EquationBuilder.coffee class as a generic class for building equations. Figure2 [] show it being used concretely in two parts in the game. We had to consider how to let the user build equations easily; keeping in mind this needs to work on mobile devices. 
-
-Adding Dice - We initially decided that we would drag dice to the area used for building the equation. Dragging dice feels intuitive for touch devices, it resembles the board game and we felt that children may enjoy it. However we didn’t do this. We decided to add dice via simple mouse clicks (or touches). We found that by just by simply clicking on a dice, we can form equations quickly. We anticipated that dragging dice may be awkward on very small screens and that the programming would take more time. 
-Adding Brackets (version 1) - Another issue was finding a way to add brackets easily. We were told by our supervisor that children may have difficulty pairing up brackets for larger equations. They needed a clean, fast and easy way to add brackets around dice. Our initial idea is depicted in the figure below. 
-
-The user drags his mouse horizontally (or swipes his finger horizontally) in order to group dice into a pair of parentheses. The user first presses down, moves his finger across then releases to form the group. While dragging, an area is highlighted showing what dice will be bracketed.  This idea is nice because it always adds brackets in pairs. It’s impossible to form equations with unbalanced parentheses because the opening and closing brackets are always added in one atomic operation. 
-Adding Brackets (version 2) - The dragging idea seemed adequate until we realised that equations may span several lines. We figured that any input movement required to group dice across several lines would be too complicated to program and too complicated for the user to make. So instead, we used a new idea that puts dots in between dice. The dots are clickable and act as placeholders for brackets. Clicking a dot places an open bracket in the dot’s position then clicking a different dot adds the closing bracket in the respective position. To remove brackets, the user clicks on the bracket (either open or closed). The tool is intelligent enough to remove redundant brackets. The tool also prevents the user from adding opening brackets and closing brackets in invalid positions. Example cases are shown in figure 4x.
-
-
+Inputting equations is needed for both forming the goal and when submitting attempts to solve the goal. We wrote the EquationBuilder.coffee class as a generic class for building equations. Figure \ref{fig:equation1} shows it being used concretely in two parts in the game. We had to consider how to let the user build equations easily; keeping in mind this needs to work on mobile devices. 
 % use \ref{fig:equation1} to reference figure number
 \begin{figure}[H] 
 \center{\includegraphics[width=\linewidth]{fig2}}
@@ -333,12 +328,20 @@ Adding Brackets (version 2) - The dragging idea seemed adequate until we realise
 \label{fig:equation1}
 \end{figure}
 
+Adding Dice - We initially decided that we would drag dice to the area used for building the equation. Dragging dice feels intuitive for touch devices, it resembles the board game and we felt that children may enjoy it. However we didn’t do this. We decided to add dice via simple mouse clicks (or touches). We found that by just by simply clicking on a dice, we can form equations quickly. We anticipated that dragging dice may be awkward on very small screens and that the programming would take more time. 
+Adding Brackets (version 1) - Another issue was finding a way to add brackets easily. We were told by our supervisor that children may have difficulty pairing up brackets for larger equations. They needed a clean, fast and easy way to add brackets around dice. Our initial idea is depicted in figure \ref{fig:equation2}. 
+
 % use \ref{fig:equation2} to reference figure number
 \begin{figure}[H] 
 \center{\includegraphics[width=\linewidth]{fig2-2}}
 \caption{Equation Forming in Game Screen}
 \label{fig:equation2}
 \end{figure}
+
+The user drags his mouse horizontally (or swipes his finger horizontally) in order to group dice into a pair of parentheses. The user first presses down, moves his finger across then releases to form the group. While dragging, an area is highlighted showing what dice will be bracketed.  This idea is nice because it always adds brackets in pairs. It’s impossible to form equations with unbalanced parentheses because the opening and closing brackets are always added in one atomic operation. 
+\\
+\\
+Adding Brackets (version 2) - The dragging idea seemed adequate until we realised that equations may span several lines. We figured that any input movement required to group dice across several lines would be too complicated to program and too complicated for the user to make. So instead, we used a new idea that puts dots in between dice. The dots are clickable and act as placeholders for brackets. Clicking a dot places an open bracket in the dot’s position then clicking a different dot adds the closing bracket in the respective position. To remove brackets, the user clicks on the bracket (either open or closed). The tool is intelligent enough to remove redundant brackets. The tool also prevents the user from adding opening brackets and closing brackets in invalid positions. Example cases are shown in figures \ref{fig:bracket1} and \ref{fig:bracket2}.
 
 % use \ref{fig:bracket1} to reference figure number
 \begin{figure}[H] 
@@ -353,16 +356,38 @@ Adding Brackets (version 2) - The dragging idea seemed adequate until we realise
 \caption{Bracketing in Game Screen}
 \label{fig:bracket2}
 \end{figure}
-\subsection{Parsing and Evaluating Equations}
 
+
+
+\subsubsection{Parsing and Evaluating Equations}
+Our game requires a parser and evaluator. We need to check that an inputted equation gives the same value as another equation. We wrote an ExpressionParser.coffee class to build a parse tree for an equation and we wrote Evaluator.coffee to walk over parse trees to calculate the numerical value for the expression.
 % use \ref{fig:parser} to print figure number
 \begin{figure}[H] 
 \center{\includegraphics[width=\linewidth]{image00}}
 \caption{Parser and Evaluator Structure}
 \label{fig:parser}
 \end{figure}
+Scanning Tokens - A scanner was not needed. We anticipated that we would need to parse the equations and so opted to store equations as an array of integers as previously described. The indices to the global dice array stored in an array already gives us the tokens required for the parser. If we had used strings to represent equations, we would need to consider writing a scanning to convert ascii characters to tokens and to cleanup whitespace. 
+LL(1) Parser - The parser is an LL(1). It builds the parse tree from the root to the leaves using a very simple algorithm. It enforces precedence by the order of in which we call handle*() private methods - which identify the type of node based on the next token. 
+\\
+\\
+Division By Zero - Our parser prevents division by zero. For division, once the right subtree has been parsed - we evaluate the subtree and check if it’s zero. The appropriate error message is sent to say an equation that divides by zero has been inputted. 
+\\
+\\
+Square Roots of Negative Numbers - Our parser prevents taking the square roots of negative values. Once a subtree has been parsed - if we are taking the square root, we evaluate the subtree and check if it’s negative. The appropriate error message is sent if the subtree is negative. 
+\\
+\\
+Handling Errors - Besides it’s simplicity, it also allowed us to detect most errors we needed easily. We could identify the location or errors well. This was useful because the user needs good information about what the error is and where it occurred. We wrote an a class that delivers errors from the server to the client in a useful form (an object with an messages,parameters about the error and a unique error number).  Client can receive these errors and create useful visual responses (e.g. highlighting dice that cause the error). 
+\\
+\\
+Removing Redundant Brackets - Our parser removes redundant brackets. If a user submits an equation with redundant brackets then our parser will delete them before storing the tree in the game and before passing them to the evaluator. 
 
-\subsection{Game Class}
+\subsubsection{Game Class}
+The game class holds the state of the game and only this. We took  the design decision of separating the core game logic from networking code. As a result, there are no calls in the game class to send data over the network. This was crucial because we needed to ensure that the game logic worked to a satisfactory degree. We ensured this by writing unit tests that tested many of the game methods, completely separate from any networking code that actually calls the functions to manipulate the game logic. It also meant that we could have multiple instances of the Game to implement multiple games - so someone could create a “new” game in the lobby and the server could just create a new instance of a Game.
+\\
+\\
+To manage several games, the GamesManager simply keeps track of a list of Games, as shown above. The Game class is responsible for all of the game logic. The diagram above shows only some of the methods the Game class implements. Note that the Game class is isolated from the fact there might be several games running concurrently, and is completely isolated from the networking and distributed calls which might add a lot of complexity. It was therefore possible to unit test the methods implemented here by creating demo “game” instances that could be tested separately.
+
 % use \ref{fig:games} to print figure number
 \begin{figure}[H] 
 \center{\includegraphics[width=\linewidth]{image06}}
@@ -370,8 +395,17 @@ Adding Brackets (version 2) - The dragging idea seemed adequate until we realise
 \label{fig:games}
 \end{figure}
 
-\subsection{Turn System}
-\subsection{Screens}
+\subsubsection{Turn System}
+Each turn in the game is timed. The server is in control of whose turn it is and how long they have to make their move. The state object in the game class stores whose turn it currently is. We used a javascript set interval to time events. It makes a function call every second to decrement the timer for the turn. We also store a turn duration value in the state object and a timestamp of when the turn started in the state object. The timestamp was needed because there is a delay with sending objects over the network. Every client receives this and can work out whose turn it is and how long they have to make their move. 
+\\
+\\
+One issue we ran into was how use timestamps. We used Javascripts Date.now() which stores the number of milliseconds since the UNIX epoch (UNIX time). The average turns duration was around 60 seconds. So Date.now() gave enough precision. One issue we realised was that each client may have a different system time and this a different value for Date.now() (e.g. in a different time zone). However our system avoids this problem by only using the servers Date.now for timestamps. 
+\\
+\\
+The clients show a small timer on their screen. We considered different ways to show a timer. Our supervisor wanted us to use show the time in a way that is not distracting and in a way that doesn’t scare or pressurise children. We used a radial bar that occupies a small part of a screen rather than a larger horizontal bar that spans the entire screen.
+\subsubsection{Screens}
+We realised that our game was going to have several screens with different code associated with each screen. We wanted to load screens via AJAX (asynchronous javascript server requests) but realised that these calls are asynchronous and that we need to know when the screen has loaded before doing anything. We decided to write a static ScreenSystem class. This class would be mainly responsible for loading screens but  also for providing an interface for letting code run on these screens and passing network events to screens.
+
 % use \ref{fig:screen} to print figure number
 \begin{figure}[H] 
 \center{\includegraphics[width=\linewidth]{image05}}
@@ -379,46 +413,25 @@ Adding Brackets (version 2) - The dragging idea seemed adequate until we realise
 \label{fig:screen}
 \end{figure}
 
-\subsubsection{Parsing and Evaluating Equations}
-Our game requires a parser and evaluator. We need to check that an inputted equation gives the same value as another equation. We wrote an ExpressionParser.coffee class to build a parse tree for an equation and we wrote Evaluator.coffee to walk over parse trees to calculate the numerical value for the expression.
-
-Scanning Tokens - A scanner was not needed. We anticipated that we would need to parse the equations and so opted to store equations as an array of integers as previously described. The indices to the global dice array stored in an array already gives us the tokens required for the parser. If we had used strings to represent equations, we would need to consider writing a scanning to convert ascii characters to tokens and to cleanup whitespace. 
-LL(1) Parser - The parser is an LL(1). It builds the parse tree from the root to the leaves using a very simple algorithm. It enforces precedence by the order of in which we call handle*() private methods - which identify the type of node based on the next token. 
-
-Division By Zero - Our parser prevents division by zero. For division, once the right subtree has been parsed - we evaluate the subtree and check if it’s zero. The appropriate error message is sent to say an equation that divides by zero has been inputted. 
-Square Roots of Negative Numbers - Our parser prevents taking the square roots of negative values. Once a subtree has been parsed - if we are taking the square root, we evaluate the subtree and check if it’s negative. The appropriate error message is sent if the subtree is negative. 
-Handling Errors - Besides it’s simplicity, it also allowed us to detect most errors we needed easily. We could identify the location or errors well. This was useful because the user needs good information about what the error is and where it occurred. We wrote an a class that delivers errors from the server to the client in a useful form (an object with an messages,parameters about the error and a unique error number).  Client can receive these errors and create useful visual responses (e.g. highlighting dice that cause the error). 
-Removing Redundant Brackets - Our parser removes redundant brackets. If a user submits an equation with redundant brackets then our parser will delete them before storing the tree in the game and before passing them to the evaluator. 
-
-\subsubsection{Game Class}
-The game class holds the state of the game and only this. We took  the design decision of separating the core game logic from networking code. As a result, there are no calls in the game class to send data over the network. This was crucial because we needed to ensure that the game logic worked to a satisfactory degree. We ensured this by writing unit tests that tested many of the game methods, completely separate from any networking code that actually calls the functions to manipulate the game logic. It also meant that we could have multiple instances of the Game to implement multiple games - so someone could create a “new” game in the lobby and the server could just create a new instance of a Game.
-
-To manage several games, the GamesManager simply keeps track of a list of Games, as shown above. The Game class is responsible for all of the game logic. The diagram above shows only some of the methods the Game class implements. Note that the Game class is isolated from the fact there might be several games running concurrently, and is completely isolated from the networking and distributed calls which might add a lot of complexity. It was therefore possible to unit test the methods implemented here by creating demo “game” instances that could be tested separately.
-\subsubsection{Turn System}
-Each turn in the game is timed. The server is in control of whose turn it is and how long they have to make their move. The state object in the game class stores whose turn it currently is. We used a javascript set interval to time events. It makes a function call every second to decrement the timer for the turn. We also store a turn duration value in the state object and a timestamp of when the turn started in the state object. The timestamp was needed because there is a delay with sending objects over the network. Every client receives this and can work out whose turn it is and how long they have to make their move. 
-
-One issue we ran into was how use timestamps. We used Javascripts Date.now() which stores the number of milliseconds since the UNIX epoch (UNIX time). The average turns duration was around 60 seconds. So Date.now() gave enough precision. One issue we realised was that each client may have a different system time and this a different value for Date.now() (e.g. in a different time zone). However our system avoids this problem by only using the servers Date.now for timestamps. 
-The clients show a small timer on their screen. We considered different ways to show a timer. Our supervisor wanted us to use show the time in a way that is not distracting and in a way that doesn’t scare or pressurise children. We used a radial bar that occupies a small part of a screen rather than a larger horizontal bar that spans the entire screen.
-\subsubsection{Screens}
-We realised that our game was going to have several screens with different code associated with each screen. We wanted to load screens via AJAX (asynchronous javascript server requests) but realised that these calls are asynchronous and that we need to know when the screen has loaded before doing anything. We decided to write a static ScreenSystem class. This class would be mainly responsible for loading screens but  also for providing an interface for letting code run on these screens and passing network events to screens.
-
-
-
-We defined an abstract Screen class that every screen must extend. 
-Each concrete instance of Screen is, in essence, an encapsulation of:
-HTML file: A html template that contains static content as well as placeholders for content that will change as the game progresses. 
-CSS file: This is used to style the page (choosing background colours, fonts etc.) A design decision we had, was to separate content from style for screens. We found that separating the css into its own file made things easier to follow.
-Initialisation code: each screen has its own javascript initialisation code. This code is called when the screen has first been loaded by the screen manager. This is needed or else to begin the flow of running code for this screen.
+We defined an abstract Screen class that every screen must extend. Each concrete instance of Screen is, in essence, an encapsulation of:
+\begin{itemize}
+\item HTML file: A html template that contains static content as well as placeholders for content that will change as the game progresses. 
+\item CSS file: This is used to style the page (choosing background colours, fonts etc.) A design decision we had, was to separate content from style for screens. We found that separating the css into its own file made things easier to follow.
+\item Initialisation code: each screen has its own javascript initialisation code. This code is called when the screen has first been loaded by the screen manager. This is needed or else to begin the flow of running code for this screen.
+\end{itemize}
 To show a screen on the page, first we create the concrete instance. Then we call the load method, followed by ScreenManager’s renderScreen method. This takes a loaded screen and displays it; placing the HTML from the screen’s HTML file into the DOM. At the same time, it calls the the screen’s init() method - allowing the screen to do its initialisation code.
-
+\\
+\\
 For example, we have the concrete “Goal Screen” which gets displayed once enough players have joined and the game has started. It encapsulates goalscreen.html, goalscreen.css and has it’s own javascript initialisation logic in init() to load the screen (add the goal dice and areas).  
-
+\\
+\\
 The goal setter will see this screen and be able to interact with it in order to set the goal. Examples of other Screens include the lobby screen, join waiting screen, goal waiting screen, game screen, end of round screen, etc. The game class stores an unique id for each screen (provided by ScreenSystem) so that it can refer to the screens later.
-
+\\
+\\
 The client side code was the main point of interaction with the user, and so needed to be as easy to use and pretty as possible. But more crucially, it needed to be very robust and efficient. We made a tremendous effort to ensure that our client side code is as modular and easy to understand as possible, despite the amount of complexity there was. We designed ScreenSystem so that we can easily switch between pages simply by calling renderScreen. 
-
+\\
+\\
 As one can imagine, the ScreenSystem class is used when needed by the client’s game methods. For example, once the server has told the clients in a game that the goal has been set, the client code calls the ScreenSystem methods to render the Game screen. In this way, we can easily, efficiently, and asynchronously load only required content and scripts when its needed.
-
 
 
 \section{Evaluation}
