@@ -370,7 +370,7 @@ Adding Brackets (version 2) - The dragging idea seemed adequate until we realise
 \label{fig:games}
 \end{figure}
 
-\subsection{Turn System}
+
 \subsection{Screens}
 % use \ref{fig:screen} to print figure number
 \begin{figure}[H] 
@@ -381,44 +381,56 @@ Adding Brackets (version 2) - The dragging idea seemed adequate until we realise
 
 \subsubsection{Parsing and Evaluating Equations}
 Our game requires a parser and evaluator. We need to check that an inputted equation gives the same value as another equation. We wrote an ExpressionParser.coffee class to build a parse tree for an equation and we wrote Evaluator.coffee to walk over parse trees to calculate the numerical value for the expression.
-
+\\
+\\
 Scanning Tokens - A scanner was not needed. We anticipated that we would need to parse the equations and so opted to store equations as an array of integers as previously described. The indices to the global dice array stored in an array already gives us the tokens required for the parser. If we had used strings to represent equations, we would need to consider writing a scanning to convert ascii characters to tokens and to cleanup whitespace. 
 LL(1) Parser - The parser is an LL(1). It builds the parse tree from the root to the leaves using a very simple algorithm. It enforces precedence by the order of in which we call handle*() private methods - which identify the type of node based on the next token. 
+\begin{itemize}
+\item{Division By Zero} - Our parser prevents division by zero. For division, once the right subtree has been parsed - we evaluate the subtree and check if it’s zero. The appropriate error message is sent to say an equation that divides by zero has been inputted. 
+\item{Square Roots of Negative Numbers} - Our parser prevents taking the square roots of negative values. Once a subtree has been parsed - if we are taking the square root, we evaluate the subtree and check if it’s negative. The appropriate error message is sent if the subtree is negative. 
+\item{Handling Errors} - Besides it’s simplicity, it also allowed us to detect most errors we needed easily. We could identify the location or errors well. This was useful because the user needs good information about what the error is and where it occurred. We wrote an a class that delivers errors from the server to the client in a useful form (an object with an messages,parameters about the error and a unique error number).  Client can receive these errors and create useful visual responses (e.g. highlighting dice that cause the error). 
+\item{Removing Redundant Brackets} - Our parser removes redundant brackets. If a user submits an equation with redundant brackets then our parser will delete them before storing the tree in the game and before passing them to the evaluator. 
 
-Division By Zero - Our parser prevents division by zero. For division, once the right subtree has been parsed - we evaluate the subtree and check if it’s zero. The appropriate error message is sent to say an equation that divides by zero has been inputted. 
-Square Roots of Negative Numbers - Our parser prevents taking the square roots of negative values. Once a subtree has been parsed - if we are taking the square root, we evaluate the subtree and check if it’s negative. The appropriate error message is sent if the subtree is negative. 
-Handling Errors - Besides it’s simplicity, it also allowed us to detect most errors we needed easily. We could identify the location or errors well. This was useful because the user needs good information about what the error is and where it occurred. We wrote an a class that delivers errors from the server to the client in a useful form (an object with an messages,parameters about the error and a unique error number).  Client can receive these errors and create useful visual responses (e.g. highlighting dice that cause the error). 
-Removing Redundant Brackets - Our parser removes redundant brackets. If a user submits an equation with redundant brackets then our parser will delete them before storing the tree in the game and before passing them to the evaluator. 
+\end{itemize}
 
 \subsubsection{Game Class}
 The game class holds the state of the game and only this. We took  the design decision of separating the core game logic from networking code. As a result, there are no calls in the game class to send data over the network. This was crucial because we needed to ensure that the game logic worked to a satisfactory degree. We ensured this by writing unit tests that tested many of the game methods, completely separate from any networking code that actually calls the functions to manipulate the game logic. It also meant that we could have multiple instances of the Game to implement multiple games - so someone could create a “new” game in the lobby and the server could just create a new instance of a Game.
-
+\\
+\\
 To manage several games, the GamesManager simply keeps track of a list of Games, as shown above. The Game class is responsible for all of the game logic. The diagram above shows only some of the methods the Game class implements. Note that the Game class is isolated from the fact there might be several games running concurrently, and is completely isolated from the networking and distributed calls which might add a lot of complexity. It was therefore possible to unit test the methods implemented here by creating demo “game” instances that could be tested separately.
 \subsubsection{Turn System}
 Each turn in the game is timed. The server is in control of whose turn it is and how long they have to make their move. The state object in the game class stores whose turn it currently is. We used a javascript set interval to time events. It makes a function call every second to decrement the timer for the turn. We also store a turn duration value in the state object and a timestamp of when the turn started in the state object. The timestamp was needed because there is a delay with sending objects over the network. Every client receives this and can work out whose turn it is and how long they have to make their move. 
-
+\\
+\\
 One issue we ran into was how use timestamps. We used Javascripts Date.now() which stores the number of milliseconds since the UNIX epoch (UNIX time). The average turns duration was around 60 seconds. So Date.now() gave enough precision. One issue we realised was that each client may have a different system time and this a different value for Date.now() (e.g. in a different time zone). However our system avoids this problem by only using the servers Date.now for timestamps. 
 The clients show a small timer on their screen. We considered different ways to show a timer. Our supervisor wanted us to use show the time in a way that is not distracting and in a way that doesn’t scare or pressurise children. We used a radial bar that occupies a small part of a screen rather than a larger horizontal bar that spans the entire screen.
 \subsubsection{Screens}
 We realised that our game was going to have several screens with different code associated with each screen. We wanted to load screens via AJAX (asynchronous javascript server requests) but realised that these calls are asynchronous and that we need to know when the screen has loaded before doing anything. We decided to write a static ScreenSystem class. This class would be mainly responsible for loading screens but  also for providing an interface for letting code run on these screens and passing network events to screens.
 
-
-
 We defined an abstract Screen class that every screen must extend. 
 Each concrete instance of Screen is, in essence, an encapsulation of:
-HTML file: A html template that contains static content as well as placeholders for content that will change as the game progresses. 
-CSS file: This is used to style the page (choosing background colours, fonts etc.) A design decision we had, was to separate content from style for screens. We found that separating the css into its own file made things easier to follow.
-Initialisation code: each screen has its own javascript initialisation code. This code is called when the screen has first been loaded by the screen manager. This is needed or else to begin the flow of running code for this screen.
+\begin{itemize}
+\item{HTML file}: A html template that contains static content as well as placeholders for content that will change as the game progresses. 
+\item{CSS file}: This is used to style the page (choosing background colours, fonts etc.) A design decision we had, was to separate content from style for screens. We found that separating the css into its own file made things easier to follow.
+\item{Initialisation code}: each screen has its own javascript initialisation code. This code is called when the screen has first been loaded by the screen manager. This is needed or else to begin the flow of running code for this screen.
+\end{itemize}
 To show a screen on the page, first we create the concrete instance. Then we call the load method, followed by ScreenManager’s renderScreen method. This takes a loaded screen and displays it; placing the HTML from the screen’s HTML file into the DOM. At the same time, it calls the the screen’s init() method - allowing the screen to do its initialisation code.
+\\
+\\
 
 For example, we have the concrete “Goal Screen” which gets displayed once enough players have joined and the game has started. It encapsulates goalscreen.html, goalscreen.css and has it’s own javascript initialisation logic in init() to load the screen (add the goal dice and areas).  
+\\
+\\
 
 The goal setter will see this screen and be able to interact with it in order to set the goal. Examples of other Screens include the lobby screen, join waiting screen, goal waiting screen, game screen, end of round screen, etc. The game class stores an unique id for each screen (provided by ScreenSystem) so that it can refer to the screens later.
+\\
+\\
 
 The client side code was the main point of interaction with the user, and so needed to be as easy to use and pretty as possible. But more crucially, it needed to be very robust and efficient. We made a tremendous effort to ensure that our client side code is as modular and easy to understand as possible, despite the amount of complexity there was. We designed ScreenSystem so that we can easily switch between pages simply by calling renderScreen. 
+\\
+\\
 
 As one can imagine, the ScreenSystem class is used when needed by the client’s game methods. For example, once the server has told the clients in a game that the goal has been set, the client code calls the ScreenSystem methods to render the Game screen. In this way, we can easily, efficiently, and asynchronously load only required content and scripts when its needed.
-
 
 
 \section{Evaluation}
@@ -433,18 +445,19 @@ Testing client-side and client-server interaction presented a different problem 
 Selenium is a unit-testing platform that can execute client-side scripts. We started using selenium in order to use TDD for client-side code, by writing scripts that would emulate GUI interactions and test network calls. However, writing tests for Selenium turned out to be very tedious and time-consuming, so we did not end up using it as much as we wanted to.
 
 \subsection{Evaluation of Final Product}
-Interface
-
+\subsubsection{Interface}
 We came up with a simple, easy to understand interface for the web page. This part is specially important as our main audience are young children, and a complex or uninteresting representation would strongly push them away from enjoying the game. That’s why we focused a lot on the interface of the game, coming up with a very intuitive design that people can completely understand before finishing their first game. We also accomplish this by the use of lively colours such as light blue and yellow to give the game a more dynamic look.
+\\
+\\
 
 We also tested the game on our own personal devices such as the Samsung Galaxy SII Note (smartphone), Google Nexus 7 (tablet) and the iPhone 4. We found that the game ran without any noticeable glitches either on the default browser or the installed chrome. In some cases the game even ran a bit faster, we believe that this was the case because these devices are more modern and have better hardware capabilities. If we spent more time taking performance into consideration then we could’ve perhaps made it run faster on the Motorola tablet. 
 
 
-Networking
+\subsubsection{Networking}
 
 Our success in this area is not as well defined, as while various players can play the same game without a problem, we still can’t perfectly deal with unexpected actions such as a disconnection from one of the players. For example, if a player disconnects from a game, he will be kicked out and the game will still go on without problems (unless there were only two players left, in which case the game would end). However, the disconnected player would not be able to return to the game and would have to join a different room.
 
-The actual game
+\subsubsection{The actual game}
 
 The original game, being a board game, is very malleable due to house rules. That’s why while having the same core, 2 games can be very different from each other. However, this flexibility is quite hard to implement, therefore we had to be careful when deciding our rules, as they had to be fit for everybody while still making the game as entertaining as possible. We believe we have achieved this to a certain extent, but a lack of testing with the intended audience makes it hard to come to a definite conclusion. Perhaps given more time we could make changes to when a client creates the game such as adding in custom rules, custom dice and deciding on how a game ends (these new rules and features could be shown in a description box that appears when another player clicks on the game in the lobby).
 
@@ -452,17 +465,18 @@ The original game, being a board game, is very malleable due to house rules. Tha
 \section{Conclusion and Future Extensions}
 Through the course of this project, we have successfully designed and implemented a web-based version of the Equations variant of Wff ‘n Proof. By focusing on user-friendliness as well as core functionality, we were able to produce a product that is not only accessible to our target audience of 8 to 13 year olds, but also encapsulates the full functionality of the Equations game.
 
-Possible extensions
+\subsection{Possible extensions}
+\begin{itemize}
+\item AI player: we can incorporate an artificial player so that players would not have to wait for other players to join their game. We could also vary the difficulty of the AI with basic levels for beginners and more advanced AI’s for the more experienced of players. The AI could also act as a helper where it automatically solve equations (using heuristics), for instance if at the end of the round, no players could find a solution (or they all agreed that no solution could be found), the AI could tell them whether there was a solution or not and give them a valid solution if there indeed was.
+\item More rules: Another way that we could extend our game would be to implement more rules, for instance as we mentioned earlier there are many various versions of the game, including ‘house rules’. When a client create a game, we could have added the opportunity for them to add these rules in. There are also other rules that we could have added such as the Last Cube Procedure (where there is only one dice left in resources, the player whose turn it is must make a never challenge). In addition we could have added an element of difficulty to our game (eg a an easy, normal and hard mode), using only plus and minus operators in an easy version and add more operators as the difficulty goes up. Tied in to difficulty we could add difficulty specific rules such the One Resource Rule (you are only allowed to use one dice from the resources when submitting your solution). 
+\item Game types: In a continuation of the various version of the game, we could have implemented modes where the players could play these various game types. For instance the Set Theory variant, Complex Number variant etc. We could also then implement a sharing capability for our game, allowing players to upload and share their variation of the game.
+\item Profiles: We could have created profiles for clients, allowing them to upload pictures and keep a track of their stats such as the number of games played and the total number of points that they have accumulated.
+\item Communication between players: Building on a profile system, we can take it further to have private messages, chat, groups of users, etc.
+\item Integration with social services: We could also integrate the game with other services such as Google. Google+ and other social networks has API’s for integrating HTML5 apps with its service, so that you can add the app during a video or voice conference and play together with your friends.
+\end{itemize}
 
 
-AI player: we can incorporate an artificial player so that players would not have to wait for other players to join their game. We could also vary the difficulty of the AI with basic levels for beginners and more advanced AI’s for the more experienced of players. The AI could also act as a helper where it automatically solve equations (using heuristics), for instance if at the end of the round, no players could find a solution (or they all agreed that no solution could be found), the AI could tell them whether there was a solution or not and give them a valid solution if there indeed was.
-More rules: Another way that we could extend our game would be to implement more rules, for instance as we mentioned earlier there are many various versions of the game, including ‘house rules’. When a client create a game, we could have added the opportunity for them to add these rules in. There are also other rules that we could have added such as the Last Cube Procedure (where there is only one dice left in resources, the player whose turn it is must make a never challenge). In addition we could have added an element of difficulty to our game (eg a an easy, normal and hard mode), using only plus and minus operators in an easy version and add more operators as the difficulty goes up. Tied in to difficulty we could add difficulty specific rules such the One Resource Rule (you are only allowed to use one dice from the resources when submitting your solution). 
-Game types: In a continuation of the various version of the game, we could have implemented modes where the players could play these various game types. For instance the Set Theory variant, Complex Number variant etc. We could also then implement a sharing capability for our game, allowing players to upload and share their variation of the game.
-Profiles: We could have created profiles for clients, allowing them to upload pictures and keep a track of their stats such as the number of games played and the total number of points that they have accumulated.
-Communication between players: Building on a profile system, we can take it further to have private messages, chat, groups of users, etc.
-Integration with social services: We could also integrate the game with other services such as Google. Google+ and other social networks has API’s for integrating HTML5 apps with its service, so that you can add the app during a video or voice conference and play together with your friends.
-
-Known issues
+\subsection{Known issues}
 
 Though we tried to make the game as reliable as possible through the use of now.js (which adds hand-shaking to web socket connections), there were still some issues we found which are to do with connectivity. The main one was to do with unreliable internet connections, such as mobile networks or unreliable wireless connections. In the current version, when a client disconnects, they are completely removed from the game. To account for unreliable connections, we would need to have sessions which are authenticated once per browser session instead. That way, we can use the session as opposed to the web socket connection to authenticate the player such that when the player disconnects, we give them some time to reconnect before removing them from the game.
 
