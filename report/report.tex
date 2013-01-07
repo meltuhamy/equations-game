@@ -254,6 +254,14 @@ The advantages of using jQuery is that it allows us to very easily manipulate th
 \\
 Though there are other test frameworks available for Javascript, we decided to use Jasmine since it is designed to be thought of as behavior driven. Behavior driven development is a spin-off of test driven development where the thing you are testing is actually a behavior of the application and should be reasoned about in this way. Dan North gives a very good explanation for behaviour driven development \cite{dan}. Jasmine was also available for both client side implementation and node.js server side applications.
 
+\subsubsection{Now.js}
+Now.js is a javascript library that runs on both front and back ends of the application. It is used to implement remote procedure calls (RPC) from client to server and vice-versa. It is an extra layer over Socket.io, which is a javascript library that manages the use of web sockets. 
+\\
+\\
+The advantages of using Now.js was that it has a very simple interface of doing event-driven development, which is the use of remote procedure calls. Now.js also had some nice features. One of these is using pockets to synchronise methods and variables. A pocket is a variable space inside the client which is synchronised with the server, or vice-versa. We used this when implementing multiple concurrent games, as is explained later in this section.
+\\
+\\
+The disadvantages of Now.js is that it is a library that is built on top of another libraries, and both libraries are quite new. We had issues getting this setup, since there are different version dependencies, but once we got it to work, we decided to stick with it.
 
 \subsection{Designing for Mobile Devices}
 To develop our game for mobile devices, specifically tablet computers, we borrowed an Android tablet from the department, though the game should also work with any tablet with a webkit browser (such as mobile Safari as is the case for the iPad). 
@@ -328,14 +336,23 @@ Inputting equations is needed for both forming the goal and when submitting atte
 \label{fig:equation1}
 \end{figure}
 
-Adding Dice - We initially decided that we would drag dice to the area used for building the equation. Dragging dice feels intuitive for touch devices, it resembles the board game and we felt that children may enjoy it. However we didn’t do this. We decided to add dice via simple mouse clicks (or touches). We found that by just by simply clicking on a dice, we can form equations quickly. We anticipated that dragging dice may be awkward on very small screens and that the programming would take more time. 
-Adding Brackets (version 1) - Another issue was finding a way to add brackets easily. We were told by our supervisor that children may have difficulty pairing up brackets for larger equations. They needed a clean, fast and easy way to add brackets around dice. Our initial idea is depicted in figure \ref{fig:equation2}. 
-
 % use \ref{fig:equation2} to reference figure number
 \begin{figure}[H] 
 \center{\includegraphics[width=\linewidth]{fig2-2}}
 \caption{Equation Forming in Game Screen}
 \label{fig:equation2}
+\end{figure}
+
+Adding Dice - We initially decided that we would drag dice to the area used for building the equation. Dragging dice feels intuitive for touch devices, it resembles the board game and we felt that children may enjoy it. However we didn’t do this. We decided to add dice via simple mouse clicks (or touches). We found that by just by simply clicking on a dice, we can form equations quickly. We anticipated that dragging dice may be awkward on very small screens and that the programming would take more time. 
+\\
+\\
+Adding Brackets (version 1) - Another issue was finding a way to add brackets easily. We were told by our supervisor that children may have difficulty pairing up brackets for larger equations. They needed a clean, fast and easy way to add brackets around dice. Our initial idea is depicted in figure \ref{fig:james2}. 
+
+% use \ref{fig:equation2} to reference figure number
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{james2}}
+\caption{Equation Forming in Game Screen}
+\label{fig:james2}
 \end{figure}
 
 The user drags his mouse horizontally (or swipes his finger horizontally) in order to group dice into a pair of parentheses. The user first presses down, moves his finger across then releases to form the group. While dragging, an area is highlighted showing what dice will be bracketed.  This idea is nice because it always adds brackets in pairs. It’s impossible to form equations with unbalanced parentheses because the opening and closing brackets are always added in one atomic operation. 
@@ -433,7 +450,6 @@ The client side code was the main point of interaction with the user, and so nee
 \\
 As one can imagine, the ScreenSystem class is used when needed by the client’s game methods. For example, once the server has told the clients in a game that the goal has been set, the client code calls the ScreenSystem methods to render the Game screen. In this way, we can easily, efficiently, and asynchronously load only required content and scripts when its needed.
 
-
 \section{Evaluation}
 \subsection{Testing Procedures and Results}
 \subsubsection{Test Driven Development}
@@ -442,22 +458,24 @@ A major focus of our development process was to employ test driven development a
 Jasmine is a unit testing framework for Javascript code that does not depend on any other Javascript frameworks and has easy to understand syntax. We decided to use Jasmine as our unit testing framework for writing TDD and general tests on the server side. 
 \subsubsection{Selenium and iMacros}
 Testing client-side and client-server interaction presented a different problem for which we found a few solutions. At first, a lot of our client GUI testing was done manually. This was very laborious and time-intensive, so we decided to switch to a browser macro platform in order to save time and increase reproducibility of tests. iMacros is an extension for Google Chrome and Mozilla Firefox which allows you to record browser actions and repeat them at speed. 
-
+\\
+\\
 Selenium is a unit-testing platform that can execute client-side scripts. We started using selenium in order to use TDD for client-side code, by writing scripts that would emulate GUI interactions and test network calls. However, writing tests for Selenium turned out to be very tedious and time-consuming, so we did not end up using it as much as we wanted to.
 
 \subsection{Evaluation of Final Product}
-Interface
-
+\subsubsection{Interface}
 We came up with a simple, easy to understand interface for the web page. This part is specially important as our main audience are young children, and a complex or uninteresting representation would strongly push them away from enjoying the game. That’s why we focused a lot on the interface of the game, coming up with a very intuitive design that people can completely understand before finishing their first game. We also accomplish this by the use of lively colours such as light blue and yellow to give the game a more dynamic look.
+\\
+\\
 
 We also tested the game on our own personal devices such as the Samsung Galaxy SII Note (smartphone), Google Nexus 7 (tablet) and the iPhone 4. We found that the game ran without any noticeable glitches either on the default browser or the installed chrome. In some cases the game even ran a bit faster, we believe that this was the case because these devices are more modern and have better hardware capabilities. If we spent more time taking performance into consideration then we could’ve perhaps made it run faster on the Motorola tablet. 
 
 
-Networking
+\subsubsection{Networking}
 
 Our success in this area is not as well defined, as while various players can play the same game without a problem, we still can’t perfectly deal with unexpected actions such as a disconnection from one of the players. For example, if a player disconnects from a game, he will be kicked out and the game will still go on without problems (unless there were only two players left, in which case the game would end). However, the disconnected player would not be able to return to the game and would have to join a different room.
 
-The actual game
+\subsubsection{The actual game}
 
 The original game, being a board game, is very malleable due to house rules. That’s why while having the same core, 2 games can be very different from each other. However, this flexibility is quite hard to implement, therefore we had to be careful when deciding our rules, as they had to be fit for everybody while still making the game as entertaining as possible. We believe we have achieved this to a certain extent, but a lack of testing with the intended audience makes it hard to come to a definite conclusion. Perhaps given more time we could make changes to when a client creates the game such as adding in custom rules, custom dice and deciding on how a game ends (these new rules and features could be shown in a description box that appears when another player clicks on the game in the lobby).
 
@@ -465,17 +483,18 @@ The original game, being a board game, is very malleable due to house rules. Tha
 \section{Conclusion and Future Extensions}
 Through the course of this project, we have successfully designed and implemented a web-based version of the Equations variant of Wff ‘n Proof. By focusing on user-friendliness as well as core functionality, we were able to produce a product that is not only accessible to our target audience of 8 to 13 year olds, but also encapsulates the full functionality of the Equations game.
 
-Possible extensions
+\subsection{Possible extensions}
+\begin{itemize}
+\item AI player: we can incorporate an artificial player so that players would not have to wait for other players to join their game. We could also vary the difficulty of the AI with basic levels for beginners and more advanced AI’s for the more experienced of players. The AI could also act as a helper where it automatically solve equations (using heuristics), for instance if at the end of the round, no players could find a solution (or they all agreed that no solution could be found), the AI could tell them whether there was a solution or not and give them a valid solution if there indeed was.
+\item More rules: Another way that we could extend our game would be to implement more rules, for instance as we mentioned earlier there are many various versions of the game, including ‘house rules’. When a client create a game, we could have added the opportunity for them to add these rules in. There are also other rules that we could have added such as the Last Cube Procedure (where there is only one dice left in resources, the player whose turn it is must make a never challenge). In addition we could have added an element of difficulty to our game (eg a an easy, normal and hard mode), using only plus and minus operators in an easy version and add more operators as the difficulty goes up. Tied in to difficulty we could add difficulty specific rules such the One Resource Rule (you are only allowed to use one dice from the resources when submitting your solution). 
+\item Game types: In a continuation of the various version of the game, we could have implemented modes where the players could play these various game types. For instance the Set Theory variant, Complex Number variant etc. We could also then implement a sharing capability for our game, allowing players to upload and share their variation of the game.
+\item Profiles: We could have created profiles for clients, allowing them to upload pictures and keep a track of their stats such as the number of games played and the total number of points that they have accumulated.
+\item Communication between players: Building on a profile system, we can take it further to have private messages, chat, groups of users, etc.
+\item Integration with social services: We could also integrate the game with other services such as Google. Google+ and other social networks has API’s for integrating HTML5 apps with its service, so that you can add the app during a video or voice conference and play together with your friends.
+\end{itemize}
 
 
-AI player: we can incorporate an artificial player so that players would not have to wait for other players to join their game. We could also vary the difficulty of the AI with basic levels for beginners and more advanced AI’s for the more experienced of players. The AI could also act as a helper where it automatically solve equations (using heuristics), for instance if at the end of the round, no players could find a solution (or they all agreed that no solution could be found), the AI could tell them whether there was a solution or not and give them a valid solution if there indeed was.
-More rules: Another way that we could extend our game would be to implement more rules, for instance as we mentioned earlier there are many various versions of the game, including ‘house rules’. When a client create a game, we could have added the opportunity for them to add these rules in. There are also other rules that we could have added such as the Last Cube Procedure (where there is only one dice left in resources, the player whose turn it is must make a never challenge). In addition we could have added an element of difficulty to our game (eg a an easy, normal and hard mode), using only plus and minus operators in an easy version and add more operators as the difficulty goes up. Tied in to difficulty we could add difficulty specific rules such the One Resource Rule (you are only allowed to use one dice from the resources when submitting your solution). 
-Game types: In a continuation of the various version of the game, we could have implemented modes where the players could play these various game types. For instance the Set Theory variant, Complex Number variant etc. We could also then implement a sharing capability for our game, allowing players to upload and share their variation of the game.
-Profiles: We could have created profiles for clients, allowing them to upload pictures and keep a track of their stats such as the number of games played and the total number of points that they have accumulated.
-Communication between players: Building on a profile system, we can take it further to have private messages, chat, groups of users, etc.
-Integration with social services: We could also integrate the game with other services such as Google. Google+ and other social networks has API’s for integrating HTML5 apps with its service, so that you can add the app during a video or voice conference and play together with your friends.
-
-Known issues
+\subsection{Known issues}
 
 Though we tried to make the game as reliable as possible through the use of now.js (which adds hand-shaking to web socket connections), there were still some issues we found which are to do with connectivity. The main one was to do with unreliable internet connections, such as mobile networks or unreliable wireless connections. In the current version, when a client disconnects, they are completely removed from the game. To account for unreliable connections, we would need to have sessions which are authenticated once per browser session instead. That way, we can use the session as opposed to the web socket connection to authenticate the player such that when the player disconnects, we give them some time to reconnect before removing them from the game.
 
@@ -533,11 +552,6 @@ At times, it was difficult to do pair programming when people are far away from 
   \url{https://github.com/pivotal/jasmine}
 \bibitem{dan}
   \url{http://dannorth.net/introducing-bdd/}
-\bibitem[Figueredo and Wolf, 2009]{Figueredo:2009dg}
-Figueredo, A.~J. and Wolf, P. S.~A. (2009).
-\newblock Assortative pairing and life history strategy - a cross-cultural
-  study.
-\newblock {\em Human Nature}, 20:317--330.
  
 \end{thebibliography}
 
