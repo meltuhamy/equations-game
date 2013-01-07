@@ -18,6 +18,7 @@
 
 \documentclass[12pt]{article} % Default font size is 12pt, it can be changed here
 
+\usepackage{url}
 \usepackage{geometry} % Required to change the page size to A4
 \geometry{a4paper} % Set the page size to be A4 as opposed to the default US Letter
 
@@ -30,14 +31,14 @@
 
 \linespread{1.2} % Line spacing
 
-%\setlength\parindent{0pt} % Uncomment to remove all indentation from paragraphs
+\setlength\parindent{0pt} % Uncomment to remove all indentation from paragraphs
 
 \graphicspath{{./Pictures/}} % Specifies the directory where pictures are stored
 
 \begin{document}
 
 %----------------------------------------------------------------------------------------
-%  TITLE PAGE
+%	TITLE PAGE
 %----------------------------------------------------------------------------------------
 
 \begin{titlepage}
@@ -47,7 +48,7 @@
 \center % Center everything on the page
 
 \HRule \\[0.4cm]
-{ \huge \bfseries Equations Live!}\\[0.4cm] % Title of your document
+{ \huge \bfseries Equations!}\\[0.4cm] % Title of your document
 \HRule \\[1.5cm]
 
 \begin{minipage}{0.4\textwidth}
@@ -90,48 +91,435 @@ Dr. Krysia \textsc{Broda} % Supervisor's Name
 %	INTRODUCTION
 %----------------------------------------------------------------------------------------
 \section{Executive Summary}
+Our game Equations! converts the popular and family friendly board game known as Wff ‘n’ proof into a fully fledged turn based web game, adding in improvements over the board game such as the removal of the possibility of cheating, substituting of dice and no longer having to worry about losing any of the equipment. Thus our game brings together people from all corners of the world who love this game. 
+\\
+\\
+The main clients who will use our game will be children aged between 8 and 13, who have some sort of internet access and who want to improve their mathematical skills in building and forming equations. Equations! will help these children while providing them with the opportunity to improve their mathematical skills while at the same time being a fun game to play. Especially when they do not have access to the board game or when they have no one nearby to play with, the wonders of the internet providing both for them. And with the number of people who have access to the internet growing, we can expect our target audience to grow with it.
+\\
+\\
+It is well known that there are many web games that aim to help further children’s further education, especially in maths. However we believe that our game has an edge over the competition due to its simplistic but attractive design along with a reward system that encourages players when they do well without any negativity if they do not perform as well.
+\\
+\\
+Our vision is to see our game being used by every child. Using it to learn and furthering their education in mathematics. Eventually we hope our game finds its way into schools where teachers can use it to help them teach children about equations in a fun but still meaningful way.
+\\
+\\
+We have created a working prototype that has already been deployed. At the moment we wish to get feedback on our product from our target audience so that we can tweak our design to better cater for their needs. The current development team consists of five computer undergraduate students from Imperial College London, indicating the strong technical drive that will carry this project towards its realisation.
 
 \section{Introduction}
 \subsection{Motivation}
-\subsection{Objectives}
+Developed more than 45 years ago by Professor Layman Allen of Yale University, Wff ‘n Proof is a game of logic, maths, and quick thinking. The game was developed with the intention of bringing an element of fun to learning \cite{allen}, and has since been adopted in schools across the United States and the rest of the world, with very promising results. Studies have shown that higher IQ scores, increased mathematical achievement, and even improved attendance, are among the many benefits Wff ‘n Proof can bring to schoolchildren \cite{wffnproof}. Up until now, the game only exists in physical form, as a board game. It is our aim to make Wff ‘n Proof available to a wider audience by creating an easy to use web-base version, allowing all schoolchildren with internet access to experience the benefits that this game can bring.
+\\
+\\
+Although the original version of Wff ‘n Proof involved natural deduction, and logical principles that may not be known to most 8 to 13 year olds, there is a variation called Equations which just uses the basic mathematical operations, where the participants try to create an equation, given the dice available, that matches the goal (that was set by a someone at the beginning of the game). It is this version of the game that we would implement. By making it less complex than the original version, we hope to target our game to children aged 8 to 13.
+\\
+\\
+A brief outline of the actual game rules are as follows, and an illustration of the game board can be seen in Figure \ref{fig:gameboard}:
+\begin{itemize}
+\item The game is played by 2 or more players.
 
+\item There are two areas called Resources and Goal, and three mats called Optional, Required, and Forbidden.
+
+\item One player is chosen as the goal setter. He picks up 24 6-sided dice and throws them in the Resources area.  
+
+\item Each die has 2 operators and 4 numbers, from 0 to 9, on them. The goal setter moves between 1 and 6 die from the Resources area to the Goal area to form an equation which he then declares as the goal by saying “Goal”. Numbers can only be made up by 2 digits when setting the goal.
+
+\item Then the players take turns making their move in a clockwise direction. When it is your turn to play, you must move a die from the Resource area to either the Forbidden, Optional, or Required mat.
+
+\item At any time, a player has the choice to make a challenge. A special ‘challenge’ block (this can be anything) is put in the middle and a player must first pick up the challenge block to make a challenge. There are two types of challenge, a ‘Now’ challenge (where you make an equation using the dice) and a ‘Never’ challenge (where you claim that you cannot make an equation), these are explained in more detail below. When a player makes a challenge, the turns stop, and all other players must say whether they agree or disagree.
+
+\item In a ‘Now’ challenge, the challenger and everyone who agreed must create an equation that equals the Goal using all the dice from the Required mat, any number of dice from the Optional mat, and up to 1 die from Resources.
+
+\item In a ‘Never’ challenge, everyone who disagreed with the challenger must create an equation using all the dice from the Required mat, any number of dice from the Optional mat, and any number of dice from Resources.
+
+\item Only one digit numbers can be used in the solution (you can’t group 2 dice together to make a bigger number)
+
+\item After the solutions have been submitted, points will be distributed amongst the players depending on their answers, and a new round will begin, selecting a different goal setter.
+
+\item The end of game can vary from a player reaching an objective score, or a limit in the number of rounds. This however must be agreed between the players before the game starts.
+
+\end{itemize}
+
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{gameboard}}
+\caption{The Equations Game Board}
+\label{fig:gameboard}
+\end{figure}
+
+\subsection{Objectives}
+Our main objective was to create an up-to-date, web-based distributed version of the Equations game, that can be played by any number of participants. As well as being functional, we want our game to be fun, and playable by our target audience of 8 to 13 year olds. In order to meet these goals it was imperative that we design a simple and intuitive user-interface, that is not only easy to use but also appealing to our target audience. 
+\\
+\\
+In order to create a fully functioning version of the Equations game, our implementation objectives, against which which we can evaluate our final product, are as follows:
+\begin{enumerate}
+
+\item Game state: Of chief concern to us would be at first to create a game and then how to hold the state of it, with the game updating itself on the end of each turn. For instance we would have to consider how we would create the dice and know which mat it is on; how the game would know whose turn it is; and which part of the game (goal setting/ end-round etc) it is at. Another concern was security, as we did not want players to have access to the game state. thus we knew we had to store the game state on the server only. Once we had decided on how our server would hold the state of the game, we then needed to decide upon how this state would be represented to the client. As our game is aimed at younger children we needed to make our design as simple and as easy to follow as possible.
+\item Networking: Our next objective was how we would send information between the server and clients that were connected. We needed to make sure that the information would be updated as soons as a player makes a move and changes the game state and thus we needed to inform the other players of this change. In addition to this we had to let other players know when a particular action was required such when a goal needed to be set or when another player has issued a challenge requiring action to be taken.
+\item Joining games: We had to consider how we would implement the lobby screen and how clients could join and even create games. The first issue here would be how many people could play in a game and how difficult a game should be. The next issue would be how we would show these games, for instance we needed to show the current games that were available, how many players were in them currently and how difficult they would be. After a client had connected to a game we needed to show said client that he/she had been connected and tell them that it was waiting for other players to connect.
+\item Challenges: A key part of the game is the challenge system. In various version of the game there are different rules for how challenges can take place. Bearing in mind that our game was aimed at children and was meant to help them further their mathematical ability, we knew that in our implementation we had to keep it as simple and as easy to follow as possible.
+\item Scoring: As we said when we explained how to play the game, scores are distributed out or taken away depending on the performance of the player. For our game we had to make sure that a fair and just scoring system was in place. In addition to this there is the problem of how a game should end. Should it be by a player reaching a score limit or when a set number of rounds have taken place.
+\item Tablets and Phones: One of the motivations for making our game was to take advantage of mobile and tablet devices. As a board game, the game can be developed to be lightweight and run on an vast array of devices, as well as on desktop computers. We would have to keep this in mind when we were to design the look of our game so that it could work on mobile devices.
+\item Ease of use: Our final motivation was to make sure that the game was easy to play. We wanted it to be self explanatory, so that children would be able to pick up the game and the rules quickly.
+
+\end{enumerate}
+
+\subsection{Contributions}
+As a whole we feel that we have met most of our objectives if not all of them, though there are certain areas that we feel could be improved or things that if we had more time we could have incorporated into our game.
+\\
+\\
+We successfully accomplished the main loop of them game, while keeping an overall attractive and simple design to it. In addition we feel that our design works very well on mobile devices as well as laptops and desktops. Overall we feel our networking works rather well, updating the game state quickly and notifying clients when they needed to do something. Our challenge system is simple and easy to follow but we are unsure about our scoring system, with more testing with our target audience we could have fine-tuned it to ensure its fairness. 
 \section{Design and Implementation}
 \subsection{Implementation Overview}
+Our client side implementation was done using Javascript, HTML and CSS. The main reason for this choice was for performance and compatibility with mobile devices.
+\\
+\\
+The server side implementation was done in Javascript (using Node.js). The reason for this was that it was much easier to integrate a client and server together using web sockets in Javascript with many aspects of distributivity taken care of using the socket.io library and the now.js library. Using Node.js also meant our application was far more scalable due to the non-blocking architecture present in Node.js.
+
 \subsection{Alternative Implementation Choices}
-\subsection{Designing for Mobile Devices}
-\subsection{Network Model-View-Controller}
-\subsection{Multiple Players}
-\subsection{Networking and Remote Procedure Calls}
-\subsection{Representing Equations and Dice}
-\subsubsection{LL(1) Parser and Evaluator}
-\subsection{Game Class}
-\subsection{Turn System}
-\subsection{Screen Manager}
+We carefully considered other implementation choices before making our final decision. Here are some of our candidate client side implementation choices:
+\\
+\\
+Adobe Flash (Actionscript) - Adobe Flash is a popular browser plugin that has been used for many web based games and applications. However, as a plugin,  it is not a web standard. There are many devices which we target that do not support Flash. This includes the iPad as well as many new Android devices, since it is now discontinued on the Android platform. Flash also has a learning curve and requires a full-fledged development environment which is not available openly.
+\\
+\\
+Java Applet (Java)  - Java Applets are another browser plugin. We all have good experience with Java and are very comfortable working with Java. However, Mobile devices running Apple iOS and Android don’t run Java Applets at all \cite{stack1}\cite{stack2}. Java web applets are also considerably slower to load and run and often require more memory and processor time.
+\\
+\\
+Google Dart - is a language created by Google to help web developers design and develop web applications. The reason we decided to not use Dart was that it was not very mature and we didn’t want to risk using a very new tool in case we had issues with bugs and stability. It is also very difficult (often impossible) to import existing javascript libraries into Dart applications. Our game relies heavily on network requests over a websockets - and certain libraries we wanted to use were not available for Dart. Finally, Dart is yet another language that has a learning curve, unlike the Javascript approach we took.
+\\
+\\
+For the server side implementation, we decided to use Node.js. This was mainly for its speed, scalability, and reliability. Other solutions included PHP and other CGI scripting solutions. We decided Node.js would be better to use because normally PHP and other CGI tools have a synchronous, blocking architecture. This was not suitable for our application since we needed a fast and scalable server which could host many games dynamically. And while websocket implementations are available in these languages, they are not designed for continuous bidirectional communication and often the server stack such as Apache, locks up and slows the whole application on the server down. Node.js does not face this problem because it is asynchronous and is designed to be event-driven.
+
 \subsection{Tools, Languages, and Libraries}
+\subsubsection{CoffeeScript}
+Even though we decided to use Javascript as our implementation language for both client and server side code, Javascript does have some problems. It is often difficult to design good object-oriented code using Javascript, since there is no notion of classes, inheritance, etc. Javascript does have a notion of prototypes which can be thought of as object templates, like classes, but they are more complex to understand and there are still some issues to deal with, including the fact that it is very difficult to abstract data in Javascript.
+\\
+\\
+To solve many of these issues and also add some nice syntax-sugar to Javascript, CoffeeScript was introduced.
+\\
+\\
+"CoffeeScript is a little language that compiles into JavaScript. Underneath all those awkward braces and semicolons, JavaScript has always had a gorgeous object model at its heart. CoffeeScript is an attempt to expose the good parts of JavaScript in a simple way.
+\\
+\\
+The golden rule of CoffeeScript is: "It's just JavaScript". The code compiles one-to-one into the equivalent JS, and there is no interpretation at runtime. You can use any existing JavaScript library seamlessly from CoffeeScript (and vice-versa). The compiled output is readable and pretty-printed, passes through JavaScript Lint without warnings, will work in every JavaScript runtime, and tends to run as fast or faster than the equivalent handwritten JavaScript."\cite{coffee}
+\\
+\\
+An important feature of CoffeeScript that we used frequently was its class feature. It acted as a layer over prototypes - so that we can think and use prototypes as if they were classed. This can be seen in Figure \ref{fig:coffee}
+
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{coffee}}
+\caption{CoffeeScript Classes}
+\label{fig:coffee}
+\end{figure}
+
+Another feature of CoffeeScript we used heavily was its build system. Like the Unix make command, it allowed us to specify build procedures. For example, Javascript on the client side does not have a file 'include' system like that of C, nor does it have a class inclusion system like that of Java. Therefore the only way to include files would be to add them in the HTML manually, using <script> tags. The problem with this is that including multiple files this way is considerably slower. To solve this, we concatenate all our CoffeeScript files into a single Javascript file that is included in the HTML. We also implemented many other build tools, as shown  below:
+
+\begin{verbatim}
+cake setup                # Set up dependencies
+cake build                # Compile everything
+cake client               # Compile client code including .styl
+cake watch                # Compile client when changes made in client/src/*
+cake server               # Compile server code
+cake run                  # Compile everything and run the server
+cake debug                # Run the server with debugging. Break on line 1
+cake test                 # Compile everything and run unit tests
+cake stylus               # Compiles and watches styl to css
+
+  -d, --debug        Turns debug mode ON. (off by default)
+\end{verbatim}
+
+\subsubsection{Stylus}
+To separate design, appearance, and layout from the presentation layer, we used CSS. However, we decided to use stylus to write our CSS. 
+\\
+\\
+"Stylus is a revolutionary new language, providing an efficient, dynamic, and expressive way to generate CSS. Supporting both an indented syntax and regular CSS style." \cite{stylus}
+\\
+\\
+The main advantages of using Stylus was that it was easier and faster to write complicated CSS, by introducing variables and mix-ins (like functions). It was therefore a lot easier to add cross-browser CSS 3 with no code duplication (this is the case with normal CSS because you need to add renderer-specific code for CSS 3 implementations).
+\\
+\\
+The disadvantages of Stylus was that the stylus code needed to be compiled into CSS. But since we were already compiling client code, this was not much of an issue.
+\\
+\\
+\subsubsection{jQuery}
+"jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript." \cite{jquery}
+\\
+\\
+jQuery is very reliable and thoroughly tested, and is used by many large corporate companies such as Microsoft, Google, Mozilla, Wordpress, etc. In that sense, jQuery has become a kind of standard when it comes to web development.
+\\
+\\
+The advantages of using jQuery is that it allows us to very easily manipulate the DOM. The alternative would have been to alter it using plain Javascript, however, there are issues with browser compatibility which jQuery takes care of. For this reason, we decided to stick with jQuery.
+\subsubsection{Jasmine}
+"Jasmine is a Behavior Driven Development testing framework for JavaScript. It does not rely on browsers, DOM, or any JavaScript framework. Thus it's suited for websites, Node.js projects, or anywhere that JavaScript can run." \cite{jasmine}
+\\
+\\
+Though there are other test frameworks available for Javascript, we decided to use Jasmine since it is designed to be thought of as behavior driven. Behavior driven development is a spin-off of test driven development where the thing you are testing is actually a behavior of the application and should be reasoned about in this way. Dan North gives a very good explanation for behaviour driven development \cite{dan}. Jasmine was also available for both client side implementation and node.js server side applications.
+
+
+\subsection{Designing for Mobile Devices}
+To develop our game for mobile devices, specifically tablet computers, we borrowed an Android tablet from the department, though the game should also work with any tablet with a webkit browser (such as mobile Safari as is the case for the iPad). 
+\\
+\\
+We had to make the following considerations.
+\begin{itemize}
+\item Screen size - our implementation needs to scale to smaller screen sizes. We had to consider whether some elements should not be visible for certain sizes. We also had to consider whether the layout should change and whether we needed smaller fonts, widths and heights. To solve this issue, we wrote our CSS using media queries. Media queries (written using @media in CSS) allow us to write rules to target different screen sizes.
+\item Graphics Processor - we didn’t have the luxury of using javascript to create elaborate page effects. We had to ensure that any effects or transitions would not be too processor intensive. Many javascript games use the new HTML5 canvas with a game loop. They draw and onto a canvas and update the game logic at a frequency near 50 times per second. This approach is nice for creating smooth real-time action games. However our game  is a turn based game that needs to run on mobile devices. We opted to create the game in the DOM . It’s more static but less processor intensive.
+\item Touch Screens - we had to keep in mind that users may be using either a mouse of their hand as a pointing device. This means we cannot rely on mouse-hover (rollover) events and tooltips. Any effects that rely on a mouse to be hovering over an element will not be experience on a tablet. Furthermore, we had to ensure that any buttons were large enough to be touched on (making a trade-off with small screen sizes). In particular, when touching adjacent dice on tablets - we found that some tablets had some trouble (zooming-in; asking us which one we meant). We solved many of these issues by using appropriate browser meta-data which disable certain mobile browsing features such as zooming.
+\end{itemize}
+
+\subsection{Network Model-View-Controller}
+The overall design of the game is to have all the game logic on a single server, and use thin clients as views for the game. We decided to use the model-view-controller (MVC) architecture for the game but across a network. We anticipated the risk of players cheating, hence we choose this architecture from the very start to mitigate this risk. 
+\begin{itemize}
+\item Model (server) - The server stores the model for the game. We decided to take this approach was because we needed maximum security of the game state. Allowing a player to have control of the game’s state allows malicious behaviour to occur. 
+\item View (client)  - The server sends to each client the state. The client merely reflects a visual representation of this received state. If the client attempts to make any changes, he can only change the local variables on his machine - which gives him no advantage to the game. The true state of the game is on the server.
+\item Controller (network) - Each client can send commands to the server via remote procedure calls. The server can also invoke a remote procedure call on the client. To ensure correct synchronisation of server’s game state, we needed to correctly send an updated version of the game state to each client every time the state was changed.
+\end{itemize}
+
+
+
+% use \ref{fig:mvc} to print figure number
+\begin{figure}[H] % MVC pic 
+\center{\includegraphics[width=0.5\linewidth]{image03}}
+\caption{MVC Control Flow}
+\label{fig:mvc}
+\end{figure}
+\subsection{Networking and Remote Procedure Calls}
+The main complexity of our game comes from the challenge of having a static state while having several dynamic connections and events happening asynchronously. The way we decided to implement this is to keep everything completely asynchronous and therefore as modular as possible. To handle events, we had a server that listens for remote procedure calls from clients.
+\\
+\\
+Websockets - First a client goes to the website. When the page loads our networking library (now.js) allows the client sends a request to establish a websocket with the server. Once the server establishes a socket, it then listens for further messages to be sent from the client. To send messages between client and server, we use remote procedure calls. Remote procedure calls are implemented over web sockets just to provide a clean interface for event-driven programming. The diagram below shows an example.
+\\
+\\
+Group Messages - Now.js allows the server to perform the same remote procedure calls on several clients in one line. This was achieved using a groups interface provided by now.js. The library can manage groups of client websocket connections. But on top of this, thanks to now.js, we can also store our own values about each client. So when a client connects or does a request (in the form of a RPC), we simply check this value that we set.
+\\
+\\
+Sending the state: The game class stores the state of the game. This is stored as a JSON object holding variables such as whose turn it is and what dice are placed on what mat. This state object is stored in the game class on the server. When server thinks it’s necessary - it uses a group message to send the updated state to all the players in the game. This is usually when a player has taken a turn or when the timer has ran out. We decided to take this approach because sending across the whole instance of the game that is on the server to the client would raise security concerns. For example, some variables are private to the server (such as socket ids) and shouldn’t be exposed to clients. It was also not feasible from a technical point of view due to serialisability issues. We found that sending serialised objects (serialising Javascript prototypes) caused issues - for example handling referencing other server side classes.
+Players Authentication - Now, there was an issue with security - what if the player changes their player id so that he can play as someone else? To solve this, we first authenticate the player id with the player’s socket id. In other words, the player ids we send to the client to distinguish between players are different from the socket ids that are actually connecting to the server. The mapping from player id to socket id is only stored on the server and therefore the client could never “pretend” to be someone else.
+Concurrent Games -  Our application scales in that it can have several games running concurrently. There are several instances of the game class all managed by a GamesManager class (explained later.) When the player joins a particular game, we store a value that links to their socket id to a specific game id.  The server does some authentication and works out that the client is already registered with an already running game with an id of gameId. Now.js’s groups feature was flexible enough to allow us to group clients by the game that they were in. This meant that we can broadcast messages to all the clients for a particular game id. 
+\\
+Figure \ref{fig:rpc}: Here, the client has set the goal of ‘1+2’ and pressed the submit button. A remote procedure on the server called receiveGoal(‘1+2’) is invoked. 
+The server determines whether this operation is acceptable from this player given the current state of the game. Assuming it is, the server calls a remote procedure on every client in that game called recieveGoalTurnEnd(‘1+2’). 
+Every the client receives this and changes their views to reflect that the goal has been set.
+Note that the equation ‘1+2’  this isn’t stored as string but actually an array of integers. This will be explained next.
+Asynchronous calls - When the client calls remote procedures, it is important to note that this call is asynchronous - meaning that once the call has been made, the client does not wait for a response. This is good because the client doesn’t lock. We wanted this because there are many asynchronous events being fired in the browser such as timing events that would be affected by any locking procedure calls. 
+\\
+\\
+
+% use \ref{fig:rpc} to print figure number
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{image04}}
+\caption{Remote Procedure Calls}
+\label{fig:rpc}
+\end{figure}
+
+\subsection{Representing Equations and Dice}
+Dice Faces - To store the dice in our game, we use integers. Each integer represents a particular dice face. However the numbers chosen to represent faces had to be arbitrarily chosen. To avoid scattering our code with unreadable magic numbers, we decided to use variables that maps words to these numbers. So for example, instead of writing face == 17, we can write face == DiceFace.divide when checking a dice face is the divide face. We wrote DiceFace.coffee as a static class that holds the enumerated type.
+Global Dice and Dice Mats - Every dice used in our game is stored in an array which we call the global dice array. This array is an array of integers representing dice face and it randomly created at the very start of the game. These are the dice that are moved between mats and used by players to form solutions. Each mat in the game is an array of indices to the global dice array. The concept is shown in figure x. 
+Equations - An equation is simple an array of global dice references. However we needed to add parenthesis. The original equations game does not have brackets on dice faces (they were hand-drawn on paper). We decided to reserve -1 and -2 as pseudo-indices to the global dice array. -1 represents a left bracket and -2 represents a right bracket. One of the reasons why decided to use a global dice array is because it makes it easier to check whether an equation don’t use invalid dice or the same dice twice. 
+
+\subsection{Equation Builder}
+Inputting equations is needed for both forming the goal and when submitting attempts to solve the goal. We wrote the EquationBuilder.coffee class as a generic class for building equations. Figure2 [] show it being used concretely in two parts in the game. We had to consider how to let the user build equations easily; keeping in mind this needs to work on mobile devices. 
+
+Adding Dice - We initially decided that we would drag dice to the area used for building the equation. Dragging dice feels intuitive for touch devices, it resembles the board game and we felt that children may enjoy it. However we didn’t do this. We decided to add dice via simple mouse clicks (or touches). We found that by just by simply clicking on a dice, we can form equations quickly. We anticipated that dragging dice may be awkward on very small screens and that the programming would take more time. 
+Adding Brackets (version 1) - Another issue was finding a way to add brackets easily. We were told by our supervisor that children may have difficulty pairing up brackets for larger equations. They needed a clean, fast and easy way to add brackets around dice. Our initial idea is depicted in the figure below. 
+
+The user drags his mouse horizontally (or swipes his finger horizontally) in order to group dice into a pair of parentheses. The user first presses down, moves his finger across then releases to form the group. While dragging, an area is highlighted showing what dice will be bracketed.  This idea is nice because it always adds brackets in pairs. It’s impossible to form equations with unbalanced parentheses because the opening and closing brackets are always added in one atomic operation. 
+Adding Brackets (version 2) - The dragging idea seemed adequate until we realised that equations may span several lines. We figured that any input movement required to group dice across several lines would be too complicated to program and too complicated for the user to make. So instead, we used a new idea that puts dots in between dice. The dots are clickable and act as placeholders for brackets. Clicking a dot places an open bracket in the dot’s position then clicking a different dot adds the closing bracket in the respective position. To remove brackets, the user clicks on the bracket (either open or closed). The tool is intelligent enough to remove redundant brackets. The tool also prevents the user from adding opening brackets and closing brackets in invalid positions. Example cases are shown in figure 4x.
+
+
+% use \ref{fig:equation1} to reference figure number
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{fig2}}
+\caption{Equation Forming at Goal Screen}
+\label{fig:equation1}
+\end{figure}
+
+% use \ref{fig:equation2} to reference figure number
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{fig2-2}}
+\caption{Equation Forming in Game Screen}
+\label{fig:equation2}
+\end{figure}
+
+% use \ref{fig:bracket1} to reference figure number
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{fig4}}
+\caption{Bracketing in Goal Screen}
+\label{fig:bracket1}
+\end{figure}
+
+% use \ref{fig:bracket2} to reference figure number
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{fig4-2}}
+\caption{Bracketing in Game Screen}
+\label{fig:bracket2}
+\end{figure}
+\subsection{Parsing and Evaluating Equations}
+
+% use \ref{fig:parser} to print figure number
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{image00}}
+\caption{Parser and Evaluator Structure}
+\label{fig:parser}
+\end{figure}
+
+\subsection{Game Class}
+% use \ref{fig:games} to print figure number
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{image06}}
+\caption{Games System Structure}
+\label{fig:games}
+\end{figure}
+
+\subsection{Turn System}
+\subsection{Screens}
+% use \ref{fig:screen} to print figure number
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{image05}}
+\caption{Screen System Structure}
+\label{fig:screen}
+\end{figure}
+
+\subsubsection{Parsing and Evaluating Equations}
+Our game requires a parser and evaluator. We need to check that an inputted equation gives the same value as another equation. We wrote an ExpressionParser.coffee class to build a parse tree for an equation and we wrote Evaluator.coffee to walk over parse trees to calculate the numerical value for the expression.
+
+Scanning Tokens - A scanner was not needed. We anticipated that we would need to parse the equations and so opted to store equations as an array of integers as previously described. The indices to the global dice array stored in an array already gives us the tokens required for the parser. If we had used strings to represent equations, we would need to consider writing a scanning to convert ascii characters to tokens and to cleanup whitespace. 
+LL(1) Parser - The parser is an LL(1). It builds the parse tree from the root to the leaves using a very simple algorithm. It enforces precedence by the order of in which we call handle*() private methods - which identify the type of node based on the next token. 
+
+Division By Zero - Our parser prevents division by zero. For division, once the right subtree has been parsed - we evaluate the subtree and check if it’s zero. The appropriate error message is sent to say an equation that divides by zero has been inputted. 
+Square Roots of Negative Numbers - Our parser prevents taking the square roots of negative values. Once a subtree has been parsed - if we are taking the square root, we evaluate the subtree and check if it’s negative. The appropriate error message is sent if the subtree is negative. 
+Handling Errors - Besides it’s simplicity, it also allowed us to detect most errors we needed easily. We could identify the location or errors well. This was useful because the user needs good information about what the error is and where it occurred. We wrote an a class that delivers errors from the server to the client in a useful form (an object with an messages,parameters about the error and a unique error number).  Client can receive these errors and create useful visual responses (e.g. highlighting dice that cause the error). 
+Removing Redundant Brackets - Our parser removes redundant brackets. If a user submits an equation with redundant brackets then our parser will delete them before storing the tree in the game and before passing them to the evaluator. 
+
+\subsubsection{Game Class}
+The game class holds the state of the game and only this. We took  the design decision of separating the core game logic from networking code. As a result, there are no calls in the game class to send data over the network. This was crucial because we needed to ensure that the game logic worked to a satisfactory degree. We ensured this by writing unit tests that tested many of the game methods, completely separate from any networking code that actually calls the functions to manipulate the game logic. It also meant that we could have multiple instances of the Game to implement multiple games - so someone could create a “new” game in the lobby and the server could just create a new instance of a Game.
+
+To manage several games, the GamesManager simply keeps track of a list of Games, as shown above. The Game class is responsible for all of the game logic. The diagram above shows only some of the methods the Game class implements. Note that the Game class is isolated from the fact there might be several games running concurrently, and is completely isolated from the networking and distributed calls which might add a lot of complexity. It was therefore possible to unit test the methods implemented here by creating demo “game” instances that could be tested separately.
+\subsubsection{Turn System}
+Each turn in the game is timed. The server is in control of whose turn it is and how long they have to make their move. The state object in the game class stores whose turn it currently is. We used a javascript set interval to time events. It makes a function call every second to decrement the timer for the turn. We also store a turn duration value in the state object and a timestamp of when the turn started in the state object. The timestamp was needed because there is a delay with sending objects over the network. Every client receives this and can work out whose turn it is and how long they have to make their move. 
+
+One issue we ran into was how use timestamps. We used Javascripts Date.now() which stores the number of milliseconds since the UNIX epoch (UNIX time). The average turns duration was around 60 seconds. So Date.now() gave enough precision. One issue we realised was that each client may have a different system time and this a different value for Date.now() (e.g. in a different time zone). However our system avoids this problem by only using the servers Date.now for timestamps. 
+The clients show a small timer on their screen. We considered different ways to show a timer. Our supervisor wanted us to use show the time in a way that is not distracting and in a way that doesn’t scare or pressurise children. We used a radial bar that occupies a small part of a screen rather than a larger horizontal bar that spans the entire screen.
+\subsubsection{Screens}
+We realised that our game was going to have several screens with different code associated with each screen. We wanted to load screens via AJAX (asynchronous javascript server requests) but realised that these calls are asynchronous and that we need to know when the screen has loaded before doing anything. We decided to write a static ScreenSystem class. This class would be mainly responsible for loading screens but  also for providing an interface for letting code run on these screens and passing network events to screens.
+
+
+
+We defined an abstract Screen class that every screen must extend. 
+Each concrete instance of Screen is, in essence, an encapsulation of:
+HTML file: A html template that contains static content as well as placeholders for content that will change as the game progresses. 
+CSS file: This is used to style the page (choosing background colours, fonts etc.) A design decision we had, was to separate content from style for screens. We found that separating the css into its own file made things easier to follow.
+Initialisation code: each screen has its own javascript initialisation code. This code is called when the screen has first been loaded by the screen manager. This is needed or else to begin the flow of running code for this screen.
+To show a screen on the page, first we create the concrete instance. Then we call the load method, followed by ScreenManager’s renderScreen method. This takes a loaded screen and displays it; placing the HTML from the screen’s HTML file into the DOM. At the same time, it calls the the screen’s init() method - allowing the screen to do its initialisation code.
+
+For example, we have the concrete “Goal Screen” which gets displayed once enough players have joined and the game has started. It encapsulates goalscreen.html, goalscreen.css and has it’s own javascript initialisation logic in init() to load the screen (add the goal dice and areas).  
+
+The goal setter will see this screen and be able to interact with it in order to set the goal. Examples of other Screens include the lobby screen, join waiting screen, goal waiting screen, game screen, end of round screen, etc. The game class stores an unique id for each screen (provided by ScreenSystem) so that it can refer to the screens later.
+
+The client side code was the main point of interaction with the user, and so needed to be as easy to use and pretty as possible. But more crucially, it needed to be very robust and efficient. We made a tremendous effort to ensure that our client side code is as modular and easy to understand as possible, despite the amount of complexity there was. We designed ScreenSystem so that we can easily switch between pages simply by calling renderScreen. 
+
+As one can imagine, the ScreenSystem class is used when needed by the client’s game methods. For example, once the server has told the clients in a game that the goal has been set, the client code calls the ScreenSystem methods to render the Game screen. In this way, we can easily, efficiently, and asynchronously load only required content and scripts when its needed.
+
+
 
 \section{Evaluation}
 \subsection{Testing Procedures and Results}
 \subsubsection{Test Driven Development}
+A major focus of our development process was to employ test driven development as much as possible. The TDD cycle enabled us to define the requirements of our code by creating unit tests that would initially fail, writing code to make the tests pass, and then refactoring. One of the many advantages of this development process is that it builds up a regression testing suite that can be used to test for faults in existing code when new features are added. TDD is considered good software engineering practice, and is used extensively in industry, so using it for this project helped us to create good code as well as prepare us for working in industry.
 \subsubsection{Testing Framework}
+Jasmine is a unit testing framework for Javascript code that does not depend on any other Javascript frameworks and has easy to understand syntax. We decided to use Jasmine as our unit testing framework for writing TDD and general tests on the server side. 
 \subsubsection{Selenium and iMacros}
+Testing client-side and client-server interaction presented a different problem for which we found a few solutions. At first, a lot of our client GUI testing was done manually. This was very laborious and time-intensive, so we decided to switch to a browser macro platform in order to save time and increase reproducibility of tests. iMacros is an extension for Google Chrome and Mozilla Firefox which allows you to record browser actions and repeat them at speed. 
+
+Selenium is a unit-testing platform that can execute client-side scripts. We started using selenium in order to use TDD for client-side code, by writing scripts that would emulate GUI interactions and test network calls. However, writing tests for Selenium turned out to be very tedious and time-consuming, so we did not end up using it as much as we wanted to.
+
 \subsection{Evaluation of Final Product}
+Interface
+
+We came up with a simple, easy to understand interface for the web page. This part is specially important as our main audience are young children, and a complex or uninteresting representation would strongly push them away from enjoying the game. That’s why we focused a lot on the interface of the game, coming up with a very intuitive design that people can completely understand before finishing their first game. We also accomplish this by the use of lively colours such as light blue and yellow to give the game a more dynamic look.
+
+We also tested the game on our own personal devices such as the Samsung Galaxy SII Note (smartphone), Google Nexus 7 (tablet) and the iPhone 4. We found that the game ran without any noticeable glitches either on the default browser or the installed chrome. In some cases the game even ran a bit faster, we believe that this was the case because these devices are more modern and have better hardware capabilities. If we spent more time taking performance into consideration then we could’ve perhaps made it run faster on the Motorola tablet. 
+
+
+Networking
+
+Our success in this area is not as well defined, as while various players can play the same game without a problem, we still can’t perfectly deal with unexpected actions such as a disconnection from one of the players. For example, if a player disconnects from a game, he will be kicked out and the game will still go on without problems (unless there were only two players left, in which case the game would end). However, the disconnected player would not be able to return to the game and would have to join a different room.
+
+The actual game
+
+The original game, being a board game, is very malleable due to house rules. That’s why while having the same core, 2 games can be very different from each other. However, this flexibility is quite hard to implement, therefore we had to be careful when deciding our rules, as they had to be fit for everybody while still making the game as entertaining as possible. We believe we have achieved this to a certain extent, but a lack of testing with the intended audience makes it hard to come to a definite conclusion. Perhaps given more time we could make changes to when a client creates the game such as adding in custom rules, custom dice and deciding on how a game ends (these new rules and features could be shown in a description box that appears when another player clicks on the game in the lobby).
+
 
 \section{Conclusion and Future Extensions}
+Through the course of this project, we have successfully designed and implemented a web-based version of the Equations variant of Wff ‘n Proof. By focusing on user-friendliness as well as core functionality, we were able to produce a product that is not only accessible to our target audience of 8 to 13 year olds, but also encapsulates the full functionality of the Equations game.
+
+Possible extensions
+
+
+AI player: we can incorporate an artificial player so that players would not have to wait for other players to join their game. We could also vary the difficulty of the AI with basic levels for beginners and more advanced AI’s for the more experienced of players. The AI could also act as a helper where it automatically solve equations (using heuristics), for instance if at the end of the round, no players could find a solution (or they all agreed that no solution could be found), the AI could tell them whether there was a solution or not and give them a valid solution if there indeed was.
+More rules: Another way that we could extend our game would be to implement more rules, for instance as we mentioned earlier there are many various versions of the game, including ‘house rules’. When a client create a game, we could have added the opportunity for them to add these rules in. There are also other rules that we could have added such as the Last Cube Procedure (where there is only one dice left in resources, the player whose turn it is must make a never challenge). In addition we could have added an element of difficulty to our game (eg a an easy, normal and hard mode), using only plus and minus operators in an easy version and add more operators as the difficulty goes up. Tied in to difficulty we could add difficulty specific rules such the One Resource Rule (you are only allowed to use one dice from the resources when submitting your solution). 
+Game types: In a continuation of the various version of the game, we could have implemented modes where the players could play these various game types. For instance the Set Theory variant, Complex Number variant etc. We could also then implement a sharing capability for our game, allowing players to upload and share their variation of the game.
+Profiles: We could have created profiles for clients, allowing them to upload pictures and keep a track of their stats such as the number of games played and the total number of points that they have accumulated.
+Communication between players: Building on a profile system, we can take it further to have private messages, chat, groups of users, etc.
+Integration with social services: We could also integrate the game with other services such as Google. Google+ and other social networks has API’s for integrating HTML5 apps with its service, so that you can add the app during a video or voice conference and play together with your friends.
+
+Known issues
+
+Though we tried to make the game as reliable as possible through the use of now.js (which adds hand-shaking to web socket connections), there were still some issues we found which are to do with connectivity. The main one was to do with unreliable internet connections, such as mobile networks or unreliable wireless connections. In the current version, when a client disconnects, they are completely removed from the game. To account for unreliable connections, we would need to have sessions which are authenticated once per browser session instead. That way, we can use the session as opposed to the web socket connection to authenticate the player such that when the player disconnects, we give them some time to reconnect before removing them from the game.
+
 
 \section{Project Management}
 \subsection{Group Meetings}
+In order to discuss and review requirements, priorities, and task allocation, we held regular informal group meetings in the computing labs. During these meetings we discussed each member’s ideas about how to implement certain features, and sorted out which tasks would be best suited to which team members. By loosely following the Scrum development methodology, we split up tasks into sprints, with approximate time estimates for each, and then reported back to the group on progress in our informal scrum-like meetings.
 \subsection{Task Allocation}
+For the most part, our project could be split up into two main tasks - developing front end and GUI features, and back end server-side development. This enabled us to split the group into two teams with  group members choosing the task most suited to them. Seeing as James and Mohamed have the most experience with front-end web application development, the task of developing the front-end and client-side features was assigned to them, and the server-side development assigned to the remaining team members Tristan, Udara, and Alex. With both teams working in parallel, our workflow was very efficient. While our groups of size 2 or 3 are smaller than typical agile development teams, we followed similar methodology, using continuous integration to ensure that the shared source code repository was consistently up to date, minimising merge-conflicts when publishing to the shared source repository.
 \subsection{Version Control}
-\subsection{User Stories}
-\subsection{Pair Programming}
-\subsubsection{Remote Pair Programming}
+Our main collaboration tool for this project was the ‘Git’ version control system, which we used in conjunction with GitHub, a repository hosting service. This allowed us to seamlessly merge changes made independently, and fetch the latest changes made by other members of the group. GitHub has many features which are useful for team-based software development, such as bug reporting and task assignment, which we made extensive use of for planning out the development process of our project. The ‘issues’ system on GitHub allowed us to list exactly which tasks needed completing, and enables other users to comment on and contribute to each of the tasks at hand. 
+% use \ref{fig:github} to print figure number
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{image01}}
+\caption{GitHub Issue Tracking}
+\label{fig:github}
+\end{figure}
 
+\subsection{User Stories}
+To guide the development of our project we created user stories, which detailed the end-user requirements in an easy to understand format. We found Trello, an online service, to be particularly useful for collaboratively creating and organizing our user stories. In this way we could set out concisely what features we still needed to implement, by directly targeting our end-user needs. For example: “As a child playing the game, I want to be able to join a new game with ease”.
+% use \ref{fig:trello} to print figure number
+\begin{figure}[H] 
+\center{\includegraphics[width=\linewidth]{image02}}
+\caption{Trello User Stories}
+\label{fig:trello}
+\end{figure}
+
+\subsection{Pair Programming}
+Programming in pairs helped to keep our code clean and relatively bug-free. By working in this fashion, code is reviewed by the pair as it is written, ensuring most obvious bugs are weeded out sooner rather than later. Another advantage of pair programming is that when the coder gets stuck or doesn’t know how to progress, the pairs can swap roles or discuss their ideas, and work continues without too much interruption. Our group consists of five members, and was often split into a team of two and a team of three working on different tasks in parallel. This often allowed us to work as two pairs, with an extra person available to write tests or work alongside one of the pairs. This turned out to be very efficient, and helped to increase our overall productivity.
+\subsubsection{Remote Pair Programming}
+At times, it was difficult to do pair programming when people are far away from each other. Thanks to Cloud9, an online collaborative IDE which also acts as a platform as a service (PaaS) which allowed us to actually run a remote instance of our server, we were able to have online skype conversations while discussing and coding together, live on the cloud.  
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
 
 \begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
 
+\bibitem[Allen, L, 1965]{allen}
+\newblock Allen, Layman E. (1965), "Toward Autotelic Learning of Mathematical Logic by the WFF 'N PROOF Games", Mathematical Learning: Report of a Conference Sponsored by the Committee on Intellective Processes Research of the Social Science Research Council, Monographs of the Society for Research in Child Development
+\bibitem{wffnproof}
+  \url{http://www.wffnproof.com/research} 
+\bibitem{stack1}
+  \url{http://stackoverflow.com/questions/2368166/can-i-run-a-webpage-embedded-java-applet-on-the-iphones-web-browser}
+\bibitem{stack2}
+  \url{http://android.stackexchange.com/questions/987/are-there-any-android-browsers-that-support-loading-a-java-applet-in-browser}
+\bibitem{coffee}
+  \url{http://www.coffeescript.org}
+\bibitem{stylus}
+  \url{https://github.com/learnboost/stylus}
+\bibitem[Best Practices for Web Apps, Android Development Guide]{zooming}
+  \url{http://developer.android.com/guide/webapps/best-practices.html}
+\bibitem{jquery}
+  \url{http://jquery.com}
+\bibitem{jasmine}
+  \url{https://github.com/pivotal/jasmine}
+\bibitem{dan}
+  \url{http://dannorth.net/introducing-bdd/}
 \bibitem[Figueredo and Wolf, 2009]{Figueredo:2009dg}
 Figueredo, A.~J. and Wolf, P. S.~A. (2009).
 \newblock Assortative pairing and life history strategy - a cross-cultural
