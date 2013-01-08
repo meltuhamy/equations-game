@@ -6,3 +6,7 @@ test/spec/*.js
 *~
 client/css/*.css
 report/*.pdf
+report/*.aux
+report/*.log
+report/*.synctex.gz
+report/*.toc
