@@ -20,6 +20,12 @@ class Screen
   # @abstract Event that happens when the state json on server changes
   onUpdatedState: () ->
 
+  # @abstract Event that happens when the server pauses the game timer
+  onPauseTimer: () ->
+
+  # @abstract Event that happens when the server resumes the game timer
+  onResumeTimer: () ->
+
   # @abstract Event that happens when dice allocating turn it is updated
   onUpdatedPlayerTurn: () ->
 

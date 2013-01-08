@@ -132,3 +132,12 @@ now.badMove = (serverMessage) ->
 now.badGoal = (parserMessage) ->
   #do something here to show which part of the goal is malformed
   console.warn parserMessage
+
+now.receivePauseTurnTimer = ->
+  console.log "game paused"
+  ScreenSystem.currentScreen.onPauseTimer()
+
+
+now.receiveResumeTurnTimer = ->
+  console.log "game resumed"
+  ScreenSystem.currentScreen.onResumeTimer()

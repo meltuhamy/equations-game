@@ -296,5 +296,14 @@ everyone.now.nextRoundReady = ->
     group.now.receiveState(game.state)
     group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)
   
-clientLeaveGame = (clientId, gameNumber) ->
-  
+everyone.now.pauseTurnTimer = ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
+  game.pauseTurnTimer()
+  group.now.receivePauseTurnTimer()
+  group.now.receiveState(game.state)
+
+everyone.now.resumeTurnTimer = ->
+  {game, group} = getThisGameGroup(this.now.gameNumber)
+  game.resumeTurnTimer()
+  group.now.receiveResumeTurnTimer()
+  group.now.receiveState(game.state)

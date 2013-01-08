@@ -35,6 +35,9 @@ class GameScreen extends Screen
 
   # {Integer} The id of the interval for the turn timer
   #turnTimer: undefined
+  #
+  # {Boolean} Is the game paused?
+  #isPaused: false
 
   knobSettings: {width:50,height:50,fgColor:'#87CEEB',bgColor:'#EEEEEE',displayInput: false}
 
@@ -57,6 +60,7 @@ class GameScreen extends Screen
     @submittedDecision = false
     @turnTimer = undefined
     @knobInterval = 100
+    @isPaused = false
 
     
     @drawGoal()
@@ -154,16 +158,27 @@ class GameScreen extends Screen
       
 
     # Add a setinterval (faster than 1sec) to countdown the timer
-    thisReference = this
-    $('#timer-knob').val(Game.state.turnDuration).trigger('change');
-    value = @getKnobFaceTime()
-    $('#timer-text-ctnr').html("#{value}")
+    if !@isPaused
+      thisReference = this
+      $('#timer-knob').val(Game.state.turnDuration).trigger('change');
+      value = @getKnobFaceTime()
+      $('#timer-text-ctnr').html("#{value}")
+      @resetKnobTimer()
+
+  resetKnobTimer: ()->
     thisReference = this
     clearInterval(@turnTimer)
     @turnTimer = setInterval ->
       thisReference.doChangeKnob(thisReference)
     , @knobInterval
 
+  onPauseTimer:() ->
+    clearInterval(@turnTimer)
+    @isPaused = true
+
+  onResumeTimer:() ->
+    @isPaused = false
+    @resetKnobTimer()
 
   # When the player has changed on a state change
   onUpdatedPlayerTurn:() ->

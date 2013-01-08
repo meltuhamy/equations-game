@@ -401,17 +401,33 @@ class Game
   ###
   resetTurnTimer: (turnSeconds, turnEndCallback) ->
     if @started
+      @originalTurnSeconds = turnSeconds
       @state.turnStartTime = Date.now()
       @state.turnDuration = turnSeconds
+      @state.turnEndTime = @state.turnStartTime + @originalTurnSeconds*1000
+      @turnEndCallback = turnEndCallback
       clearInterval(@turnTimer)
       # Has the player completed his turn BEFORE end of time?
       thisReference = this
-      @turnTimer = setInterval(->
-        thisReference.handleTimeOut(turnEndCallback)
-        if(turnEndCallback?) then turnEndCallback() else console.log "TURN OVER"
-      , turnSeconds*1000)
+      @turnTimer = setInterval ->
+        thisReference.handleTimeOut(thisReference.turnEndCallback)
+        if(thisReference.turnEndCallback?) then thisReference.turnEndCallback() else console.log "TURN OVER"
+      , turnSeconds*1000
     else
       clearInterval(@turnTimer)
+
+  pauseTurnTimer: () ->
+    @pausedTime = Date.now()
+    clearInterval(@turnTimer)
+
+  resumeTurnTimer: () ->
+    @state.turnStartTime = Date.now()
+    resumeDuration = @state.turnEndTime -  @pausedTime
+    if resumeDuration < 0 then resumeDuration = 0
+    @state.turnDuration = resumeDuration / 1000.0
+    @resetTurnTimer(@state.turnDuration, @turnEndCallback)
+
+
 
 
   handleTimeOut: (turnEndCallback) ->
