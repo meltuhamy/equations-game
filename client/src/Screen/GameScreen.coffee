@@ -418,7 +418,7 @@ class GameScreen extends Screen
     console.log "draw Allocation menu"
     console.log clickedOn
     #Create the new allocation menu
-    html = '<br /><span id="mamenu-required-btn" class="mamenu-button">Required</span>
+    html = '<span id="mamenu-required-btn" class="mamenu-button">Required</span>
             <span id="mamenu-optional-btn" class="mamenu-button">Optional</span>
             <span id="mamenu-forbidden-btn" class="mamenu-button">Forbidden</span>'
     $(clickedOn).qtip 
@@ -444,8 +444,8 @@ class GameScreen extends Screen
         effect: -> $(this).fadeOut(100)
       style:
         classes: 'qtip-shadow qtip-light qtip-rounded'
-        width: '230px'
-        height: '70px'
+        #width: '230px'
+        #height: '70px'
       events: 
         render: (event, api) ->
           console.log "Render fired"
