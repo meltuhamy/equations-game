@@ -17,7 +17,7 @@ div#goalwait
     text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
     
   p
-    color: #7D879B
+    color: #88AFFF
 
 div#goalmake
   h2
@@ -70,6 +70,8 @@ div#added-goal-ctnr
       text-shadow: rgba(0, 0, 0, .75) 0px 1px 0px
       border-color:#005E9B
       background: #777777
+    li.dice.error
+      background: #DB0000
   
 div#added-goal-ctnr,
 div#notadded-goal-ctnr
@@ -85,6 +87,23 @@ div#notadded-goal-ctnr
     text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 0px
 
 
+div#goalmake p#goalerror
+  color: #FFDDD5
+  margin-bottom: 15px
+  padding: 10px 20px
+  background: #CD4200
+  border-radius(5px) 
+  display: none
+  font-weight: bold
+  margin-bottom: 14px
+  transition(background 1s ease-in)
+
+
+div#goalmake p#goaltimer
+  padding: 10px
+  font-size: 13px
+  span
+    color: #979797
 
 button#sendgoal
   padding: 7px 30px

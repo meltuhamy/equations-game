@@ -66,7 +66,8 @@ class GoalScreen extends Screen
    * @param {Number} index The (zero based) index of the global array to move.
   ###
   addDiceToGoal: (index) ->
-
+    # Remove any errors caused by a previous submit
+    @removeErrors()
     # There is a maximum of six dice allowed
     # Only allow dice to be added when we are not in the middle of adding brackets
     if(@equationBuilder.getNumberOfDice() < 6 && @equationBuilder.hasCompletedBrackets()) 
@@ -89,14 +90,39 @@ class GoalScreen extends Screen
    * @param  {Number} index The (zero based) index in the adding to goal list of dice to remove
   ###
   removeDiceFromGoal: (index) ->
+    # Remove any errors caused by a previous submit
+    @removeErrors()
     # Try to remove the die from the equation builder container.
     removedElement = @equationBuilder.removeDiceByIndex(index)
     if(removedElement isnt false)
       # Add the dice back to the top
       thisReference = this   
       $(removedElement).hide().appendTo("#notadded-goal").show(300).bind 'click', (event) ->
-          thisReference.addDiceToGoal($(this).data('index'));
+        thisReference.addDiceToGoal($(this).data('index'));
 
+  ###*
+   * receiveServerError
+   * @param  {Json} errorObject A error json with position of error in params
+  ###
   receiveServerError: (errorObject) ->
-    if(errorObject.code == ErrorManager.codes.goalNotParse)
-      $("#goalerror").html("Goal failed to parse around dice #{errorObject.params.token}")
+    # Did the server say an error was caused by parsing?
+    if(errorObject.code == ErrorManager.codes.parseError)
+      # Remove any errors caused by a previous submit
+      @removeErrors()
+      # Add errors relating the submit we just did
+      @hasParseErrors = true
+      $("#goalerror").slideToggle("fast")
+      $("#goalerror").html("Sorry, I don't understand your goal.")
+      $("#added-goal li").index(errorObject.params.token).addClass('error')
+
+  ###*
+   * Remove the error message and any error highlighting.
+  ###
+  removeErrors: () ->
+    if @hasParseErrors
+      $("#goalerror").hide('fast')
+      $("#added-goal li").removeClass('error')
+      @hasParseErrors = false
+
+
+
