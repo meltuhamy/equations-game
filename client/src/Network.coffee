@@ -54,6 +54,12 @@ class Network
   sendNextRoundReady: () ->
     now.nextRoundReady()
 
+  pauseTurnTimer: () ->
+    now.pauseTurnTimer()
+
+  resumeTurnTimer: () ->
+    now.resumeTurnTimer()
+
 ###
 # LOOKING FOR now.js listener events? 
 # -> Go to nowListener.coffee
