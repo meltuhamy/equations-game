@@ -104,7 +104,8 @@ class ExpressionParser
     if this.isNumber(c)
       node = new Node(type: "number", token: this.matchNumber())
     else if !c?
-      ErrorManager.throw(ERRORCODES.parseError, {token: @idx, diceface:c}, "You can't finish with an operator")
+      ErrorManager.throw(ERRORCODES.parseError, {token: @idx-1
+        , diceface:c}, "You can't finish with an operator")
     else
       ErrorManager.throw(ERRORCODES.parseError, {token: @idx, diceface:c}, "UNEXPECTED TOKEN: #{c}")
     return node

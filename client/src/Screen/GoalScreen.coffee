@@ -113,7 +113,7 @@ class GoalScreen extends Screen
       @hasParseErrors = true
       $("#goalerror").slideToggle("fast")
       $("#goalerror").html("Sorry, I don't understand your goal.")
-      $("#added-goal li").index(errorObject.params.token).addClass('error')
+      $($("#added-goal li:not([data-bracket='none'])")[errorObject.params.token]).addClass('error')
 
   ###*
    * Remove the error message and any error highlighting.
