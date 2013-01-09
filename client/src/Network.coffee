@@ -60,6 +60,9 @@ class Network
   resumeTurnTimer: () ->
     now.resumeTurnTimer()
 
+  skipTurn: () ->
+    now.skipTurn()
+
 ###
 # LOOKING FOR now.js listener events? 
 # -> Go to nowListener.coffee
