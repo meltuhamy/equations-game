@@ -417,8 +417,11 @@ class Game
       clearInterval(@turnTimer)
 
   pauseTurnTimer: () ->
-    @pausedTime = Date.now()
-    clearInterval(@turnTimer)
+    if !@pausedTime?
+      @pausedTime = Date.now()
+      clearInterval(@turnTimer)
+    else
+      console.log "Game already paused."
 
   resumeTurnTimer: () ->
     @state.turnStartTime = Date.now()
@@ -426,6 +429,7 @@ class Game
     if resumeDuration < 0 then resumeDuration = 0
     @state.turnDuration = resumeDuration / 1000.0
     @resetTurnTimer(@state.turnDuration, @turnEndCallback)
+    @pausedTime = undefined
 
 
 
