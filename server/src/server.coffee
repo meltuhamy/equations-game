@@ -309,6 +309,7 @@ everyone.now.resumeTurnTimer = ->
   group.now.receiveState(game.state)
 
 everyone.now.skipTurn = ->
+  console.log this.now.gameNumber
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupNow = group.now
   game.nextTurn ->
