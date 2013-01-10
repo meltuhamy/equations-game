@@ -49,7 +49,7 @@ class ExpressionParser
       if(c == DICEFACESYMBOLS.divide)
         e = new Evaluator
         if e.evaluate(child2) == 0 
-          ErrorManager.throw(ERRORCODES.parserDivByZero, {token: @idx, diceface:c}, "You can't divide by zero you idiot")
+          ErrorManager.throw(ERRORCODES.parserDivByZero, {token: @idx, diceface:c}, "You can't divide by zero ")
       node = new Node(type : "binop", token: [c], children: [ child1, child2 ]);
       c = @expr[@idx]
       child1 = node
@@ -79,6 +79,8 @@ class ExpressionParser
           ErrorManager.throw(ERRORCODES.parserSqrtNeg, {token: @idx, diceface:c}, "You can't square root a negative")
         @idx = temp
       node = new Node(type: "unaryop", token: [c], children: [@handleUnaryOps()])
+    else if c == DICEFACESYMBOLS.multiply or c == DICEFACESYMBOLS.divide or c == DICEFACESYMBOLS.power
+      ErrorManager.throw(ERRORCODES.parseError, {token: @idx, diceface:c}, "This operator isn't allowed to go here")
     else
       node = @handleParen()
     node
@@ -120,9 +122,9 @@ class ExpressionParser
     c = @expr[@idx]
     result.push @expr[@idx++] while !this.atEnd() and matchFn(@expr[@idx]) and ++numMatched <=2
     if(numMatched >2 && @isGoal)
-      ErrorManager.throw(ERRORCODES.parserTooManyDigits, {token: @idx, diceface:c, maxdigits:2}, "Can't have more than two digits, maytey")
+      ErrorManager.throw(ERRORCODES.parserTooManyDigits, {token: @idx, diceface:c, maxdigits:2}, "Can't have more than two digits")
     else if (numMatched >1)
-      ErrorManager.throw(ERRORCODES.parserTooManyDigits, {token: @idx, diceface:c, maxdigits:1}, "Can't have more than one digit, maytey")
+      ErrorManager.throw(ERRORCODES.parserTooManyDigits, {token: @idx, diceface:c, maxdigits:1}, "Can't have more than one digit")
     result
     #if(numMatched >2 && @isGoal)
       #throw "Can't have more than two digits, maytey"
