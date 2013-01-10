@@ -706,6 +706,7 @@ class Game
   isGameOver: -> @endOfGame or @state.currentRound > @state.numRounds
 
   restartGame: ->
+    @nextRound()
     @constructor(@gameNumber, @name, @gameSize, @state.numRounds, @endOfGameCallback)
 
 
