@@ -90,7 +90,12 @@ class GameScreen extends Screen
 
   onServerError: (json) ->
     @alert json.msg, true
-  
+    switch json.code
+      when ErrorManager.codes.parseError, ErrorManager.codes.parseError, ErrorManager.codes.parserTooManyDigits, ErrorManager.codes.parserMultBrackWithoutTimes, ErrorManager.codes.parserUnbalancedBrack, ErrorManager.codes.parserSqrtNeg, ErrorManager.codes.parserDivByZero, ErrorManager.codes.doesntUseAllRequired, ErrorManager.codes.doesntUseOneUnallocated, ErrorManager.codes.usesForbidden, ErrorManager.codes.outOfBoundsDice, ErrorManager.codes.duplicateDice
+        @submittedSolution = false
+        $('#answer-submit-btn').show()
+        $('#answer-add-dice-btn').show()
+
   ###*
    * Initialises the html sketcher element
    * @return {[type]} [description]
