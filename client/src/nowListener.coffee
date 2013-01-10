@@ -117,7 +117,7 @@ now.receiveNextRoundAllReady = () ->
 
 now.receivePlayerDisconnect = (playerId) ->
   console.log "Player Disconnected"
-  if not (ScreenSystem.currentScreen instanceof EndOfGameScreen)
+  if not (ScreenSystem.currentScreen instanceof EndGameScreen)
     if(playerId == Game.myPlayerId)
       window.location.reload()
     else
