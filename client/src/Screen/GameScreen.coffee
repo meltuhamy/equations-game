@@ -88,7 +88,9 @@ class GameScreen extends Screen
     ### Timer Knob ###
     $('#timer-knob').knob(@knobSettings)
 
-
+  onServerError: (json) ->
+    @alert json.msg, true
+  
   ###*
    * Initialises the html sketcher element
    * @return {[type]} [description]

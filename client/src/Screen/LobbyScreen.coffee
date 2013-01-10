@@ -25,6 +25,8 @@ class LobbyScreen extends Screen
     @renderRoomList()
     @addClickListeners()
 
+  onServerError: (json) ->
+    @alert json.msg, true
 
   ###*
    * Add event listeners to the rows so when you click to join a game, a event fires; calling Network
