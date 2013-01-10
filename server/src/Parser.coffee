@@ -117,6 +117,7 @@ class ExpressionParser
   match:(matchFn) ->
     result = []
     numMatched = 0
+    c = @expr[@idx]
     result.push @expr[@idx++] while !this.atEnd() and matchFn(@expr[@idx]) and ++numMatched <=2
     if(numMatched >2 && @isGoal)
       ErrorManager.throw(ERRORCODES.parserTooManyDigits, {token: @idx, diceface:c, maxdigits:2}, "Can't have more than two digits, maytey")

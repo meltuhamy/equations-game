@@ -427,9 +427,8 @@ ul#answers
     background: #4FBA07
   li.dice[data-alloc='forbidden']
     background: red
-
-li.dice[data-alloc='forbidden']
-    background: red
+  li.dice.error
+    background: #DB0000
 
 
 p.answer-dice-notice
@@ -447,12 +446,14 @@ p#answer-submit-notice
 p#answer-error
   color: #FFDDD5
   margin-bottom: 15px
-  padding: 10px 20px
+  padding: 5px 15px
   background: #CD4200
   border-radius(5px) 
   display: none
+  font-size: 13px
   font-weight: bold
   margin-bottom: 14px
+  margin-right: 10px
 
 /*************************************************************/
 /*********************  SKETCH AREA    ***********************/

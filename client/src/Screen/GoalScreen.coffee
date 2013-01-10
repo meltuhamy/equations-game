@@ -110,14 +110,15 @@ class GoalScreen extends Screen
   ###
   onServerError: (errorObject) ->
     # Did the server say an error was caused by parsing?
-    if(errorObject.code == ErrorManager.codes.parseError)
-      # Remove any errors caused by a previous submit
-      @removeErrors()
-      # Add errors relating the submit we just did
-      @hasParseErrors = true
-      $("#goalerror").slideDown("fast")
-      $("#goalerror").html("Sorry, I don't understand your goal.")
-      $($("#added-goal li:not([data-bracket='none'])")[errorObject.params.token]).addClass('error')
+    switch errorObject.code
+      when ErrorManager.codes.parseError, ErrorManager.codes.parserTooManyDigits, ErrorManager.codes.parserMultBrackWithoutTimes, ErrorManager.codes.parserUnbalancedBrack, ErrorManager.codes.parserSqrtNeg, ErrorManager.codes.parserDivByZero, ErrorManager.codes.goalEmpty, ErrorManager.codes.goalTooLarge, ErrorManager.codes.goalNotParse
+        # Remove any errors caused by a previous submit
+        @removeErrors()
+        # Add errors relating the submit we just did
+        @hasParseErrors = true
+        $("#goalerror").slideDown("fast")
+        $("#goalerror").html("Sorry, I don't understand your goal. #{errorObject.msg}")
+        $($("#added-goal li:not([data-bracket='none'])")[errorObject.params.token]).addClass('error')
 
   ###*
    * Remove the error message and any error highlighting.

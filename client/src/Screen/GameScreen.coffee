@@ -102,6 +102,9 @@ class GameScreen extends Screen
           @submittedSolution = false
           $('#answer-submit-btn').show("fast")
           $('#answer-add-dice-btn').show("fast")
+           
+          $($("#added-goal li:not([data-bracket='none'])")[json.params.token]).addClass('error')
+
 
   ###*
    * Remove the error message and any error highlighting.
