@@ -10,6 +10,20 @@ class ErrorManager
     goalEmpty                   : 6
     goalTooLarge                : 7
     goalNotParse                : 8
+    submitNotChallengeMode      : 9
+    alreadyGaveOpinion          : 10
+    alreadySubmittedSolution    : 11
+    doesntUseOneUnallocated     : 12
+    doesntUseAllRequired        : 13
+    usesForbidden               : 14
+    outOfBoundsDice             : 15
+    duplicateDice               : 16
+    possibleSubmitSolution      : 17
+    goalAlreadySet              : 18
+    gameFull                    : 19
+    moveDuringChallenge         : 20
+    moveWithoutGoal             : 21
+    notYourTurn                 : 22
 
 
   @throw: (errorCode, jsonParams, errorMessage) ->

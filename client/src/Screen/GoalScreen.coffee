@@ -105,10 +105,10 @@ class GoalScreen extends Screen
         thisReference.addDiceToGoal($(this).data('index'));
 
   ###*
-   * receiveServerError
+   * onServerError
    * @param  {Json} errorObject A error json with position of error in params
   ###
-  receiveServerError: (errorObject) ->
+  onServerError: (errorObject) ->
     # Did the server say an error was caused by parsing?
     if(errorObject.code == ErrorManager.codes.parseError)
       # Remove any errors caused by a previous submit

@@ -187,7 +187,7 @@ class Game
 
   setGoal: (dice, turnEndCallback) ->  
     if @goalHasBeenSet() #if goal already set
-      throw "Goal already set"
+      ErrorManager.throw(ErrorManager.codes.goalAlreadySet, {}, "Goal already set")
     
     @checkGoal(dice)
     @start(turnEndCallback)
@@ -224,8 +224,8 @@ class Game
     diceValues = []
     for i in [0 ... dice.length]
       for j in [i+1 ... dice.length]
-        if (dice[i] < -2  || dice[i] >= numGlobalDice) then throw "Goal has out of bounds array index"
-        if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then throw "Goal uses duplicates dice"
+        if (dice[i] < -2  || dice[i] >= numGlobalDice) then ErrorManager.throw(ErrorManager.codes.outOfBoundsDice, {}, "Goal has out of bounds array index")
+        if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then ErrorManager.throw(ErrorManager.codes.duplicateDice, {}, "Goal uses duplicates dice")
       if dice[i] == -1
         diceValues.push(DICEFACESYMBOLS.bracketL)
       else if dice[i] == -2
@@ -237,7 +237,7 @@ class Game
     @state.unallocated = unallocatedTemp
 
     # Finally, check that the expression in the dice parses as an expression.
-    p = new ExpressionParser(ERRORCODES.goalNotParse)
+    p = new ExpressionParser()
     @goalTree = p.parse(diceValues, true)
     result = []
     flattened = p.flatten(@goalTree)
@@ -259,7 +259,7 @@ class Game
   ###
   addClient: (clientid, playerName) ->
     if @players.length == @playerLimit || @started
-      throw new Error("Game full or already started")
+      ErrorManager.throw(ErrorManager.codes.gameFull, {}, "Game full or already started")
     else
       newPlayerIndex = @players.length
       @players.push(new Player(newPlayerIndex, playerName))
@@ -487,13 +487,13 @@ class Game
 
   checkValidAllocationMove: (index, clientId) ->
     if @challengeMode
-      throw "Can't move during challenge mode"
+      ErrorManager.throw(ErrorManager.codes.moveDuringChallenge, {}, "Can't move during challenge mode")
     if !@goalHasBeenSet()
-      throw "Can't move yet, goal has not been set"
+      ErrorManager.throw(ErrorManager.codes.moveWithoutGoal, {}, "Can't move yet, goal has not been set")
     if !@authenticateMove(clientId)
-      throw "Not your turn"
+      ErrorManager.throw(ErrorManager.codes.notYourTurn, {}, "Not your turn")
     else if index < 0 || index >= @state.unallocated.length
-      throw "Index for move out of bounds"
+      ErrorManager.throw(ErrorManager.codes.outOfBoundsDice, {}, "Index for move out of bounds")
     else true
 
   moveToRequired: (index, clientId, turnEndCallback) ->
@@ -555,9 +555,9 @@ class Game
 
   checkChallengeDecision:(clientId) ->
     if !@challengeMode
-      @throwError(0, {}, "Can't submit opinion, not currently challenge mode")
+      ErrorManager.throw(ErrorManager.codes.submitNotChallengeMode, {}, "Can't submit opinion, not currently challenge mode")
     if (clientId in @state.possiblePlayers) || (clientId in @state.impossiblePlayers)
-      @throwError(0, {}, "Already stated your opinion")
+      ErrorManager.throw(ErrorManager.codes.alreadyGaveOpinion, {}, "Already stated your opinion")
 
 
   # Check if everyone has submitted their decisions for the decision making turn
@@ -570,11 +570,11 @@ class Game
    * @param  {Integer[]} dice An array of indices to the globalArray for the answer we need to check.
   ###
   submitSolution: (socketId, dice) ->
-    if !@challengeMode then throw "Not in challenge mode"
+    if !@challengeMode then ErrorManager.throw(ErrorManager.codes.submitNotChallengeMode, {}, "Can't submit opinion, not currently challenge mode")
     playerid = @getPlayerIdBySocket(socketId)
     if (playerid in @state.possiblePlayers)
       # If he hasn't already submitted a solution..
-      if (@submittedSolutions[playerid]?) then throw @throwError(0, {}, "Player #{socketId} already submitted solution which is: #{@submittedSolutions[playerid]}")
+      if (@submittedSolutions[playerid]?) then ErrorManager.throw(ErrorManager.codes.alreadySubmittedSolution, {solution: @submittedSolutions[playerid]}, "You already submitted your solution")
       # Check if the solution submitted is valid
 
       diceValues = []
@@ -583,8 +583,8 @@ class Game
       numGlobalDice = @globalDice.length
       for i in [0 ... dice.length]
         for j in [i+1 ... dice.length]
-          if (dice[i] < -2  || dice[i] >= numGlobalDice) then throw @throwError(0, {}, "Solution has out of bounds array index")
-          if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then throw @throwError(0, {}, "Solution uses duplicate dice")
+          if (dice[i] < -2  || dice[i] >= numGlobalDice) then ErrorManager.throw(ErrorManager.codes.outOfBoundsDice, {}, "Solution has out of bounds array index")
+          if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then ErrorManager.throw(ErrorManager.codes.duplicateDice, {}, "Solution uses duplicate dice")
 
         if dice[i] == -1
           diceValues.push(DICEFACESYMBOLS.bracketL)
@@ -592,12 +592,12 @@ class Game
           diceValues.push(DICEFACESYMBOLS.bracketR)
         else
           diceValues.push(@globalDice[dice[i]])
-        if(dice[i] in @state.forbidden) then throw @throwError(0, {}, "Solution uses dice from forbidden")
+        if(dice[i] in @state.forbidden) then ErrorManager.throw(ErrorManager.codes.usesForbidden, {}, "Solution uses dice from forbidden")
         if(dice[i] in @state.required) then numRequiredInAns++
         if(dice[i] in @state.unallocated) then numUnallocatedInAns++
 
-      if(numRequiredInAns < @state.required.length) then @throwError(0, {}, "Solution doesn't use all dice from required")
-      if(numUnallocatedInAns > 1 && @challengeModeNow) then throw @throwError(0, {}, "Solution doesn't use one dice from unallocated")
+      if(numRequiredInAns < @state.required.length) then ErrorManager.throw(ErrorManager.codes.doesntUseAllRequired, {}, "Solution doesn't use all of the required dice.")
+      if(numUnallocatedInAns > 1 && @challengeModeNow) then ErrorManager.throw(ErrorManager.codes.doesntUseOneUnallocated, {}, "Solution doesnt use one grey dice")
 
       # Everything ok-doky index wise. Now let's check it parses and gives the same value.
       e = new Evaluator
@@ -610,7 +610,7 @@ class Game
       
     else
       playerid = @getPlayerIdBySocket(socketId)
-      @throwError(0, {}, "Client not in 'possible' list")
+      ErrorManager.throw(ErrorManager.codes.possibleSubmitSolution, {}, "Client not in 'possible' list")
     if(@allSolutionsSent()) then @scoreAdder()
 
   allSolutionsSent: () ->

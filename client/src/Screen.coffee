@@ -36,7 +36,7 @@ class Screen
   onKeyup: (e) ->
   
   # @abstract Pass a error json (sent from server) to the screen.
-  receiveServerError: (errorObject) ->
+  onServerError: (errorObject) ->
 
   ###*
    * This function is called by ScreenSystem once the page has loaded
