@@ -115,7 +115,7 @@ class GoalScreen extends Screen
       @removeErrors()
       # Add errors relating the submit we just did
       @hasParseErrors = true
-      $("#goalerror").slideToggle("fast")
+      $("#goalerror").slideDown("fast")
       $("#goalerror").html("Sorry, I don't understand your goal.")
       $($("#added-goal li:not([data-bracket='none'])")[errorObject.params.token]).addClass('error')
 
@@ -124,7 +124,7 @@ class GoalScreen extends Screen
   ###
   removeErrors: () ->
     if @hasParseErrors
-      $("#goalerror").hide('fast')
+      $("#goalerror").slideUp('fast')
       $("#added-goal li").removeClass('error')
       @hasParseErrors = false
 
