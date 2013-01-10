@@ -50,7 +50,11 @@ class GoalScreen extends Screen
     , 1000
     
 
-
+  onKeyup: (e) ->
+    switch e.which
+      when 80 then network.pauseTurnTimer() # P key
+      when 82 then network.resumeTurnTimer() # R key
+  
   ###*
    * Return the goal array from the dice in the added-to-goal area
    * @return {Integer} Each element is an index to the original global dice array

@@ -32,6 +32,9 @@ class Screen
   # @abstract Event that happens when the list of rooms is updated (when games added/deleted)
   onUpdatedGameList: (roomlist) ->
 
+  # @abstract Event that happens when someone presses a key
+  onKeyup: (e) ->
+  
   # @abstract Pass a error json (sent from server) to the screen.
   receiveServerError: (errorObject) ->
 
