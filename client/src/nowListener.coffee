@@ -125,7 +125,7 @@ now.receivePlayerDisconnect = (playerId) ->
 
 now.receiveError = (errorObject) ->
   console.warn(errorObject)
-  ScreenSystem.receiveServerError(errorObject)
+  ScreenSystem.onServerError(errorObject)
 
 now.badMove = (serverMessage) ->
   console.warn(serverMessage)
