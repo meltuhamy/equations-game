@@ -254,8 +254,10 @@ everyone.now.challengeDecision = (agree) ->
         group.now.receiveChallengeSolutionsTurn()
 
   catch e
-    this.now.badMove(e)
+    e.playerid = game.getPlayerIdBySocket(this.user.clientId)
+    this.now.receiveError(e)
     console.log e
+    
 
 
 # client telling the server that he wants to submit a solution
@@ -282,8 +284,10 @@ everyone.now.challengeSolution = (answer) ->
           game.getRoundSolutionPoints()
         )
   catch e
+    e.playerid = game.getPlayerIdBySocket(this.user.clientId)
     this.now.receiveError(e)
     console.log e
+    
 
 
 # client telling the server that he is ready for next round

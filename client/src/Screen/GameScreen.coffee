@@ -88,6 +88,29 @@ class GameScreen extends Screen
     ### Timer Knob ###
     $('#timer-knob').knob(@knobSettings)
 
+  onServerError: (json) ->
+    super(json)
+    switch json.code
+      when ErrorManager.codes.parseError, ErrorManager.codes.parserTooManyDigits, ErrorManager.codes.parserMultBrackWithoutTimes, ErrorManager.codes.parserUnbalancedBrack, ErrorManager.codes.parserSqrtNeg, ErrorManager.codes.parserDivByZero, ErrorManager.codes.doesntUseAllRequired, ErrorManager.codes.doesntUseOneUnallocated, ErrorManager.codes.usesForbidden, ErrorManager.codes.outOfBoundsDice, ErrorManager.codes.duplicateDice
+        if(Game.solutionRequired() && @submittedSolution && json.playerid == Game.myPlayerId)
+          # Remove any errors caused by a previous submit
+          @removeErrors()
+          # Add errors relating the submit we just did
+          @hasAnswerErrors = true
+          $("#answer-error").slideDown("fast")
+          $("#answer-error").html("There's a problem with your answer. #{json.msg}")
+          @submittedSolution = false
+          $('#answer-submit-btn').show("fast")
+          $('#answer-add-dice-btn').show("fast")
+
+  ###*
+   * Remove the error message and any error highlighting.
+  ###
+  removeErrors: () ->
+    if @hasAnswerErrors
+      $("#answer-error").slideUp('fast')
+      @hasAnswerErrors = false
+
 
   ###*
    * Initialises the html sketcher element
@@ -574,6 +597,7 @@ class GameScreen extends Screen
   addDiceToAnswerArea: (index) ->
     # Only let him add dice to the area if his brackets are complete
     # and if the dice hasn't already been added
+    @removeErrors()
     if(@equationBuilder.hasCompletedBrackets() && $.inArray(index, @answerAreaDice) is -1)
       thisReference = this
       # Work out dice face from global dice array then make the html. add to list. add to dom
@@ -589,6 +613,7 @@ class GameScreen extends Screen
   removeDiceFromAnswerArea: (pos, index) ->
     # Find the corresponding mat and the dice in the mat and tell it that it's no longer
     # used in our ans (usedinans=false). Also remove hover highlighting (anshover=false)
+    @removeErrors()
     theDice = $("ul#answers li.dice[data-index='#{index}']")
     theMat = theDice.attr('data-alloc')
     theIndex = theDice.attr('data-index')
@@ -601,6 +626,7 @@ class GameScreen extends Screen
 
 
   submitAnswer: () ->
+    @removeErrors()
     answer = @equationBuilder.getIndicesToGlobalDice()
     @submittedSolution = true
     network.sendChallengeSolution(answer)

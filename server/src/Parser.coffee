@@ -16,9 +16,8 @@ class Node
 module.exports.Node = Node
 
 class ExpressionParser
-  constructor: (parserErrorCode = ERRORCODES.parseError)->
+  constructor: ()->
     @isGoal = undefined
-    @parserErrorCode = parserErrorCode
 
   parse:(expr, goalFlag) ->
     @isGoal = goalFlag

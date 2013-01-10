@@ -25,6 +25,8 @@ class LobbyScreen extends Screen
     @renderRoomList()
     @addClickListeners()
 
+  onServerError: (json) ->
+    @alert json.msg, true
 
   ###*
    * Add event listeners to the rows so when you click to join a game, a event fires; calling Network
@@ -89,9 +91,10 @@ class LobbyScreen extends Screen
 
 
       # Validate the difficult mode
+      ###
       condition = (!difficulty? || (difficulty != 'easy' && difficulty != 'hard'))
       thisReference.handleError(condition, 'newgame-difficulty-label', 'Please select either Easy or Hard')
-
+      ###
       if thisReference.formErrorNum is 0
         ScreenSystem.renderScreen(Game.joinWaitScreenId)
         network.sendCreateGameRequest(gameName, numPlayers, playerName, numRounds)

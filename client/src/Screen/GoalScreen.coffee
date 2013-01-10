@@ -105,17 +105,17 @@ class GoalScreen extends Screen
         thisReference.addDiceToGoal($(this).data('index'));
 
   ###*
-   * receiveServerError
+   * onServerError
    * @param  {Json} errorObject A error json with position of error in params
   ###
-  receiveServerError: (errorObject) ->
+  onServerError: (errorObject) ->
     # Did the server say an error was caused by parsing?
     if(errorObject.code == ErrorManager.codes.parseError)
       # Remove any errors caused by a previous submit
       @removeErrors()
       # Add errors relating the submit we just did
       @hasParseErrors = true
-      $("#goalerror").slideToggle("fast")
+      $("#goalerror").slideDown("fast")
       $("#goalerror").html("Sorry, I don't understand your goal.")
       $($("#added-goal li:not([data-bracket='none'])")[errorObject.params.token]).addClass('error')
 
@@ -124,7 +124,7 @@ class GoalScreen extends Screen
   ###
   removeErrors: () ->
     if @hasParseErrors
-      $("#goalerror").hide('fast')
+      $("#goalerror").slideUp('fast')
       $("#added-goal li").removeClass('error')
       @hasParseErrors = false
 
