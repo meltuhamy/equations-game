@@ -86,6 +86,7 @@ class Game
     @submittedSolutions= []
 
     @started = false
+    @challengeMode = false
 
     @rightAnswers = []
     @answerExists = false
