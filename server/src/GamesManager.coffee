@@ -1,5 +1,6 @@
 {Game} = require './Game.js'
 {Settings} = require './Settings.js'
+{PlayerManager} = require './PlayerManager.js'
 class GamesManager
 
 
@@ -43,14 +44,14 @@ class GamesManager
         # index to the games array
         gameNumber: g.gameNumber,
         playerCount: g.getNumPlayers(),
-        playerLimit: g.playerLimit,
+        playerLimit: g.playerManager.playerLimit,
         started: g.started
     return gamesList
 
   cleanGames: () ->
     startCleanupOn = if Settings.DEBUG then 2 else 0
     for i in [startCleanupOn...@games.length]
-      if @games[i]? && @games[i].players.length == 0
+      if @games[i]? && @games[i].playerManager.players.length == 0
         @games[i] = undefined
 
 

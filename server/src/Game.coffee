@@ -6,6 +6,7 @@ ERRORCODES = ErrorManager.codes
 
 {ExpressionParser, Node} = require './Parser.js'
 {Player} = require './Player.js'
+{PlayerManager} = require './PlayerManager.js'
 {Evaluator} = require './Evaluator.js'
 {Settings} = require './Settings.js'
 
@@ -19,18 +20,6 @@ class Game
   # {String} The name of the game as it appears on the lobby etc.
   name: ''
 
-  # {Player[]} An array of players who have joined the game
-  players: []
-
-  # {Number} The nowjs sockets for players. These match up index-by-index with players array
-  playerSocketIds: []
-
-  # {Number} The maximum number of players allow in the game.
-  playerLimit: 2
-
-  # {Number} An index to players array. Player who sets the goal (takes the goal setting turn)
-  goalSetter: undefined
-
   # {String} The string id for the nowjs group/room used for players in this game
   nowJsGroupName: ''
 
@@ -39,6 +28,9 @@ class Game
 
   # {Boolean} True when the game has started (is full)
   started: false
+
+  # {PlayerManager} The player manager that manages players
+  playerManager = undefined
 
   # {Number} The dice that will be used throughout the game. An array of diceface magic numbers.
   globalDice: []
@@ -49,46 +41,30 @@ class Game
   # {Boolean} Differentiates between now and never challenges
   challengeModeNow: false
 
-  # {Number} the index of the player array for the challenger
-  challenger: undefined
-
   # {Boolean} Has the game ended?
   endOfGame: false
 
-  submittedSolutions: []
-
-  rightAnswers: []
-
-  
-
-  ###*
-   * The game state.
-   * **************
-   * IF YOU CHANGE THIS, CHANGE client/Game.coffee
-   * **************
-  ###
+  # {Object} A JSON object that reperesents the game state.
   state: undefined
+
 
 
   
   constructor: (@gameNumber, @name, gameSize, numRounds, throwErrors = true) ->
     # Initalise all variables so that they're object (not prototype) specfific
+    
+    @playerManager = new PlayerManager()
+    
     @throwErrors = throwErrors
     @goalTree = undefined
     @goalArray = []
     @goalValue = undefined
     @name= ''
-    @players= []
-    @playerSocketIds= []
-    @goalSetter= undefined
     @nowJsGroupName= ''
-    @challenger= undefined
-    @submittedSolutions= []
 
     @started = false
     @challengeMode = false
 
-    @rightAnswers = []
     @answerExists = false
     @challengePoints = []
     @decisionPoints = []
@@ -134,18 +110,13 @@ class Game
     @name = name
     @gameSize = gameSize
     if gameSize?
-      if gameSize > 2 then @playerLimit = gameSize
+      if gameSize > 2 then @playerManager.playerLimit = gameSize
     @nowJsGroupName = "game#{gameNumber}"
     @allocate()
 
 
   goalHasBeenSet: () ->
     @goalTree? #returns false if goalTree undefined, true otherwise
-
-
-  # Convert a player id to a socketid and vica versa
-  getPlayerIdBySocket: (socket) -> @playerSocketIds.indexOf(socket)
-  getPlayerSocketById: (id) -> @playerSocketIds[id]
 
 
   throwError: (errorNumber, jsonParams, errorMessage) ->
@@ -259,25 +230,25 @@ class Game
    * @return {Integer} The index of the players array for the newly added player
   ###
   addClient: (clientid, playerName) ->
-    if @players.length == @playerLimit || @started
+    if @playerManager.players.length == @playerManager.playerLimit || @started
       ErrorManager.throw(ErrorManager.codes.gameFull, {}, "Game full or already started")
     else
-      newPlayerIndex = @players.length
-      @players.push(new Player(newPlayerIndex, playerName))
-      @playerSocketIds.push(clientid)
+      newPlayerIndex = @playerManager.players.length
+      @playerManager.players.push(new Player(newPlayerIndex, playerName))
+      @playerManager.playerSocketIds.push(clientid)
       @state.playerScores[newPlayerIndex] = 0
       return newPlayerIndex
 
   removeClient: (clientid) ->
-    if @players.length == 2
+    if @playerManager.players.length == 2
       @restartGame()
     else #now we need to update players and playersocketIds
-      index = @getPlayerIdBySocket(clientid)
-      @players.splice(index, 1)
-      @playerSocketIds.splice(index,1)
+      index = @playerManager.getPlayerIdBySocket(clientid)
+      @playerManager.players.splice(index, 1)
+      @playerManager.playerSocketIds.splice(index,1)
       @state.playerScores.splice(index, 1)
-      @submittedSolutions.splice(index, 1)
-      @rightAnswers.splice(index,1)
+      @playerManager.submittedSolutions.splice(index, 1)
+      @playerManager.rightAnswers.splice(index,1)
       #now we update possiblePlayers, impossiblePlayers and readyForNextRound arrays in state
       for i in [0...@state.possiblePlayers.length]
         if @state.possiblePlayers[i] == index
@@ -304,13 +275,13 @@ class Game
           @state.readyForNextRound[i]--
 
       if @state.currentPlayer == index
-        @state.currentPlayer = @players.length
+        @state.currentPlayer = @playerManager.players.length
       return index
 
 
 
-  isFull: () -> @players.length == @playerLimit
-  getNumPlayers: () -> return @players.length
+  isFull: () -> @playerManager.players.length == @playerManager.playerLimit
+  getNumPlayers: () -> return @playerManager.players.length
 
   
   ###*
@@ -318,19 +289,19 @@ class Game
    * @return {[Integer} An index to the players array
   ###
   getFirstTurnPlayerId: () -> 
-    if !@goalSetter? then @getGoalSetterPlayerId()
-    return @goalSetter+1%@players.length
+    if !@playerManager.goalSetter? then @getGoalSetterPlayerId()
+    return @playerManager.goalSetter+1%@playerManager.players.length
   # If we want to get his socket id instead of the player array index
-  getFirstTurnPlayerSocketId: () -> @getPlayerSocketById(@getFirstTurnPlayerId())
+  getFirstTurnPlayerSocketId: () -> @playerManager.getPlayerSocketById(@getFirstTurnPlayerId())
 
   ###*
    * Return the index of the player who will set the goal
    * @return {[Integer} An index to the players array
   ###
   getGoalSetterPlayerId: () ->
-    if !@goalSetter?
+    if !@playerManager.goalSetter?
       @setGoalSetterPlayerId()
-    @goalSetter
+    @playerManager.goalSetter
 
   ###*
    * Gets a random player id (index).
@@ -339,8 +310,8 @@ class Game
   ###
   randomPlayerId: (exceptions) ->
     e = [].concat(exceptions)
-    newNumber = Math.floor(Math.random() * @players.length)
-    newNumber = Math.floor(Math.random() * @players.length) while newNumber in e
+    newNumber = Math.floor(Math.random() * @playerManager.players.length)
+    newNumber = Math.floor(Math.random() * @playerManager.players.length) while newNumber in e
     return newNumber
 
   ###*
@@ -351,12 +322,12 @@ class Game
     if(!forceId?)
       #set a random goalSetter
       if Settings.DEBUG
-        @goalSetter = 0
+        @playerManager.goalSetter = 0
       else
-        exceptions = if @goalSetter? then @goalSetter else []
-        @goalSetter = @randomPlayerId(exceptions)
+        exceptions = if @playerManager.goalSetter? then @playerManager.goalSetter else []
+        @playerManager.goalSetter = @randomPlayerId(exceptions)
     else
-      @goalSetter = forceId
+      @playerManager.goalSetter = forceId
 
 
 
@@ -366,10 +337,10 @@ class Game
    * @return {[type]}          Return True if it is this player's turn to move 
   ###
   authenticateMove: (socketId) -> #returns a boolean 
-    (socketId == @playerSocketIds[@state.currentPlayer])
+    (socketId == @playerManager.playerSocketIds[@state.currentPlayer])
 
   validateChallenge: (socketId) ->
-    (socketId != @playerSocketIds[((@state.currentPlayer-1)+@players.length)%@players.length])
+    (socketId != @playerManager.playerSocketIds[((@state.currentPlayer-1)+@playerManager.players.length)%@playerManager.players.length])
 
 
   goalStart: (turnEndCallback) ->
@@ -380,14 +351,14 @@ class Game
 
 
   start: (turnEndCallback) ->
-    @state.currentPlayer = (@goalSetter+1)%@players.length
+    @state.currentPlayer = (@playerManager.goalSetter+1)%@playerManager.players.length
     @state.turnNumber = 1
     @resetTurnTimer(Settings.turnSeconds, turnEndCallback)
     
 
   nextTurn: (turnEndCallback) ->
     if @started
-      @state.currentPlayer = (@state.currentPlayer+1)%@players.length
+      @state.currentPlayer = (@state.currentPlayer+1)%@playerManager.players.length
       @state.turnNumber += 1
       @resetTurnTimer(Settings.turnSeconds, turnEndCallback)
     else
@@ -441,10 +412,10 @@ class Game
         # Move players into the option that makes them submit a solution
         if(!@allDecisionsMade())
           console.log "NOT EVERYONE MADE DECISION"
-          for p in @players
+          for p in @playerManager.players
             index = p.index
             if((index not in @state.possiblePlayers) and (index not in @state.impossiblePlayers))
-              @submitPossible(@getPlayerSocketById(index))
+              @submitPossible(@playerManager.getPlayerSocketById(index))
       else if @state.turnNumber == 0
         #Time ran out on goal setting screen. Choose new player to set goal
         @setGoalSetterPlayerId()
@@ -461,26 +432,26 @@ class Game
   penalisePlayer: () ->
     missplayer = @state.currentPlayer
     # Basic system for Penalising player for taking too
-    @players[missplayer].turnMisses += 1
-    @players[missplayer].consecutiveTurnMisses += 1
+    @playerManager.players[missplayer].turnMisses += 1
+    @playerManager.players[missplayer].consecutiveTurnMisses += 1
 
     # Three Rules (only one rule at a time) for Penalising players:
     # 1. Two consecutive missed turns. He loses 2 points.
     # 2. Three consecutive missed turns. He gets kicked out.
     # 3. If total misses >= total moves played > 3. He gets kicked out.
-    if(@players[missplayer].consecutiveTurnMisses == 2)
+    if(@playerManager.players[missplayer].consecutiveTurnMisses == 2)
       # First Rule
       if(@state.playerScores[missplayer] > 2)
         @state.playerScores[missplayer] -= 2
-    else if(@players[missplayer].consecutiveTurnMisses >= 3)
+    else if(@playerManager.players[missplayer].consecutiveTurnMisses >= 3)
       # Second Rule
-      @removeClient(@getPlayerSocketById(missplayer))
+      @removeClient(@playerManager.getPlayerSocketById(missplayer))
       console.log "BAD PLAYER REMOVED"
       return true
-    else if(@players[missplayer].turnMisses >= @players[missplayer].movesPlayed)
+    else if(@playerManager.players[missplayer].turnMisses >= @playerManager.players[missplayer].movesPlayed)
       # Third rule
-      if(@players[missplayer].movesPlayed > 3)
-        @removeClient(@getPlayerSocketById(missplayer))
+      if(@playerManager.players[missplayer].movesPlayed > 3)
+        @removeClient(@playerManager.getPlayerSocketById(missplayer))
         console.log "BAD PLAYER REMOVED"
         return true
     return true
@@ -501,21 +472,21 @@ class Game
     if(@checkValidAllocationMove(index, clientId))
       @state.required.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
-      @players[@getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
+      @playerManager.players[@playerManager.getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
       @nextTurn(turnEndCallback)
 
   moveToOptional: (index, clientId, turnEndCallback) ->
    if(@checkValidAllocationMove(index, clientId))
       @state.optional.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
-      @players[@getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
+      @playerManager.players[@playerManager.getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
       @nextTurn(turnEndCallback)
 
   moveToForbidden: (index, clientId, turnEndCallback) ->
     if(@checkValidAllocationMove(index, clientId))
       @state.forbidden.push(@state.unallocated[index])
       @state.unallocated.splice(index, 1)
-      @players[@getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
+      @playerManager.players[@playerManager.getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
       @nextTurn(turnEndCallback)
 
   ###*
@@ -525,28 +496,28 @@ class Game
   nowChallenge: (clientId, turnEndCallback) ->
     @challengeMode = true
     @challengeModeNow = true
-    @challenger = @getPlayerIdBySocket(clientId)
-    @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
+    @playerManager.challenger = @playerManager.getPlayerIdBySocket(clientId)
+    @state.possiblePlayers.push(@playerManager.getPlayerIdBySocket(clientId))
     @resetTurnTimer(Settings.challengeDecisionTurnSeconds, turnEndCallback)
 
 
   neverChallenge: (clientId, turnEndCallback) ->
     @challengeMode = true
     @challengeModeNow = false
-    @challenger = @getPlayerIdBySocket(clientId)
-    @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
+    @playerManager.challenger = @playerManager.getPlayerIdBySocket(clientId)
+    @state.impossiblePlayers.push(@playerManager.getPlayerIdBySocket(clientId))
     @resetTurnTimer(Settings.challengeDecisionTurnSeconds, turnEndCallback)
 
   submitPossible: (clientId, turnEndCallback) ->
     @checkChallengeDecision()
-    @state.possiblePlayers.push(@getPlayerIdBySocket(clientId))
+    @state.possiblePlayers.push(@playerManager.getPlayerIdBySocket(clientId))
     if(@allDecisionsMade())
       # Give 40 seconds for the solutions turn
       @resetTurnTimer(Settings.submitTurnSeconds, turnEndCallback)
 
   submitImpossible: (clientId, turnEndCallback) ->
     @checkChallengeDecision()
-    @state.impossiblePlayers.push(@getPlayerIdBySocket(clientId))
+    @state.impossiblePlayers.push(@playerManager.getPlayerIdBySocket(clientId))
     if(@allDecisionsMade())
       # Give 40 seconds for the solutions turn
       @resetTurnTimer(Settings.submitTurnSeconds, turnEndCallback)
@@ -562,7 +533,7 @@ class Game
 
 
   # Check if everyone has submitted their decisions for the decision making turn
-  allDecisionsMade:() -> (@players.length == (@state.possiblePlayers.length + @state.impossiblePlayers.length))
+  allDecisionsMade:() -> (@playerManager.players.length == (@state.possiblePlayers.length + @state.impossiblePlayers.length))
 
 
 
@@ -572,10 +543,10 @@ class Game
   ###
   submitSolution: (socketId, dice) ->
     if !@challengeMode then ErrorManager.throw(ErrorManager.codes.submitNotChallengeMode, {}, "Can't submit opinion, not currently challenge mode")
-    playerid = @getPlayerIdBySocket(socketId)
+    playerid = @playerManager.getPlayerIdBySocket(socketId)
     if (playerid in @state.possiblePlayers)
       # If he hasn't already submitted a solution..
-      if (@submittedSolutions[playerid]?) then ErrorManager.throw(ErrorManager.codes.alreadySubmittedSolution, {solution: @submittedSolutions[playerid]}, "You already submitted your solution")
+      if (@playerManager.submittedSolutions[playerid]?) then ErrorManager.throw(ErrorManager.codes.alreadySubmittedSolution, {solution: @playerManager.submittedSolutions[playerid]}, "You already submitted your solution")
       # Check if the solution submitted is valid
 
       diceValues = []
@@ -606,22 +577,22 @@ class Game
       # TODO separate out and wrap in try catch
       submissionValue = e.evaluate(p.parse(diceValues, false)) #pass in false because not a goal
       # Ok it does. So add it to the submitted solutions list
-      @rightAnswers[playerid] = (@goalValue == submissionValue)
-      @submittedSolutions[playerid] = dice
+      @playerManager.rightAnswers[playerid] = (@goalValue == submissionValue)
+      @playerManager.submittedSolutions[playerid] = dice
       
     else
-      playerid = @getPlayerIdBySocket(socketId)
+      playerid = @playerManager.getPlayerIdBySocket(socketId)
       ErrorManager.throw(ErrorManager.codes.possibleSubmitSolution, {}, "Client not in 'possible' list")
     if(@allSolutionsSent()) then @scoreAdder()
 
   allSolutionsSent: () ->
     for i in @state.possiblePlayers
-      if !@submittedSolutions[i]?
+      if !@playerManager.submittedSolutions[i]?
         return false
     return true
 
   # Return a copy of the submitted solutions
-  getSubmittedSolutions: () -> @submittedSolutions[..]
+  getSubmittedSolutions: () -> @playerManager.submittedSolutions[..]
   getAnswerExists: () -> @answerExists
   getRoundChallengePoints: () -> @challengePoints[..]
   getRoundDecisionPoints: () -> @decisionPoints[..]
@@ -633,53 +604,53 @@ class Game
   scoreAdder: ->
     # See if we definitely know it's solvable. See if somebody got the goal.
     
-    for playerid in [0...@players.length]
-      if @rightAnswers[playerid] then @answerExists = true
+    for playerid in [0...@playerManager.players.length]
+      if @playerManager.rightAnswers[playerid] then @answerExists = true
     # If at least one person solved it, then we knows it possible. Give points to everyone who tried
     # and give even more points to everyone who got it right. Give the most to the challenger.
     # Otherwise, we assume it wasn't possible and give points to the people who said never.
     if @answerExists
-      for playerid in [0...@players.length]
+      for playerid in [0...@playerManager.players.length]
         # Points for making that right decision
         if playerid in @state.possiblePlayers
           @decisionPoints[playerid] = 2
         # Points for getting the correct solution
-        if @rightAnswers[playerid]
+        if @playerManager.rightAnswers[playerid]
           @solutionPoints[playerid] = 2
         # Points for being the challenger
-        if @challenger == playerid && playerid in @state.possiblePlayers
+        if @playerManager.challenger == playerid && playerid in @state.possiblePlayers
           @challengePoints[playerid] = 2
     else
-      for playerid in [0...@players.length]
+      for playerid in [0...@playerManager.players.length]
         if playerid in @state.impossiblePlayers
           @decisionPoints[playerid] = 2
-        if @challenger == playerid && playerid in @state.impossiblePlayers
+        if @playerManager.challenger == playerid && playerid in @state.impossiblePlayers
           @challengePoints[playerid] = 2
 
     # Now add the scores to the player
-    for i in [0...@players.length]
+    for i in [0...@playerManager.players.length]
       if(@decisionPoints[i]?) then @state.playerScores[i] += @decisionPoints[i]
       if(@solutionPoints[i]?) then @state.playerScores[i] += @solutionPoints[i]
       if(@challengePoints[i]?) then @state.playerScores[i] += @challengePoints[i]
   
   readyForNextRound: (clientid) ->
-    index = @getPlayerIdBySocket(clientid)
+    index = @playerManager.getPlayerIdBySocket(clientid)
     if(index not in @state.readyForNextRound) then @state.readyForNextRound.push(index)
 
-  allNextRoundReady: () -> @state.readyForNextRound.length == @players.length
+  allNextRoundReady: () -> @state.readyForNextRound.length == @playerManager.players.length
 
   nextRound: ->
     @goalTree = undefined
     @goalArray = []
     @goalValue = undefined
-    @goalSetter = undefined
+    @playerManager.goalSetter = undefined
     @started = false
     @globalDice = []
     @challengeMode = false
     @challengeModeNow = false
-    @challenger = undefined
-    @submittedSolutions = []
-    @rightAnswers = []
+    @playerManager.challenger = undefined
+    @playerManager.submittedSolutions = []
+    @playerManager.rightAnswers = []
     @state.unallocated = []
     @state.required = []
     @state.optional = []

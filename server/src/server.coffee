@@ -9,6 +9,7 @@ ERRORCODES = ErrorManager.codes
 {Game} = require './Game.js'
 {Player} = require './Player.js'
 {GamesManager} = require './GamesManager.js'
+{PlayerManager} = require './PlayerManager.js'
 {Settings} = require './Settings.js'
 
 Settings.DEBUG = debugmode
@@ -80,8 +81,8 @@ everyone.now.addClient = (gameNumber, playerName) -> #called by client when conn
     # Now see if the game is full after adding him (i.e see if is the last player)
     # If it is, then tell everyone in this game that its the goal setting turn. 
     if(game.isFull() && !game.started)
-      game.goalStart(-> group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)) # TODO: add timer callback
-      group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)
+      game.goalStart(-> group.now.receiveGoalTurn(game.playerManager.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)) # TODO: add timer callback
+      group.now.receiveGoalTurn(game.playerManager.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)
   else
     # else the game is already full, so tell him - tough luck
 
@@ -100,7 +101,7 @@ everyone.now.getGames = ->
 everyone.now.receiveGoal = (goalArray) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
-  if !(this.user.clientId == game.playerSocketIds[game.getGoalSetterPlayerId()])
+  if !(this.user.clientId == game.playerManager.playerSocketIds[game.getGoalSetterPlayerId()])
     throw "Unauthorised goal setter"
   try
     game.setGoal(goalArray,  ->
@@ -133,7 +134,7 @@ everyone.now.moveToRequired = (index) ->
       #if(game.penalisePlayer()) then groupReference.receivePlayerDisconnect(game.state.currentPlayer)
       groupReference.receiveState(game.state)
     )
-    group.now.receiveMoveToRequired(game.getPlayerIdBySocket(this.user.clientId), globalDiceBeingMoved)
+    group.now.receiveMoveToRequired(game.playerManager.getPlayerIdBySocket(this.user.clientId), globalDiceBeingMoved)
     group.now.receiveState(game.state)
     
   catch e
@@ -152,7 +153,7 @@ everyone.now.moveToOptional = (index) ->
       #if(game.penalisePlayer()) then groupReference.receivePlayerDisconnect(game.state.currentPlayer)
       groupReference.receiveState(game.state)
     )
-    group.now.receiveMoveToOptional(game.getPlayerIdBySocket(this.user.clientId), globalDiceBeingMoved)
+    group.now.receiveMoveToOptional(game.playerManager.getPlayerIdBySocket(this.user.clientId), globalDiceBeingMoved)
     group.now.receiveState(game.state)
     
   catch e
@@ -170,7 +171,7 @@ everyone.now.moveToForbidden = (index) ->
       #if(game.penalisePlayer()) then groupReference.receivePlayerDisconnect(game.state.currentPlayer)
       groupReference.receiveState(game.state)
     )
-    group.now.receiveMoveToForbidden(game.getPlayerIdBySocket(this.user.clientId), globalDiceBeingMoved)
+    group.now.receiveMoveToForbidden(game.playerManager.getPlayerIdBySocket(this.user.clientId), globalDiceBeingMoved)
     group.now.receiveState(game.state)
     
   catch e
@@ -187,7 +188,7 @@ everyone.now.nowChallengeRequest = () ->
     groupReference.receiveState(game.state)
     group.now.receiveChallengeSolutionsTurn() #group.now or groupReference?
   )
-  group.now.receiveNowChallengeDecideTurn(game.getPlayerIdBySocket(this.user.clientId))
+  group.now.receiveNowChallengeDecideTurn(game.playerManager.getPlayerIdBySocket(this.user.clientId))
   group.now.receiveState(game.state)
 
 # client telling the server that he wants to make a never challenge
@@ -199,7 +200,7 @@ everyone.now.neverChallengeRequest = () ->
     groupReference.receiveState(game.state)
     group.now.receiveChallengeSolutionsTurn() #group.now or groupReference?
   )
-  group.now.receiveNeverChallengeDecideTurn(game.getPlayerIdBySocket(this.user.clientId))
+  group.now.receiveNeverChallengeDecideTurn(game.playerManager.getPlayerIdBySocket(this.user.clientId))
   group.now.receiveState(game.state)
 
 
@@ -254,7 +255,7 @@ everyone.now.challengeDecision = (agree) ->
         group.now.receiveChallengeSolutionsTurn()
 
   catch e
-    e.playerid = game.getPlayerIdBySocket(this.user.clientId)
+    e.playerid = game.playerManager.getPlayerIdBySocket(this.user.clientId)
     this.now.receiveError(e)
     console.log e
     
@@ -284,7 +285,7 @@ everyone.now.challengeSolution = (answer) ->
           game.getRoundSolutionPoints()
         )
   catch e
-    e.playerid = game.getPlayerIdBySocket(this.user.clientId)
+    e.playerid = game.playerManager.getPlayerIdBySocket(this.user.clientId)
     this.now.receiveError(e)
     console.log e
     
@@ -298,7 +299,7 @@ everyone.now.nextRoundReady = ->
     group.now.receiveNextRoundAllReady()
     game.nextRound()
     group.now.receiveState(game.state)
-    group.now.receiveGoalTurn(game.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)
+    group.now.receiveGoalTurn(game.playerManager.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)
   
 everyone.now.pauseTurnTimer = ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
