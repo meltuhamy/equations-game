@@ -237,17 +237,19 @@ class Game
       @state.playerScores[newPlayerIndex] = 0
       return newPlayerIndex
 
+  ###*
+   * Removes the client and player with clientid
+   * @param  {String} clientid The client id of the player to be removed
+   * @return {Number}          The player id of the player that was removed.
+  ###
   removeClient: (clientid) ->
     if @playerManager.players.length == 2
       @restartGame()
     else #now we need to update players and playersocketIds
-      index = @playerManager.getPlayerIdBySocket(clientid)
-      @playerManager.players.splice(index, 1)
-      @playerManager.playerSocketIds.splice(index,1)
-      @state.playerScores.splice(index, 1)
-      @playerManager.submittedSolutions.splice(index, 1)
-      @playerManager.rightAnswers.splice(index,1)
+      index = @playerManager.remove(clientid)
+
       #now we update possiblePlayers, impossiblePlayers and readyForNextRound arrays in state
+      @state.playerScores.splice(index, 1)
       for i in [0...@state.possiblePlayers.length]
         if @state.possiblePlayers[i] == index
           @state.possiblePlayers.splice(i,1)

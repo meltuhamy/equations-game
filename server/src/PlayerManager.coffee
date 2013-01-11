@@ -53,4 +53,17 @@ class PlayerManager
     @playerSocketIds.push(clientid)
     return newPlayerIndex
 
+  ###*
+   * Removes the player with the given clientid.
+   * @param  {String} clientid The player with the this client id will be removed
+   * @return {Number}          Returns the player id index of the player that was removed
+  ###
+  remove: (clientid) ->
+    index = @getPlayerIdBySocket(clientid)
+    @players.splice(index, 1)
+    @playerSocketIds.splice(index,1)
+    @submittedSolutions.splice(index, 1)
+    @rightAnswers.splice(index,1)
+    return index
+
 module.exports.PlayerManager = PlayerManager
