@@ -280,10 +280,12 @@ class Game
 
 
 
-  isFull: () -> @playerManager.players.length == @playerManager.playerLimit
-  getNumPlayers: () -> return @playerManager.players.length
+  isFull: () -> @playerManager.full()
+  getNumPlayers: () -> @playerManager.numPlayers()
 
-  
+###########################################################################
+#           REACHED UP TO HERE IN THE PLAYER MANAGER REFACTOR             #
+###########################################################################
   ###*
    * Get the index of the player who moves the first dice from unallocated
    * @return {[Integer} An index to the players array

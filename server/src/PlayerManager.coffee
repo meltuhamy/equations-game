@@ -66,4 +66,6 @@ class PlayerManager
     @rightAnswers.splice(index,1)
     return index
 
+  numPlayers: -> @players.length
+
 module.exports.PlayerManager = PlayerManager
