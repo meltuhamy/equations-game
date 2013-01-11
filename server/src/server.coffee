@@ -23,17 +23,18 @@ everyone.on 'disconnect', ->
     gameNumber = this.now.gameNumber
     {game, group} = getThisGameGroup(gameNumber)
     groupReference = group.now
-    console.log "leaveGame now method called."
     playerIndex = game.removeClient(clientId)
     game.nextTurn( ->
       groupReference.receiveMoveTimeUp()
       groupReference.receiveState(game.state))
     group.now.receivePlayerDisconnect(playerIndex)
     group.now.receiveState(game.state)
+  gamesManager.cleanGames()
+  everyone.now.getGames()
+
 
 everyone.on 'connect', ->
   console.log "CONNECT: #{this.user.clientId}"
-  gamesManager.cleanGames()
 
 gamesManager = new GamesManager()
 if Settings.DEBUG
