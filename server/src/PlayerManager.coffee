@@ -1,3 +1,4 @@
+{Player} = require './Player.js'
 class PlayerManager
 
   # {Player[]} An array of players who have joined the game
@@ -33,5 +34,23 @@ class PlayerManager
   # Convert a player id to a socketid and vica versa
   getPlayerIdBySocket: (socket) -> @playerSocketIds.indexOf(socket)
   getPlayerSocketById: (id) -> @playerSocketIds[id]
+
+  ###*
+   * Returns whether or not the game is full
+   * @return {Boolean} If true, then the game is full
+  ###
+  full: () -> @players.length is @playerLimit
+
+  ###*
+   * Adds a new player with playername and socket id.
+   * @param {String} playerName The name of the player
+   * @param {String} clientid   The socket id of the client
+   * @return {Number} The player index id of the player that was added
+  ###
+  add: (clientid, playerName) ->
+    newPlayerIndex = @players.length
+    @players.push(new Player(newPlayerIndex, playerName))
+    @playerSocketIds.push(clientid)
+    return newPlayerIndex
 
 module.exports.PlayerManager = PlayerManager

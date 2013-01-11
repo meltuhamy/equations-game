@@ -230,12 +230,10 @@ class Game
    * @return {Integer} The index of the players array for the newly added player
   ###
   addClient: (clientid, playerName) ->
-    if @playerManager.players.length == @playerManager.playerLimit || @started
+    if @playerManager.full() || @started
       ErrorManager.throw(ErrorManager.codes.gameFull, {}, "Game full or already started")
     else
-      newPlayerIndex = @playerManager.players.length
-      @playerManager.players.push(new Player(newPlayerIndex, playerName))
-      @playerManager.playerSocketIds.push(clientid)
+      newPlayerIndex = @playerManager.add(clientid, playerName)
       @state.playerScores[newPlayerIndex] = 0
       return newPlayerIndex
 
