@@ -69,6 +69,9 @@ class PlayerManager
 
   numPlayers: -> @players.length
 
+  getPlayerById: (playerId) -> @players[playerId]
+  getPlayerBySocket: (socketId) -> @players[@getPlayerIdBySocket(socketId)]
+
   ###*
    * Get the index of the player who moves the first dice from unallocated
    * @return {[Integer} An index to the players array
@@ -127,5 +130,41 @@ class PlayerManager
     numPlayers = @numPlayers()
     prevPlayerId = ((playerId-1)+numPlayers)%numPlayers
     socketId isnt @getPlayerSocketById(prevPlayerId)
+
+  ###*
+   * Sets the challenger using the socket id.
+   * @param {String} socketId The socket id
+   * @return {Number} The player id of the challenger (CoffeeScript will return it)
+  ###
+  setChallengerBySocket: (socketId) -> @setChallengerByPlayerId(@getPlayerIdBySocket(socketId))
+
+  ###*
+   * Sets the challenger using the player id
+   * @param {Number} playerId The player id
+   * @returns {Number} The player id of the challenger
+  ###
+  setChallengerByPlayerId: (playerId) -> @challenger = playerId
+
+  ###*
+   * Updates the rigt answers array and submitted solutions array
+   * with the values given:
+   * @param  {Number}  playerId  The player ID who has submitted the solution
+   * @param  {Number[]}  dice      The Dice the player has submitted
+   * @param  {Boolean} isCorrect Whether or not the player's solution was correct
+  ###
+  submitSolution: (playerId, dice, isCorrect) ->
+    @rightAnswers[playerId] = isCorrect
+    @submittedSolutions[playerId] = dice
+
+  ###*
+   * Returns whether or not the player has submitted a solution
+   * @param  {Number}  playerId The player id to check
+   * @return {Boolean}          Whether or not the player has submitted a solution
+  ###
+  isPlayerSubmittedSolution: (playerId) -> @submittedSolutions[playerId]?
+
+  isRightAnswer: (playerId) -> @rightAnswers[playerId]? and @rightAnswers[playerId]
+
+  isChallenger: (playerId) -> @challenger? and @challenger is playerId
 
 module.exports.PlayerManager = PlayerManager

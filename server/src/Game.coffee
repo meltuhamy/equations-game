@@ -304,10 +304,6 @@ class Game
     else
       clearInterval(@turnTimer)
     
-###########################################################################
-#           REACHED UP TO HERE IN THE PLAYER MANAGER REFACTOR             #
-###########################################################################
-
 
   ###*
    * When the turn has changed reset the timer back to the start.  
@@ -373,27 +369,28 @@ class Game
   ## Penalise a player for taking too long (too often).
   ## returns true if he should be removed from game for bad behavior.
   penalisePlayer: () ->
-    missplayer = @state.currentPlayer
+    missplayerId = @state.currentPlayer
+    missPlayer = @playerManager.getPlayerById(missplayerId)
     # Basic system for Penalising player for taking too
-    @playerManager.players[missplayer].turnMisses += 1
-    @playerManager.players[missplayer].consecutiveTurnMisses += 1
+    missPlayer.turnMisses += 1
+    missPlayer.consecutiveTurnMisses += 1
 
     # Three Rules (only one rule at a time) for Penalising players:
     # 1. Two consecutive missed turns. He loses 2 points.
     # 2. Three consecutive missed turns. He gets kicked out.
     # 3. If total misses >= total moves played > 3. He gets kicked out.
-    if(@playerManager.players[missplayer].consecutiveTurnMisses == 2)
+    if(missplayer.consecutiveTurnMisses == 2)
       # First Rule
-      if(@state.playerScores[missplayer] > 2)
-        @state.playerScores[missplayer] -= 2
-    else if(@playerManager.players[missplayer].consecutiveTurnMisses >= 3)
+      if(@state.playerScores[missplayerId] > 2)
+        @state.playerScores[missplayerId] -= 2
+    else if(missplayer.consecutiveTurnMisses >= 3)
       # Second Rule
       @removeClient(@playerManager.getPlayerSocketById(missplayer))
       console.log "BAD PLAYER REMOVED"
       return true
-    else if(@playerManager.players[missplayer].turnMisses >= @playerManager.players[missplayer].movesPlayed)
+    else if(missplayer.turnMisses >= @missplayer.movesPlayed)
       # Third rule
-      if(@playerManager.players[missplayer].movesPlayed > 3)
+      if(missplayer.movesPlayed > 3)
         @removeClient(@playerManager.getPlayerSocketById(missplayer))
         console.log "BAD PLAYER REMOVED"
         return true
@@ -432,6 +429,7 @@ class Game
       @playerManager.players[@playerManager.getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
       @nextTurn(turnEndCallback)
 
+
   ###*
    * Attempt to g into the decide stage of a now challenge.
    * @param  {Integer} clientId The nowjs unqiue id for client
@@ -439,28 +437,30 @@ class Game
   nowChallenge: (clientId, turnEndCallback) ->
     @challengeMode = true
     @challengeModeNow = true
-    @playerManager.challenger = @playerManager.getPlayerIdBySocket(clientId)
-    @state.possiblePlayers.push(@playerManager.getPlayerIdBySocket(clientId))
+    challengerId = @playerManager.setChallengerBySocket(clientId)
+    @state.possiblePlayers.push(challengerId)
     @resetTurnTimer(Settings.challengeDecisionTurnSeconds, turnEndCallback)
 
 
   neverChallenge: (clientId, turnEndCallback) ->
     @challengeMode = true
     @challengeModeNow = false
-    @playerManager.challenger = @playerManager.getPlayerIdBySocket(clientId)
-    @state.impossiblePlayers.push(@playerManager.getPlayerIdBySocket(clientId))
+    challengerId = @playerManager.setChallengerBySocket(clientId)
+    @state.impossiblePlayers.push(challengerId)
     @resetTurnTimer(Settings.challengeDecisionTurnSeconds, turnEndCallback)
 
   submitPossible: (clientId, turnEndCallback) ->
     @checkChallengeDecision()
-    @state.possiblePlayers.push(@playerManager.getPlayerIdBySocket(clientId))
+    agreedId = @playerManager.getPlayerIdBySocket(clientId) #The player id of the player who agreed
+    @state.possiblePlayers.push(agreedId)
     if(@allDecisionsMade())
       # Give 40 seconds for the solutions turn
       @resetTurnTimer(Settings.submitTurnSeconds, turnEndCallback)
 
   submitImpossible: (clientId, turnEndCallback) ->
     @checkChallengeDecision()
-    @state.impossiblePlayers.push(@playerManager.getPlayerIdBySocket(clientId))
+    disagreedId = @playerManager.getPlayerIdBySocket(clientId) #The player id of the player who disagreed
+    @state.impossiblePlayers.push(disagreedId)
     if(@allDecisionsMade())
       # Give 40 seconds for the solutions turn
       @resetTurnTimer(Settings.submitTurnSeconds, turnEndCallback)
@@ -475,9 +475,11 @@ class Game
       ErrorManager.throw(ErrorManager.codes.alreadyGaveOpinion, {}, "Already stated your opinion")
 
 
-  # Check if everyone has submitted their decisions for the decision making turn
-  allDecisionsMade:() -> (@playerManager.players.length == (@state.possiblePlayers.length + @state.impossiblePlayers.length))
-
+  ###*
+   * Check if everyone has submitted their decisions for the decision making turn
+   * @return {Boolean} True if everyone submitted their decisions
+  ###
+  allDecisionsMade: -> @getNumPlayers() is (@state.possiblePlayers.length+@state.impossiblePlayers.length)
 
 
   ###*
@@ -520,8 +522,8 @@ class Game
       # TODO separate out and wrap in try catch
       submissionValue = e.evaluate(p.parse(diceValues, false)) #pass in false because not a goal
       # Ok it does. So add it to the submitted solutions list
-      @playerManager.rightAnswers[playerid] = (@goalValue == submissionValue)
-      @playerManager.submittedSolutions[playerid] = dice
+      isCorrect = @goalValue is submissionValue
+      @playerManager.submitSolution(playerid, dice, isCorrect)
       
     else
       playerid = @playerManager.getPlayerIdBySocket(socketId)
@@ -530,7 +532,7 @@ class Game
 
   allSolutionsSent: () ->
     for i in @state.possiblePlayers
-      if !@playerManager.submittedSolutions[i]?
+      if !@playerManager.isPlayerSubmittedSolution(i)
         return false
     return true
 
@@ -546,32 +548,34 @@ class Game
 
   scoreAdder: ->
     # See if we definitely know it's solvable. See if somebody got the goal.
-    
-    for playerid in [0...@playerManager.players.length]
-      if @playerManager.rightAnswers[playerid] then @answerExists = true
+    numPlayers = @getNumPlayers()
+    for playerid in [0...numPlayers]
+      if @playerManager.isRightAnswer(playerid) then @answerExists = true
+      break # We now know an answer exists.
+
     # If at least one person solved it, then we knows it possible. Give points to everyone who tried
     # and give even more points to everyone who got it right. Give the most to the challenger.
     # Otherwise, we assume it wasn't possible and give points to the people who said never.
     if @answerExists
-      for playerid in [0...@playerManager.players.length]
+      for playerid in [0...numPlayers]
         # Points for making that right decision
         if playerid in @state.possiblePlayers
           @decisionPoints[playerid] = 2
         # Points for getting the correct solution
-        if @playerManager.rightAnswers[playerid]
+        if @playerManager.isRightAnswer(playerid)
           @solutionPoints[playerid] = 2
         # Points for being the challenger
-        if @playerManager.challenger == playerid && playerid in @state.possiblePlayers
+        if @playerManager.isChallenger(playerid) && playerid in @state.possiblePlayers
           @challengePoints[playerid] = 2
     else
-      for playerid in [0...@playerManager.players.length]
+      for playerid in [0...numPlayers]
         if playerid in @state.impossiblePlayers
           @decisionPoints[playerid] = 2
-        if @playerManager.challenger == playerid && playerid in @state.impossiblePlayers
+        if @playerManager.isChallenger(playerid) && playerid in @state.impossiblePlayers
           @challengePoints[playerid] = 2
 
     # Now add the scores to the player
-    for i in [0...@playerManager.players.length]
+    for i in [0...numPlayers]
       if(@decisionPoints[i]?) then @state.playerScores[i] += @decisionPoints[i]
       if(@solutionPoints[i]?) then @state.playerScores[i] += @solutionPoints[i]
       if(@challengePoints[i]?) then @state.playerScores[i] += @challengePoints[i]
