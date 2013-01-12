@@ -179,4 +179,17 @@ class PlayerManager
 
   isChallenger: (playerId) -> @challenger? and @challenger is playerId
 
+  ###*
+   * Resets internal variables to get ready for the next round
+   * @return {[type]} [description]
+  ###
+  nextRound: ->
+    @goalSetter = undefined
+    @challengePoints = []
+    @decisionPoints = []
+    @solutionPoints = []
+    @challenger = undefined
+    @submittedSolutions = []
+    @rightAnswers = []
+
 module.exports.PlayerManager = PlayerManager

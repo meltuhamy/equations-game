@@ -583,17 +583,15 @@ class Game
   allNextRoundReady: () -> @state.readyForNextRound.length == @playerManager.players.length
 
   nextRound: ->
+    @playerManager.nextRound()
+
     @goalTree = undefined
     @goalArray = []
     @goalValue = undefined
-    @playerManager.goalSetter = undefined
     @started = false
     @globalDice = []
     @challengeMode = false
     @challengeModeNow = false
-    @playerManager.challenger = undefined
-    @playerManager.submittedSolutions = []
-    @playerManager.rightAnswers = []
     @state.unallocated = []
     @state.required = []
     @state.optional = []
@@ -603,9 +601,6 @@ class Game
     @state.impossiblePlayers = []
     @state.turnNumber = 0
     @answerExists = false
-    @playerManager.challengePoints = []
-    @playerManager.decisionPoints = []
-    @playerManager.solutionPoints = []
     @state.readyForNextRound = []
     @goalStart()
     @allocate()
