@@ -23,6 +23,15 @@ class PlayerManager
   # {Number []} An array of player indices that have submitted correct answers during a challenge
   rightAnswers: []
 
+  # {Number []} An which has points for each playerid for making challenges
+  challengePoints: []
+
+  # {Number []} An which has points for each playerid for making decisions
+  decisionPoints: []
+
+  # {Number []} An which has points for each playerid for making solutions
+  solutionPoints: []
+
   constructor: ->
     @players = []
     @playerSocketIds = []
@@ -31,6 +40,9 @@ class PlayerManager
     @challenger = undefined
     @submittedSolutions = []
     @rightAnswers = []
+    @challengePoints = []
+    @decisionPoints = []
+    @solutionPoints = []
 
   # Convert a player id to a socketid and vica versa
   getPlayerIdBySocket: (socket) -> @playerSocketIds.indexOf(socket)

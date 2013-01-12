@@ -66,10 +66,6 @@ class Game
     @challengeMode = false
 
     @answerExists = false
-    @challengePoints = []
-    @decisionPoints = []
-    @solutionPoints = []
-
 
     ###*
      * The game state.
@@ -539,9 +535,9 @@ class Game
   # Return a copy of the submitted solutions
   getSubmittedSolutions: () -> @playerManager.submittedSolutions[..]
   getAnswerExists: () -> @answerExists
-  getRoundChallengePoints: () -> @challengePoints[..]
-  getRoundDecisionPoints: () -> @decisionPoints[..]
-  getRoundSolutionPoints: () -> @solutionPoints[..]
+  getRoundChallengePoints: () -> @playerManager.challengePoints[..]
+  getRoundDecisionPoints: () -> @playerManager.decisionPoints[..]
+  getRoundSolutionPoints: () -> @playerManager.solutionPoints[..]
 
 
 
@@ -560,25 +556,25 @@ class Game
       for playerid in [0...numPlayers]
         # Points for making that right decision
         if playerid in @state.possiblePlayers
-          @decisionPoints[playerid] = 2
+          @playerManager.decisionPoints[playerid] = 2
         # Points for getting the correct solution
         if @playerManager.isRightAnswer(playerid)
-          @solutionPoints[playerid] = 2
+          @playerManager.solutionPoints[playerid] = 2
         # Points for being the challenger
         if @playerManager.isChallenger(playerid) && playerid in @state.possiblePlayers
-          @challengePoints[playerid] = 2
+          @playerManager.challengePoints[playerid] = 2
     else
       for playerid in [0...numPlayers]
         if playerid in @state.impossiblePlayers
-          @decisionPoints[playerid] = 2
+          @playerManager.decisionPoints[playerid] = 2
         if @playerManager.isChallenger(playerid) && playerid in @state.impossiblePlayers
-          @challengePoints[playerid] = 2
+          @playerManager.challengePoints[playerid] = 2
 
     # Now add the scores to the player
     for i in [0...numPlayers]
-      if(@decisionPoints[i]?) then @state.playerScores[i] += @decisionPoints[i]
-      if(@solutionPoints[i]?) then @state.playerScores[i] += @solutionPoints[i]
-      if(@challengePoints[i]?) then @state.playerScores[i] += @challengePoints[i]
+      if(@playerManager.decisionPoints[i]?) then @state.playerScores[i] += @playerManager.decisionPoints[i]
+      if(@playerManager.solutionPoints[i]?) then @state.playerScores[i] += @playerManager.solutionPoints[i]
+      if(@playerManager.challengePoints[i]?) then @state.playerScores[i] += @playerManager.challengePoints[i]
   
   readyForNextRound: (clientid) ->
     index = @playerManager.getPlayerIdBySocket(clientid)
@@ -607,9 +603,9 @@ class Game
     @state.impossiblePlayers = []
     @state.turnNumber = 0
     @answerExists = false
-    @challengePoints = []
-    @decisionPoints = []
-    @solutionPoints = []
+    @playerManager.challengePoints = []
+    @playerManager.decisionPoints = []
+    @playerManager.solutionPoints = []
     @state.readyForNextRound = []
     @goalStart()
     @allocate()
