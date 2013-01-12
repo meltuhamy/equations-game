@@ -283,68 +283,6 @@ class Game
   isFull: () -> @playerManager.full()
   getNumPlayers: () -> @playerManager.numPlayers()
 
-###########################################################################
-#           REACHED UP TO HERE IN THE PLAYER MANAGER REFACTOR             #
-###########################################################################
-  ###*
-   * Get the index of the player who moves the first dice from unallocated
-   * @return {[Integer} An index to the players array
-  ###
-  getFirstTurnPlayerId: () -> 
-    if !@playerManager.goalSetter? then @getGoalSetterPlayerId()
-    return @playerManager.goalSetter+1%@playerManager.players.length
-  # If we want to get his socket id instead of the player array index
-  getFirstTurnPlayerSocketId: () -> @playerManager.getPlayerSocketById(@getFirstTurnPlayerId())
-
-  ###*
-   * Return the index of the player who will set the goal
-   * @return {[Integer} An index to the players array
-  ###
-  getGoalSetterPlayerId: () ->
-    if !@playerManager.goalSetter?
-      @setGoalSetterPlayerId()
-    @playerManager.goalSetter
-
-  ###*
-   * Gets a random player id (index).
-   * @param  {Number[]} exceptions If this is provided, the "random" player number will not include anything in this array.
-   * @return {Number}            A player id (index)
-  ###
-  randomPlayerId: (exceptions) ->
-    e = [].concat(exceptions)
-    newNumber = Math.floor(Math.random() * @playerManager.players.length)
-    newNumber = Math.floor(Math.random() * @playerManager.players.length) while newNumber in e
-    return newNumber
-
-  ###*
-   * Sets the goal setter to forceId. If no parameter given, chooses random goalSetter.
-   * @param {Number} forceId If provided, will give the goal setter this id, otherwise a random.
-  ###
-  setGoalSetterPlayerId: (forceId) ->
-    if(!forceId?)
-      #set a random goalSetter
-      if Settings.DEBUG
-        @playerManager.goalSetter = 0
-      else
-        exceptions = if @playerManager.goalSetter? then @playerManager.goalSetter else []
-        @playerManager.goalSetter = @randomPlayerId(exceptions)
-    else
-      @playerManager.goalSetter = forceId
-
-
-
-  ###*
-   * See if this player is allowed to make this move.
-   * @param  {[type]} socketId The nowjs socket id of the player.
-   * @return {[type]}          Return True if it is this player's turn to move 
-  ###
-  authenticateMove: (socketId) -> #returns a boolean 
-    (socketId == @playerManager.playerSocketIds[@state.currentPlayer])
-
-  validateChallenge: (socketId) ->
-    (socketId != @playerManager.playerSocketIds[((@state.currentPlayer-1)+@playerManager.players.length)%@playerManager.players.length])
-
-
   goalStart: (turnEndCallback) ->
     @started = true
     # TODO: add callback for timer
@@ -353,20 +291,23 @@ class Game
 
 
   start: (turnEndCallback) ->
-    @state.currentPlayer = (@playerManager.goalSetter+1)%@playerManager.players.length
+    @state.currentPlayer = (@playerManager.goalSetter+1)%@getNumPlayers()
     @state.turnNumber = 1
     @resetTurnTimer(Settings.turnSeconds, turnEndCallback)
     
 
   nextTurn: (turnEndCallback) ->
     if @started
-      @state.currentPlayer = (@state.currentPlayer+1)%@playerManager.players.length
+      @state.currentPlayer = (@state.currentPlayer+1)%@getNumPlayers()
       @state.turnNumber += 1
       @resetTurnTimer(Settings.turnSeconds, turnEndCallback)
     else
       clearInterval(@turnTimer)
     
-  
+###########################################################################
+#           REACHED UP TO HERE IN THE PLAYER MANAGER REFACTOR             #
+###########################################################################
+
 
   ###*
    * When the turn has changed reset the timer back to the start.  
@@ -420,7 +361,7 @@ class Game
               @submitPossible(@playerManager.getPlayerSocketById(index))
       else if @state.turnNumber == 0
         #Time ran out on goal setting screen. Choose new player to set goal
-        @setGoalSetterPlayerId()
+        @playerManager.setGoalSetterPlayerId()
       else
         # Move onto the next allocation turn
         @nextTurn(turnEndCallback)
@@ -464,7 +405,7 @@ class Game
       ErrorManager.throw(ErrorManager.codes.moveDuringChallenge, {}, "Can't move during challenge mode")
     if !@goalHasBeenSet()
       ErrorManager.throw(ErrorManager.codes.moveWithoutGoal, {}, "Can't move yet, goal has not been set")
-    if !@authenticateMove(clientId)
+    if !@playerManager.authenticateMove(clientId, @state.currentPlayer)
       ErrorManager.throw(ErrorManager.codes.notYourTurn, {}, "Not your turn")
     else if index < 0 || index >= @state.unallocated.length
       ErrorManager.throw(ErrorManager.codes.outOfBoundsDice, {}, "Index for move out of bounds")

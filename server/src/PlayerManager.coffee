@@ -1,4 +1,5 @@
 {Player} = require './Player.js'
+{Settings} = require './Settings.js'
 class PlayerManager
 
   # {Player[]} An array of players who have joined the game
@@ -67,5 +68,64 @@ class PlayerManager
     return index
 
   numPlayers: -> @players.length
+
+  ###*
+   * Get the index of the player who moves the first dice from unallocated
+   * @return {[Integer} An index to the players array
+  ###
+  getFirstTurnPlayerId: () -> 
+    if !@goalSetter? then @getGoalSetterPlayerId()
+    return @goalSetter+1%@numPlayers()
+
+  # If we want to get his socket id instead of the player array index
+  getFirstTurnPlayerSocketId: () -> @getPlayerSocketById(@getFirstTurnPlayerId())
+
+  ###*
+   * Return the index of the player who will set the goal
+   * @return {[Integer} An index to the players array
+  ###
+  getGoalSetterPlayerId: () ->
+    if !@goalSetter?
+      @setGoalSetterPlayerId()
+    return @goalSetter
+
+  ###*
+   * Gets a random player id (index).
+   * @param  {Number[]} exceptions If this is provided, the "random" player number will not include anything in this array.
+   * @return {Number}            A player id (index)
+  ###
+  randomPlayerId: (exceptions) ->
+    e = [].concat(exceptions)
+    numPlayers = @numPlayers()
+    newNumber = Math.floor(Math.random() * numPlayers)
+    newNumber = Math.floor(Math.random() * numPlayers) while newNumber in e
+    return newNumber
+
+  ###*
+   * Sets the goal setter to forceId. If no parameter given, chooses random goalSetter.
+   * @param {Number} forceId If provided, will give the goal setter this id, otherwise a random.
+  ###
+  setGoalSetterPlayerId: (forceId) ->
+    if(!forceId?)
+      #set a random goalSetter
+      if Settings.DEBUG
+        @goalSetter = 0
+      else
+        exceptions = if @goalSetter? then @goalSetter else []
+        @goalSetter = @randomPlayerId(exceptions)
+    else
+      @goalSetter = forceId
+
+  ###*
+   * See if this player is allowed to make this move.
+   * @param  {[type]} socketId The nowjs socket id of the player.
+   * @return {[type]}          Return True if it is this player's turn to move 
+  ###
+  authenticateMove: (socketId, playerId) -> socketId is @getPlayerSocketById(playerId)
+
+  validateChallenge: (socketId, playerId) ->
+    numPlayers = @numPlayers()
+    prevPlayerId = ((playerId-1)+numPlayers)%numPlayers
+    socketId isnt @getPlayerSocketById(prevPlayerId)
 
 module.exports.PlayerManager = PlayerManager

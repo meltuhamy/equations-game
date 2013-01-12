@@ -82,8 +82,8 @@ everyone.now.addClient = (gameNumber, playerName) -> #called by client when conn
     # Now see if the game is full after adding him (i.e see if is the last player)
     # If it is, then tell everyone in this game that its the goal setting turn. 
     if(game.isFull() && !game.started)
-      game.goalStart(-> group.now.receiveGoalTurn(game.playerManager.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)) # TODO: add timer callback
-      group.now.receiveGoalTurn(game.playerManager.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)
+      game.goalStart(-> group.now.receiveGoalTurn(game.playerManager.players, game.globalDice, game.playerManager.getGoalSetterPlayerId(), Settings.goalSeconds)) # TODO: add timer callback
+      group.now.receiveGoalTurn(game.playerManager.players, game.globalDice, game.playerManager.getGoalSetterPlayerId(), Settings.goalSeconds)
   else
     # else the game is already full, so tell him - tough luck
 
@@ -102,7 +102,7 @@ everyone.now.getGames = ->
 everyone.now.receiveGoal = (goalArray) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
-  if !(this.user.clientId == game.playerManager.playerSocketIds[game.getGoalSetterPlayerId()])
+  if !(this.user.clientId == game.playerManager.playerSocketIds[game.playerManager.getGoalSetterPlayerId()])
     throw "Unauthorised goal setter"
   try
     game.setGoal(goalArray,  ->
@@ -300,7 +300,7 @@ everyone.now.nextRoundReady = ->
     group.now.receiveNextRoundAllReady()
     game.nextRound()
     group.now.receiveState(game.state)
-    group.now.receiveGoalTurn(game.playerManager.players, game.globalDice, game.getGoalSetterPlayerId(), Settings.goalSeconds)
+    group.now.receiveGoalTurn(game.playerManager.players, game.globalDice, game.playerManager.getGoalSetterPlayerId(), Settings.goalSeconds)
   
 everyone.now.pauseTurnTimer = ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
