@@ -462,8 +462,6 @@ class GameScreen extends Screen
   ###
   drawAllocationMoveMenu: (clickedOn) ->
     @allocationMoveMenuOn = clickedOn
-    console.log "draw Allocation menu"
-    console.log clickedOn
     #Create the new allocation menu
     html = '<span id="mamenu-required-btn" class="mamenu-button">Required</span>
             <span id="mamenu-optional-btn" class="mamenu-button">Optional</span>
@@ -495,7 +493,6 @@ class GameScreen extends Screen
         #height: '70px'
       events: 
         render: (event, api) ->
-          console.log "Render fired"
           #Add event listener for each of the "required" "optional" and "forbidden" buttons inside the menu
           clickedIndex = $('#unallocated li').index($(clickedOn))
           $("#mamenu-required-btn").click -> network.moveToRequired(clickedIndex)
