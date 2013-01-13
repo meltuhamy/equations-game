@@ -51,17 +51,18 @@ class Tutorial
 
   ###*
    * Adds a step to the tutorial system (in)
-   * @param {String} {id        An identification to give to that particular step
+   * @param {String} id        An identification to give to that particular step
    * @param {String} header      The header of the modal window if one exists
    * @param {String} content     The content of the modal window if one exists
    * @param {CSS Selector} tipselector The css selector to add a tip to
    * @param {String} tipmessage  The html to add to the tip if one exists
    * @param {String} tipheading  The html to add to the heading of the tip if one exists
    * @param {Boolean} modal       Do we want the window to be modal?
-   * @param {Boolean} tipnext}   Do we want a next button inside the tip?
+   * @param {Boolean} tipnext   Do we want a next button inside the tip?
+   * @param {function} callback  A function that would be called when the step is executed.
   ###
-  @addStep: ({id, header, content, tipselector, tipmessage, tipheading, modal, tipnext}) ->
-    index = @steps.push {id: id, header: header, content: content, tipselector: tipselector, tipmessage: tipmessage, tipheading: tipheading, modal: modal, tipnext: tipnext}
+  @addStep: ({id, header, content, tipselector, tipmessage, tipheading, modal, tipnext, callback}) ->
+    index = @steps.push {id: id, header: header, content: content, tipselector: tipselector, tipmessage: tipmessage, tipheading: tipheading, modal: modal, tipnext: tipnext, callback:callback}
     if id? then @stepIds[id] = index - 1
 
   ###*
@@ -72,7 +73,7 @@ class Tutorial
     nextIndex = if stepId? then @stepIds[stepId] else @nextStepIndex
     theStep = @steps[nextIndex]
     if theStep?
-      {id, header, content, tipselector, tipmessage, tipheading, tipnext, modal} = theStep
+      {id, header, content, tipselector, tipmessage, tipheading, tipnext, modal, callback} = theStep
       if header? then @changeHeader(header)
       if content? then @changeContent(content)
       if tipselector? then @displayTip(tipselector, tipmessage, tipheading, tipnext)
@@ -82,7 +83,9 @@ class Tutorial
       if modal? or (tipselector? and tipnext)
         $('.tutorial-next-button').unbind "click"
         $('.tutorial-next-button').click (=> @doStep())
+      if callback? then callback()
       @nextStepIndex++ until @steps[@nextStepIndex]? or @nextStepIndex is @steps.length
+
   ###*
    * Executes a step with given step id only when the current screen
    * is an instance of the given class name. This is done using a timer
@@ -95,15 +98,18 @@ class Tutorial
     if typeof className is "function"
       thisReference = this
       stepid = stepId
+      numTries = 20
       doThis = -> thisReference.doStep(stepid)
       checker = ->
         currentScreen = ScreenSystem.currentScreen
         if currentScreen instanceof className
           doThis()
-        else
+        else if numTries > 0
+          numTries--
           setTimeout checker, 1000
+        else if numTries <= 0
+          ScreenSystem.currentScreen.alert "Hey! Still there? I'm waiting for you to do the tutorial..."
       checker()
-      
 
   ###*
    * Shows the tutorial modal box (bootstrap) window
@@ -202,14 +208,13 @@ class Tutorial
       tipselector: 'tr[data-gamenumber="0"] td:first-child'
       tipheading: 'Join this game'
       tipmessage: 'Click here to join the game!'
-
-    @addStep 
-      id: "goal"
-      modal: true
-      header: "Goal setting"
-      content: "Great, we're in a game! You've been chosen to be the goal setter. Let's make the goal '1+2'."
-
-    @doStepWhenScreen GoalScreen, "goal"
+      callback: =>
+        @addStep 
+          id: "goal"
+          modal: true
+          header: "Goal setting"
+          content: "Great, we're in a game! You've been chosen to be the goal setter. Let's make the goal '1+2'."
+        @doStepWhenScreen GoalScreen, "goal"
 
     @addStep
       modal: false
@@ -230,13 +235,13 @@ class Tutorial
       modal: false
       tipselector: '#sendgoal'
       tipmessage: 'Great, now click here to submit the goal and start the game.'
-
-    @addStep
-      id: "game"
-      modal: true
-      header: "We're in!"
-      content: "We've finally started playing the game. Let me now show you around."
-    @doStepWhenScreen GameScreen, "game"
+      callback: =>
+        @addStep
+          id: "game"
+          modal: true
+          header: "We're in!"
+          content: "We've finally started playing the game. Let me now show you around."
+        @doStepWhenScreen GameScreen, "game"
 
     @addStep
       modal: false
