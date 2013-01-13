@@ -470,29 +470,29 @@ class GameScreen extends Screen
       id: 'move-allocation'
       content:
         text: html
-        title:
-          text: 'Move dice to...'
-          button: true
       position: 
         my: 'top center'
         at: 'bottom center'
         viewport: $(window)
         adjust:
-          y: -5
+          y: -12
       show:
         event: 'click'
         button: true 
-        effect: -> $(this).fadeIn(400)
+        effect: -> $(this).slideDown(100, -> $(".mamenu-button").css('visibility', 'visible'))
         ready: true
       hide:
         event: 'unfocus'
-        effect: -> $(this).fadeOut(100)
+        effect: -> $(this).slideUp(200)
       style:
         classes: 'qtip-shadow qtip-light qtip-rounded'
-        #width: '230px'
-        #height: '70px'
+        tip:
+          width: 16
+          height: 12
       events: 
         render: (event, api) ->
+          $(".mamenu-button").css('visibility', 'hidden')
+        visible: (event, api) ->
           #Add event listener for each of the "required" "optional" and "forbidden" buttons inside the menu
           clickedIndex = $('#unallocated li').index($(clickedOn))
           $("#mamenu-required-btn").click -> network.moveToRequired(clickedIndex)
@@ -501,6 +501,8 @@ class GameScreen extends Screen
 
           #In general, remove the allocation menu one someone clicks any of the buttons
           $(".mamenu-button").click (event) -> api.hide()
+
+          
 
         hidden: (event, api) ->
           # Removes the buttons since even though they're hidden, they're still there.
