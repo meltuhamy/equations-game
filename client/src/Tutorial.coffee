@@ -76,15 +76,19 @@ class Tutorial
       {id, header, content, tipselector, tipmessage, tipheading, tipnext, modal, callback} = theStep
       if header? then @changeHeader(header)
       if content? then @changeContent(content)
-      if tipselector? then @displayTip(tipselector, tipmessage, tipheading, tipnext)
+      if tipselector?
+        # Hide previous exists
+        prevStep = @steps[nextIndex-1]
+        if prevStep? and prevStep.tipselector? then $(prevStep.tipselector).qtip('hide')
+        @displayTip(tipselector, tipmessage, tipheading, tipnext)
       if modal?
         if modal then @show() else @hide()
-      @steps[nextIndex] = undefined
       if modal? or (tipselector? and tipnext)
         $('.tutorial-next-button').unbind "click"
         $('.tutorial-next-button').click (=> @doStep())
       if callback? then callback()
-      @nextStepIndex++ until @steps[@nextStepIndex]? or @nextStepIndex is @steps.length
+      @steps[nextIndex].done = true
+      @nextStepIndex++ until !@steps[@nextStepIndex]? or !@steps[@nextStepIndex].done or @nextStepIndex is @steps.length
 
   ###*
    * Executes a step with given step id only when the current screen
@@ -98,17 +102,13 @@ class Tutorial
     if typeof className is "function"
       thisReference = this
       stepid = stepId
-      numTries = 20
       doThis = -> thisReference.doStep(stepid)
       checker = ->
         currentScreen = ScreenSystem.currentScreen
         if currentScreen instanceof className
           doThis()
-        else if numTries > 0
-          numTries--
-          setTimeout checker, 1000
-        else if numTries <= 0
-          ScreenSystem.currentScreen.alert "Hey! Still there? I'm waiting for you to do the tutorial..."
+        else
+          setTimeout checker, 500
       checker()
 
   ###*
@@ -135,7 +135,7 @@ class Tutorial
    * @param  {Boolean} tipnext    Whether or not we want a next button in the tip.
   ###
   @displayTip: (tipselector, tipmessage, tipheading, tipnext) ->
-    nextHtml = if tipnext then '<span class="grey-button tutorial-next-button">Next &rarr;</span>' else ''
+    nextHtml = if tipnext then '<p style="text-align:right"><span class="grey-button tutorial-next-button">Next &rarr;</span></p>' else ''
     theHtml = tipmessage+nextHtml
     $(tipselector).qtip 
       content: theHtml
@@ -143,10 +143,19 @@ class Tutorial
         my: 'top center'
         at: 'bottom center'
         viewport: $(window)
+        adjust:
+          y: -5
       show:
         event: false
         ready: true  
-      hide: false
+      hide:
+        event: false
+        effect: -> $(this).fadeOut()
+      style:
+        classes: 'qtip-shadow qtip-rounded qtip-bootstrap qtip-tutorial'
+        tip:
+          width: 11
+          height: 9
       events: 
         render: (event, api) ->
           if tipnext then $('.tutorial-next-button').bind 'click', ->
