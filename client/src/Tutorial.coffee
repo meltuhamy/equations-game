@@ -1,12 +1,24 @@
 class Tutorial
   @window: undefined
-  @windowOptions = undefined
-  @steps = undefined
-  @stepIds = undefined
-  @nextStepIndex = 0
-  @tip = undefined
+  @windowOptions: undefined
+  @steps: undefined
+  @stepIds: undefined
+  @nextStepIndex: 0
+  @tip: undefined
+
+  ###*
+   * Initialises the tutorial system's variables and configuration
+  ###
   @init : ->
+    @window = undefined
+    @windowOptions = undefined
+    @steps = undefined
+    @stepIds = undefined
+    @nextStepIndex = 0
+    @tip = undefined
+
     if $('#tutorial-window').length > 0 then $('#tutorial-window').remove()
+
     @steps = []
     @stepIds = []
     @tip = []
@@ -14,8 +26,11 @@ class Tutorial
       backdrop: 'static'
       keyboard: false
       show: false
+
     @initSteps()
+
     @nextStepIndex = 0
+
     html = '<div id="tutorial-window" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
               <div class="modal-header">
                 <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>-->
@@ -33,14 +48,140 @@ class Tutorial
     $('.tutorial-next-button').click (=> @doStep())
     $(@window).modal(@windowOptions)
 
+
+  ###*
+   * Adds a step to the tutorial system (in)
+   * @param {String} {id        An identification to give to that particular step
+   * @param {String} header      The header of the modal window if one exists
+   * @param {String} content     The content of the modal window if one exists
+   * @param {CSS Selector} tipselector The css selector to add a tip to
+   * @param {String} tipmessage  The html to add to the tip if one exists
+   * @param {String} tipheading  The html to add to the heading of the tip if one exists
+   * @param {Boolean} modal       Do we want the window to be modal?
+   * @param {Boolean} tipnext}   Do we want a next button inside the tip?
+  ###
+  @addStep: ({id, header, content, tipselector, tipmessage, tipheading, modal, tipnext}) ->
+    index = @steps.push {id: id, header: header, content: content, tipselector: tipselector, tipmessage: tipmessage, tipheading: tipheading, modal: modal, tipnext: tipnext}
+    if id? then @stepIds[id] = index - 1
+
+  ###*
+   * Executes the next step in sequence OR executes the step with the given ID
+   * @param  {String} stepId If given, the step with this ID will be executed. Otherwise, the next step will be executed.
+  ###
+  @doStep: (stepId) ->
+    nextIndex = if stepId? then @stepIds[stepId] else @nextStepIndex
+    theStep = @steps[nextIndex]
+    if theStep?
+      {id, header, content, tipselector, tipmessage, tipheading, tipnext, modal} = theStep
+      if header? then @changeHeader(header)
+      if content? then @changeContent(content)
+      if tipselector? then @displayTip(tipselector, tipmessage, tipheading, tipnext)
+      if modal?
+        if modal then @show() else @hide()
+      @steps[nextIndex] = undefined
+      if modal? or (tipselector? and tipnext)
+        $('.tutorial-next-button').unbind "click"
+        $('.tutorial-next-button').click (=> @doStep())
+      @nextStepIndex++ until @steps[@nextStepIndex]? or @nextStepIndex is @steps.length
+  ###*
+   * Executes a step with given step id only when the current screen
+   * is an instance of the given class name. This is done using a timer
+   * to periodically check if the screen has changed.
+   * 
+   * @param  {function} className The actual class name (note: not a string)
+   * @param  {String} stepId    The step id to execute
+  ###
+  @doStepWhenScreen: (className, stepId) ->
+    if typeof className is "function"
+      thisReference = this
+      stepid = stepId
+      doThis = -> thisReference.doStep(stepid)
+      checker = ->
+        currentScreen = ScreenSystem.currentScreen
+        if currentScreen instanceof className
+          doThis()
+        else
+          setTimeout checker, 1000
+      checker()
+      
+
+  ###*
+   * Shows the tutorial modal box (bootstrap) window
+  ###
+  @show: -> $(@window).modal('show')
+
+  ###*
+   * Hides the tutorial modal box (bootstrap) window
+  ###
+  @hide: -> $(@window).modal('hide')
+
+  ###*
+   * Toggles the tutorial modal box (bootstrap) window
+  ###
+  @toggle: -> $(@window).modal('toggle')
+
+
+  ###*
+   * Displays a qTip2 tip on the given selector.
+   * @param  {String} tipselector The css selector to add a bubble tip to.
+   * @param  {String} tipmessage  The message the tip will have
+   * @param  {String} tipheading  The html heading the tip will have
+   * @param  {Boolean} tipnext    Whether or not we want a next button in the tip.
+  ###
+  @displayTip: (tipselector, tipmessage, tipheading, tipnext) ->
+    nextHtml = if tipnext then '<span class="grey-button tutorial-next-button">Next &rarr;</span>' else ''
+    theHtml = tipmessage+nextHtml
+    $(tipselector).qtip 
+      content: theHtml
+      position: 
+        my: 'top center'
+        at: 'bottom center'
+        viewport: $(window)
+      show:
+        event: false
+        ready: true  
+      hide: false
+      events: 
+        render: (event, api) ->
+          if tipnext then $('.tutorial-next-button').bind 'click', ->
+            api.hide()
+            Tutorial.doStep()
+
+  ###*
+   * Returns whether or not the window exists
+   * @return {Boolean} True if the window exists.
+  ###
   @isValid: -> @window? and @window.length > 0
 
+  ###*
+   * Changes the content part of the window
+   * @param  {String} content The html that would go into the content
+  ###
   @changeContent: (content) -> if @isValid then $('#tutorial-window-content').html(content)
 
+  ###*
+   * Changes the header part of the window
+   * @param  {String} header The html that would go into the header
+  ###
   @changeHeader: (header) -> if @isValid then $('#tutorial-window-header').html(header)
 
+  ###*
+   * Changes the content and header parts of the window
+   * @param  {String} content The html that would go into the content
+   * @param {String} header The html that would go into the header
+  ###
   @changeWindow: (header, content) -> @changeHeader(header); @changeContent(content)
 
+
+
+
+#####################################################################################
+#                         The actual steps of the tutorial.                         #
+#####################################################################################
+
+  ###*
+   * Adds all the steps of the tutorial system. These steps are added *in order*
+  ###
   @initSteps: ->
     @addStep
       header: 'Welcome to the Equations Tutorial!'
@@ -146,61 +287,3 @@ class Tutorial
     @addStep
       modal: false
       
-
-
-
-
-  @show: -> $(@window).modal('show')
-  @hide: -> $(@window).modal('hide')
-  @toggle: -> $(@window).modal('toggle')
-
-  @addStep: ({id, header, content, tipselector, tipmessage, tipheading, modal, tipnext}) ->
-    index = @steps.push {id: id, header: header, content: content, tipselector: tipselector, tipmessage: tipmessage, tipheading: tipheading, modal: modal, tipnext: tipnext}
-    if id? then @stepIds[id] = index - 1
-
-  @doStep: (stepId) ->
-    nextIndex = if stepId? then @stepIds[stepId] else @nextStepIndex
-    theStep = @steps[nextIndex]
-    if theStep?
-      {id, header, content, tipselector, tipmessage, tipheading, tipnext, modal} = theStep
-      if header? then @changeHeader(header)
-      if content? then @changeContent(content)
-      if tipselector?
-        theHtml = tipmessage+(if tipnext then '<span class="grey-button tutorial-next-button">Next &rarr;</span>' else '')
-        $(tipselector).qtip 
-          content: theHtml
-          position: 
-            my: 'top center'
-            at: 'bottom center'
-            viewport: $(window)
-          show:
-            event: false
-            ready: true  
-          hide: false
-          events: 
-            render: (event, api) ->
-              if tipnext then $('.tutorial-next-button').bind 'click', ->
-                api.hide()
-                Tutorial.doStep()
-      if modal?
-        if modal then @show() else @hide()
-      @steps[nextIndex] = undefined
-      if modal? or (tipselector? and tipnext)
-        $('.tutorial-next-button').unbind "click"
-        $('.tutorial-next-button').click (=> @doStep())
-      @nextStepIndex++ until @steps[@nextStepIndex]? or @nextStepIndex is @steps.length
-
-  @doStepWhenScreen: (className, stepId) ->
-    if typeof className is "function"
-      thisReference = this
-      stepid = stepId
-      doThis = -> thisReference.doStep(stepid)
-      checker = ->
-        currentScreen = ScreenSystem.currentScreen
-        if currentScreen instanceof className
-          doThis()
-        else
-          setTimeout checker, 1000
-      checker()
-      
-
