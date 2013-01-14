@@ -2,4 +2,3 @@ module.exports.COFFEE = '/homes/USERNAME/node_modules/coffee-script/bin/coffee';
 module.exports.CAKE = '/homes/USERNAME/node_modules/coffee-script/bin/cake';
 module.exports.STYLUS = '/homes/USERNAME/node_modules/stylus/bin/stylus';
 module.exports.JASMINE = '/homes/USERNAME/node_modules/jasmine-node/bin/jasmine-node';
-module.exports.SELENIUM = '/homes/USERNAME/selenium-server-standalone-2.25.0.jar';

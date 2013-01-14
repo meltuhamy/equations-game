@@ -69,25 +69,13 @@ debug = ->
 tests = (callback) ->
   server( -> 
     client(-> 
-
-      javaselenium = spawn 'lsof', [config.SELENIUM]
-      javaselenium.stderr.on 'data', (data) ->
-        console.log data.toString()
-      javaselenium.stdout.on 'data', (data) ->
-        console.log ""
-      javaselenium.on 'exit', (code) ->
-        if(code is 0)
-          console.log "Selenium appears to be running."
-          jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
-          jnode.stderr.on 'data', (data) ->
-            process.stderr.write data.toString()
-          jnode.stdout.on 'data', (data) ->
-            print data.toString()
-          jnode.on 'exit', (code) ->
-            callback?() if code is 0
-        else
-          console.error "\n\nSelenium is not running. You need to run it in a *new* terminal window. You need only do this once.\nOpen a new terminal window and run the command below:"
-          console.error "java -jar #{config.SELENIUM}\n"
+      jnode = spawn myJnode, ['--coffee', '--color', 'spec/']
+      jnode.stderr.on 'data', (data) ->
+        process.stderr.write data.toString()
+      jnode.stdout.on 'data', (data) ->
+        print data.toString()
+      jnode.on 'exit', (code) ->
+        callback?() if code is 0
     )
   )
 
