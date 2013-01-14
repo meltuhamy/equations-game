@@ -12,23 +12,42 @@ class EndRoundScreen extends Screen
 
   # json = {solutions: the array of goal dice for possible players}
   init: (json) ->
+    # Information about the end of round is provided in the json
+    # Put these into local variables so that they can be accessed by rest of class.
+    # ------------------------------------------------------------------------------
     @solutions = json.solutions
     @answerExists = json.answerExists
     @challengePts = json.challengePts
     @decisionPts = json.decisionPts
     @solutionPts = json.solutionPts
+    # Draw the different components of the screen. Make method calls to draw 
+    # goal (top), results (middle) and the ready button (bottom). Change the 
+    # title of the page appropriately to give the round number in the title.
+    # ----------------------------------------------------------------------
     @drawResultsList()
     @drawGoal()
     @addReadyButtonListener()
     $('h2#end-round-title').html('End of Round ' + Game.state.currentRound)
+    # Play a nice sound for the end of the round which sounds like 'pwooow'.
     Sound.play('endOfRound')
 
-
+  ###*
+   * At the bottom of the screen, there is a ready for next round button. 
+   * Add an click handler to say make a network call; telling server we are ready.
+  ###
   addReadyButtonListener: () ->
+    # Add the click listener to the button:
+    # -------------------------------------
     $('#next-round-ready-btn').bind 'click', ->
+      # Tell the server we are ready:
+      # ------------------------------
       network.sendNextRoundReady()
+      # Add an effect that hides the button and displays a message
+      # saying that we are waiting for other players
+      # ------------------------------
       $('#ready-round-cntr').fadeOut -> 
         $(this).html('')
+        # &#10004; is a tick symbol
         html = '<p>&#10004; Waiting for other players...</p>'
         $(html).appendTo(this)
         $(this).fadeIn()
@@ -38,12 +57,13 @@ class EndRoundScreen extends Screen
    * At the end of the round, at the top, show the goal dice and stuff about the challenge.
   ###
   drawGoal: () ->
-    # Show the goal dice
+    # Show the goal dice at the top of the end round screen.
     $('#goal-dice-ctnr').html(DiceFace.listToHtmlByIndex(Game.globalDice, Game.goal))
 
     # What was the challenge? Was the challenge successful or not? 
     # Show a title saying 'Now Challenge' or 'Never Challenge'
     # Show a title saying whether the challenge was successful or not. 
+    # -----------------------------------------------------------------
     html = '<span id="challenge-title">' + Game.getChallengeName() + '</span> '
     @challengeSuccessful = false
     if(Game.challengeModeNow && @answerExists) then @challengeSuccessful = true
@@ -63,7 +83,8 @@ class EndRoundScreen extends Screen
   drawResultsList: () ->
     html = '<table id="resultslist">'
 
-    # The header of the results table
+    # The header of the results table. Make a tr with th's for each heading in table
+    # -------------------------------------------------------------------------------
     html += '<tr>'
     html += '<th>Player</th>'
     html += '<th>Points this Round</th>'
@@ -82,18 +103,16 @@ class EndRoundScreen extends Screen
       html += "<ul class='score-tally'>"
       if(@decisionPts[p.index]? && @decisionPts[p.index] > 0)
 
-        # Decision points
+        # Decision points - did he get points for agreeing correctly.
+        # -----------------------------------------------------------
         if(agreed)
           html += "<li><span class='scorebubble'>+" + @decisionPts[p.index] + '</span> Agreed with Challenge</li>'
         else
           html += "<li><span class='scorebubble'>+" + @decisionPts[p.index] + '</span> Didn\'t Agree with Challenge</li>'
 
-        # Solution points 
-        # Something is broken here
-        #console.log "#{p.index} stuff is here"
-        #console.log "@solutions  is" + @solutions
-        #console.log "@solutionPts is  " + @solutionPts
-
+        # Solutions points - if he make the right decision - explain the points for his solution
+        # Notice that we don't bother explaining points for his solution if he didn't even get any decision points.
+        # ----------------------------------------------------------------------------------------------------------
         if(@solutions[p.index]?)
           if(@solutionPts[p.index]? && @solutionPts[p.index] > 0)
             html += "<li><span class='scorebubble'>+" + @solutionPts[p.index] + '</span> Correct Solution</li>'
@@ -106,6 +125,7 @@ class EndRoundScreen extends Screen
       else
         # What a flop. He agreed with the failed challenge. Tell him he sucks.
         # Don't bother telling him he got zero points for his solution.
+        # ---------------------------------------------------------------------
         if(agreed)
           html += "<li class='bad'><span class='scorebubble zero'>0</span> Agreed with Challenge</li>"
         else
@@ -128,4 +148,4 @@ class EndRoundScreen extends Screen
 
     # End of Table
     html += '</table>'
-    $('#round-results-ctnr').html(html)
+    $('#round-results-ctnr').html(html) # Put the html in the container
