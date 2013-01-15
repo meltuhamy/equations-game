@@ -150,21 +150,30 @@ class ExpressionParser
         when DICEFACESYMBOLS.power then 3
 
   flatten: (node) ->
-    result = []
+    result = []  #initialise the expression to an empty list
     if node.type == 'binop'
+    #if the current root of the tree is a binary operator then we
+    #recursively flatten the left and right hand expressions
       leftResult = @flatten(node.children[0])
       rightResult = @flatten(node.children[1])
+      #if the precedence of the left hand subtree is less than the current operator
+      #then we bracket it
       if @precedence(node.children[0]) < @precedence(node)
         leftResult.push(DICEFACESYMBOLS.bracketL)
         leftResult.concat([DICEFACESYMBOLS.bracketR])
+      #same for right hand subtree
       if @precedence(node.children[1]) < @precedence(node)
         rightResult.push(DICEFACESYMBOLS.bracketL)
         rightResult.concat([DICEFACESYMBOLS.bracketR])
+      #now we simply concatnate the results and return
       result = leftResult.concat(node.token,rightResult)
       return result
     else if node.type == 'unaryop'
+      #if unary operator, then just add the operator to the output list and
+      #recursively flatten the expression to which the operator is applied
       return result.concat(node.token, @flatten(node.children[0]))
     else if node.type == 'number'
+      #if the node is a number, just return it's token
       return node.token
 
 
