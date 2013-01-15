@@ -3,6 +3,9 @@ express = require("express")
 http = require('http')
 nowjs = require("now")
 
+###########################################################################
+#           This file is where we listen for HTTP requests etc.           #
+###########################################################################
 
 app = express()
 server = http.createServer(app)
