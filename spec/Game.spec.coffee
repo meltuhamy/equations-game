@@ -8,9 +8,9 @@ DICEFACESYMBOLS = DiceFace.symbols
 
 
 describe "game", ->
-  it "should accept a valid with three dice", ->
+  it "should accept a valid goal with three dice", ->
     game = new Game
-    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.six]
+    game.globalDice = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.six]
     testPassed = game.checkGoal([0,1,2])
     expect(testPassed).toEqual(true)
 
@@ -22,34 +22,34 @@ describe "game", ->
 
   it "should check the goal uses resources dice only", ->
     game = new Game
-    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.two,DICEFACESYMBOLS.three]
+    game.globalDice = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.two,DICEFACESYMBOLS.three]
     test = -> game.checkGoal([-6,0,1])
     expect(test).toThrow("Goal has out of bounds array index")
 
   
   it "should prevent goals using pairs of the same dice", ->
     game = new Game
-    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.two,DICEFACESYMBOLS.three]
+    game.globalDice = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.two,DICEFACESYMBOLS.three]
     test = -> game.checkGoal([1,1])
     expect(test).toThrow("Goal uses duplicates dice")
 
   it "should prevent goals using a duplicate dice with other dice", ->
     game = new Game
-    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.two,DICEFACESYMBOLS.three]
+    game.globalDice = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.two,DICEFACESYMBOLS.three]
     test = -> game.checkGoal([0,0,1,2])
     expect(test).toThrow("Goal uses duplicates dice")
 
   it "should prevent goals with several duplicates", ->
     game = new Game
-    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.two,DICEFACESYMBOLS.three]
+    game.globalDice = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.two,DICEFACESYMBOLS.three]
     test = -> game.checkGoal([0,0,2,2])
     expect(test).toThrow("Goal uses duplicates dice")
 
   it "should add two players to game", ->
     game = new Game([],2)
-    game.addClient(31)
-    game.addClient(32)
-    l = game.players.length
+    game.addClient(31,"bob")
+    game.addClient(32,"sam")
+    l = game.playerManager.players.length
     expect(l).toEqual(2)
 
   it "should add two players to game and one submit a right answer", ->
@@ -57,13 +57,12 @@ describe "game", ->
     e = new Evaluator
     p = new ExpressionParser 
     game.challengeMode = true
-    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three]
-    game.addClient(31)
-    game.addClient(32)
+    game.globalDice = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three]
+    game.addClient(31,"bob")
+    game.addClient(32,"sam")
     game.setGoal([0,1,2])
     game.submitPossible(32)
     game.submitSolution(32, [5])
- #   expect(e.evaluate(game.goalTree)).toEqual(e.evaluate(p.parse(game.submittedSolutions[game.playerSocketIds.indexOf(32)])))
     expect(e.evaluate(game.goalTree)).toEqual(3)
 
   it "should add two players to game anone submit a right answer while the other submits a wrong answer", ->
@@ -71,33 +70,14 @@ describe "game", ->
     e = new Evaluator
     p = new ExpressionParser 
     game1.challengeMode = true
-    game1.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three, DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three]
-    game1.addClient(31)
-    game1.addClient(32)
+    game1.globalDice = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three, DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.two,DICEFACESYMBOLS.one,DICEFACESYMBOLS.multiply,DICEFACESYMBOLS.three]
+    game1.addClient(31,"bob")
+    game1.addClient(32,"sam")
     game1.setGoal([0,1,2])
     game1.submitPossible(31)
+    game1.submitPossible(32)
     game1.submitSolution(31, [0,1,2])
     game1.submitSolution(32, [0,1,2])
-    #!expect(e.evaluate(game.goalTree)).toEqual(e.evaluate(p.parse(game.submittedSolutions[game.playerSocketIds.indexOf(31)])))
     expect(e.evaluate(game1.goalTree)).toEqual(3)
-    expect(game1.rightAnswers[game1.playerSocketIds.indexOf(31)]==false)
-    expect(game1.rightAnswers[game1.playerSocketIds.indexOf(32)]==true)
-
-###
-  it "should not allow unbalanced brackets when setting the goal", ->
-    game = new Game
-    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.plus,DICEFACESYMBOLS.three]
-    test = -> game.checkGoal([-1,0,1,2, -2])
-    expect(test).toThrow("Error Unbalanced Parenthesis")
-
-  it "should not count brackets as dice", ->
-    game = new Game
-    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.two,DICEFACESYMBOLS.three, DICEFACESYMBOLS.four, DICEFACESYMBOLS.five, DICEFACESYMBOLS.six, DICEFACESYMBOLS.seven]
-    testPassed = game.checkGoal([0,1,2,-1,3,4,5,-2])
-    expect(testPassed).toEqual(true)
-
-  it "should work for nested brackets", ->
-    game = new Game
-    game.state.unallocated = [DICEFACESYMBOLS.one,DICEFACESYMBOLS.two,DICEFACESYMBOLS.three, DICEFACESYMBOLS.four, DICEFACESYMBOLS.five, DICEFACESYMBOLS.six, DICEFACESYMBOLS.seven]
-    testPassed = game.checkGoal([0,-1,1,2,-1,3,-2,4,5,-2])
-    expect(testPassed).toEqual(true)###
+    expect(game1.playerManager.rightAnswers[game1.playerManager.playerSocketIds.indexOf(31)]==false)
+    expect(game1.playerManager.rightAnswers[game1.playerManager.playerSocketIds.indexOf(32)]==true)

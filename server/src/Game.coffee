@@ -179,10 +179,10 @@ class Game
     diceValues = []
     for i in [0 ... dice.length]
       for j in [i+1 ... dice.length]
-        if (dice[i] < -2  || dice[i] >= numGlobalDice) # detects if the dice used is out of bounds/not allowed
-          then ErrorManager.throw(ErrorManager.codes.outOfBoundsDice, {}, "Goal has out of bounds array index")
-        if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) # detects if the same dice has been used twice
-          then ErrorManager.throw(ErrorManager.codes.duplicateDice, {}, "Goal uses duplicates dice")
+        # detects if the dice used is out of bounds/not allowed
+        if (dice[i] < -2  || dice[i] >= numGlobalDice) then ErrorManager.throw(ErrorManager.codes.outOfBoundsDice, {}, "Goal has out of bounds array index")
+        # detects if the same dice has been used twice
+        if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then ErrorManager.throw(ErrorManager.codes.duplicateDice, {}, "Goal uses duplicates dice")
       if dice[i] == -1  # detects and pushes left brackets
         diceValues.push(DICEFACESYMBOLS.bracketL)
       else if dice[i] == -2 # detects and pushes right brackets

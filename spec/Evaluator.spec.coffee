@@ -19,13 +19,6 @@ describe "evaluator", ->
     val = e.evaluate(tree)
     expect(val).toEqual(Math.sqrt(3))
 
-  it "should evaluate a unary negative double digit number", ->
-    p = new ExpressionParser
-    tree = p.parse([DICEFACESYMBOLS.minus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.two], true)
-    e = new Evaluator
-    val = e.evaluate(tree)
-    expect(val).toEqual(-32)
-
   it "should evaluate binary operator plus", ->
     p = new ExpressionParser
     tree = p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.plus, DICEFACESYMBOLS.two], true)

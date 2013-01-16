@@ -51,7 +51,7 @@ class ExpressionParser
       if(c == DICEFACESYMBOLS.divide)
         e = new Evaluator
         if e.evaluate(child2) == 0 #detects division by 0
-          ErrorManager.throw(ERRORCODES.parserDivByZero, {token: @idx, diceface:c}, "You can't divide by zero ")
+          ErrorManager.throw(ERRORCODES.parserDivByZero, {token: @idx, diceface:c}, "You can't divide by zero")
       node = new Node(type : "binop", token: [c], children: [ child1, child2 ]);
       c = @expr[@idx]
       child1 = node
@@ -140,7 +140,7 @@ class ExpressionParser
     result.push @expr[@idx++] while !this.atEnd() and matchFn(@expr[@idx]) and ++numMatched <=2
     if(numMatched >2 && @isGoal) # prevents using numbers with more than 2 digits when setting the goal
       ErrorManager.throw(ERRORCODES.parserTooManyDigits, {token: @idx, diceface:c, maxdigits:2}, "Can't have more than two digits")
-    else if (numMatched >1) # prevents using numbers with more than 1 digit when giving a solution
+    else if (numMatched >1 && !@isGoal) # prevents using numbers with more than 1 digit when giving a solution
       ErrorManager.throw(ERRORCODES.parserTooManyDigits, {token: @idx, diceface:c, maxdigits:1}, "Can't have more than one digit")
     result
 

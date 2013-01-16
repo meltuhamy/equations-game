@@ -20,17 +20,18 @@ describe "parser", ->
     expect(tree.token).toEqual [DICEFACESYMBOLS.one]
     expect(tree.children).toEqual []
 
-  it "should parse two digit numbers", ->
+  it "should parse two digit numbers when setting the goal", ->
     p = new ExpressionParser
+    p.isGoal = true
     tree = p.parse([1,2],true)
     expect(tree.type).toEqual "number"
     expect(tree.token).toEqual [1,2]
     expect(tree.children).toEqual []
 
-  it "shouldnt pass three ore more digit numbers", ->
+  it "shouldn't pass three or more digit numbers", ->
     p = new ExpressionParser
     test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.two, DICEFACESYMBOLS.three, DICEFACESYMBOLS.four],true)
-    expect(test).toThrow("Can't have more than two digits, maytey")
+    expect(test).toThrow("Can't have more than two digits")
 
   it "should parse unary operators on single digit numbers", ->
     p = new ExpressionParser
@@ -56,10 +57,10 @@ describe "parser", ->
     expect(child1.token).toEqual [DICEFACESYMBOLS.one, DICEFACESYMBOLS.two]
     expect(child1.children).toEqual []
 
-  it "shouldnt parse unary ops on more than two digiti numbers", ->
+  it "shouldnt parse unary ops on more than two digit numbers", ->
     p = new ExpressionParser
     test = -> p.parse([DICEFACESYMBOLS.minus, DICEFACESYMBOLS.one, DICEFACESYMBOLS.two, DICEFACESYMBOLS.three],true)
-    expect(test).toThrow("Can't have more than two digits, maytey")
+    expect(test).toThrow("Can't have more than two digits")
 
   it "should parse binary operators on single digits", ->
     p = new ExpressionParser
@@ -102,12 +103,12 @@ describe "parser", ->
   it "should not parse", ->
     p = new ExpressionParser
     test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.divide, DICEFACESYMBOLS.zero],true)
-    expect(test).toThrow("You can't divide by zero you idiot")
+    expect(test).toThrow("You can't divide by zero")
 
   it "should not parse", ->
     p = new ExpressionParser
     test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.divide, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.three, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.three, DICEFACESYMBOLS.bracketR],true)
-    expect(test).toThrow("You can't divide by zero you idiot")
+    expect(test).toThrow("You can't divide by zero")
 
   it "should not parse", ->
     p = new ExpressionParser
@@ -122,7 +123,7 @@ describe "parser", ->
   it "should not parse", ->
     p = new ExpressionParser
     test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.multiply, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.two],true)
-    expect(test).toThrow("Invalid value after bracket")
+    expect(test).toThrow("Invalid value before bracket")
 
   it "should not parse", ->
     p = new ExpressionParser
@@ -143,6 +144,3 @@ describe "parser", ->
     p = new ExpressionParser
     test = -> p.parse([DICEFACESYMBOLS.one, DICEFACESYMBOLS.minus, DICEFACESYMBOLS.bracketL, DICEFACESYMBOLS.two, DICEFACESYMBOLS.bracketR, DICEFACESYMBOLS.plus],true)
     expect(test).toThrow("You can't finish with an operator")
-
-  #it "should parse combinations of binary and unary operators", ->
-   # console.log "Need to implement this!"
