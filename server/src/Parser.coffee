@@ -123,10 +123,16 @@ class ExpressionParser
 
   # checks if the given value is a number
   isNumber : (c) -> c >= DICEFACESYMBOLS.zero
+  # used in match
   matchNumber:()-> this.match(this.isNumber)
-  
+  # is the parser at the end of the token array?
   atEnd: () -> @idx == @expr.length
 
+  ###*
+   * Used to match up consecutive digits.
+   * @param  {Function} matchFn A function integer->bool that must be true for matched digits. 
+   * @return {Integer[]} The array of dicefaces if there are no errors with match up digit dice.
+  ###
   match:(matchFn) ->
     result = []
     numMatched = 0
@@ -138,6 +144,8 @@ class ExpressionParser
       ErrorManager.throw(ERRORCODES.parserTooManyDigits, {token: @idx, diceface:c, maxdigits:1}, "Can't have more than one digit")
     result
 
+
+  # Used in flatten - used to remove redundant brackets
   precedence: (node) ->
     if node.type == 'unaryop'
       return 4

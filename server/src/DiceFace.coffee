@@ -1,4 +1,6 @@
 class DiceFace
+  # A json that prevents writing magic numbers for dice faces.
+  # This gets sent to the client. 
   @symbols: 
       bracketL    : -8
       bracketR    : -7
@@ -18,7 +20,14 @@ class DiceFace
       seven       : 7
       eight       : 8
       nine        : 9
+  # How many operators do we have in symbols
   @numOps      : 4
+
+  ###*
+   * Print dice faces so that can for e.g. be printed in console.
+   * @param  {Integer} face [description]
+   * @return {String}      [description]
+  ###
   @getString: (face) ->
     if 0 <= face <=0
       "#{face}"
