@@ -16,19 +16,19 @@ Supervisor: [Dr. Krysia Broda](http://www.doc.ic.ac.uk/~kb/)
 
 Steps to set up:
 ================
-**Note: This section needs to be updated**
-
 1. Install node (http://nodejs.org/)
-2. npm install coffee-script
-3. Add aliases for cake and coffeescript. ```gedit ~/.cshrc```
-```
-alias coffee "~/node_modules/coffee-script/bin/coffee"
-alias cake "~/node_modules/coffee-script/bin/cake"
-```
+2. ```npm install -g coffee-script``` (if in labs, remove the ```-g```)
+3. In the project directory, type ```npm install```. This will fetch and install all required dependancies locally.
+4. Type ```cake run```
+5. Open ```localhost:8080``` in a browser (chrome) window.
 
-4. Restart terminal and execute the command: ```cake setup```
-5. **Follow instructions** after dependencies have finished installing.
+**Some notes:***
+* Type ```cake```. If you see some tasks for the project, then everything's fine.
+* If you can't see the tasks, you will need to install coffee-script globally (```npm install -g coffee-script```).
+  If you are unable to install globally, then instead of using ```cake```, type ```./node_modules/.bin/coffee```.
+* Use this pattern when you see me telling you to type a command.
 
+---
 
 (NEW!) Using iMacros to speed up testing
 ----------------------------------------

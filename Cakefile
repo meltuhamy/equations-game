@@ -1,9 +1,9 @@
 
 # Load the user's config file and get the required names of programs
 config = require('./config.js')
-myCoffee = config.COFFEE
-myStylus = config.STYLUS
-myJnode  = config.JASMINE
+myCoffee = './node_modules/coffee-script/bin/coffee'
+myStylus = './node_modules/stylus/bin/stylus'
+myJnode  = './node_modules/jasmine-node/bin/jasmine-node'
 
 # Debug mode is off by default
 DEBUGMODE = off
@@ -167,52 +167,10 @@ watch = () ->
   watchScript.stdout.on 'data', (data) ->
     print data.toString()
 
-###*
- * Sets up the node dependencies
- * @param  {Function} callback If provided, gets called when dependencies are set up.
-###
-setupNpmDependencies = (callback) ->
-  # The list of dependencies for our project
-  dependencies = ['install', 'coffee-script', 'express', 'socket.io', 'stylus', 'jasmine-node', 'node-inspector', 'nib', 'soda']
-
-  # Nowjs doesnt work on windows, so only add it when not windows
-  if require('os').type() isnt 'Windows_NT' then dependencies.push 'now'
-
-  # Load and run npm with the dependencies as arguments
-  npmInstaller = spawn 'npm', dependencies
-
-  # If npm does any output, output it here too.
-  npmInstaller.stderr.on 'data', (data) ->
-    process.stderr.write data.toString()
-  npmInstaller.stdout.on 'data', (data) ->
-    print data.toString()
-
-  # When npm exits, call callback if provided.
-  npmInstaller.on 'exit', (code) ->
-    callback?() if code is 0
-
-
 
 ##############################################################################
 #   Cakefile Tasks (these show up when you type 'cake' in the project dir)   #
 ##############################################################################
-
-task 'setup', 'Set up dependencies', ->
-  setupNpmDependencies(->
-    console.log "\n**********************\n-> Node.js dependencies are now set up."
-    console.log "-> Make sure you have copied and configured your own config.js: "
-    console.log "    cp config.js.sample config.js"
-    console.log "-> Modify config.js to work with your machine and user."
-    console.log "\n-> Downloaded selenium modify its location in config.js"
-    console.log "    Go to http://goo.gl/NYxbW\n"
-    console.log "-> If in labs, edit your .cshrc file. Add the following aliases"
-    console.log '    alias coffee "~/node_modules/coffee-script/bin/coffee"'
-    console.log '    alias cake "~/node_modules/coffee-script/bin/cake"'
-    console.log '    alias node-inspector "~/node_modules/node-inspector/bin/inspector.js --web-port=8081"'
-    console.log "\n-> To test that everything is working, run the tests"
-    console.log "    cake test"
-
-  )
 
 task 'build', 'Compile everything', ->
   build()
