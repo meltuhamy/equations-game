@@ -11,6 +11,6 @@
     "jasmine-node": "1.x.x",
     "node-inspector": "0.2.x"
   },
-  
+  "license": "MIT",
   "engine": "node >= 0.6.12"
 }
