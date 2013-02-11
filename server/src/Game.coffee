@@ -50,12 +50,11 @@ class Game
 
 
   
-  constructor: (@gameNumber, @name, gameSize, numRounds, throwErrors = true) ->
+  constructor: (@gameNumber, @name, gameSize, numRounds) ->
     # Initalise all variables so that they're object (not prototype) specfific
     
     @playerManager = new PlayerManager()
     
-    @throwErrors = throwErrors
     @goalTree = undefined
     @goalArray = []
     @goalValue = undefined
@@ -115,14 +114,6 @@ class Game
     @goalTree? #returns false if goalTree undefined, true otherwise
 
 
-  throwError: (errorNumber, jsonParams, errorMessage) ->
-    error = new Error(errorMessage)
-    error.number = errorNumber
-    if(jsonParams?) then error.params = jsonParams
-    error.emsg = errorMessage
-    throw error
-
-
   ###*
    * Spawns the global array. Uses a random distribution to work out the dice for the game.
   ###
@@ -159,9 +150,6 @@ class Game
     
     @checkGoal(dice)
     @start(turnEndCallback)
-    #e = new Evaluator()
-    #val = e.evaluate(@goalTree)
-    #console.log "Goal parsed and evaluates to #{val}"
 
   ###*
    * This checks whether a goal is a subset of the resources dice and can be parsed.
@@ -170,13 +158,12 @@ class Game
   ###
   checkGoal: (dice) ->
     # First check there are not too many dice in the goal
-    #if(dice.length > 6) then throw "Goal uses more than six dice"
     dices = 0
     for i in [0..dice.length]
       if (dice[i] >= 0)
         dices++
       i++
-    if (dices > 6)
+    if (dices > 6) # detects if more than 6 dice are used on the goal
       ErrorManager.throw(ERRORCODES.goalTooLarge, {}, "Goal uses more than six dice")
 
     # Now check that there are not duplicates. We can't use the same dice twice.
@@ -192,11 +179,13 @@ class Game
     diceValues = []
     for i in [0 ... dice.length]
       for j in [i+1 ... dice.length]
+        # detects if the dice used is out of bounds/not allowed
         if (dice[i] < -2  || dice[i] >= numGlobalDice) then ErrorManager.throw(ErrorManager.codes.outOfBoundsDice, {}, "Goal has out of bounds array index")
+        # detects if the same dice has been used twice
         if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then ErrorManager.throw(ErrorManager.codes.duplicateDice, {}, "Goal uses duplicates dice")
-      if dice[i] == -1
+      if dice[i] == -1  # detects and pushes left brackets
         diceValues.push(DICEFACESYMBOLS.bracketL)
-      else if dice[i] == -2
+      else if dice[i] == -2 # detects and pushes right brackets
         diceValues.push(DICEFACESYMBOLS.bracketR)
       else
         diceValues.push(@globalDice[dice[i]])
@@ -274,25 +263,37 @@ class Game
         @state.currentPlayer = @playerManager.players.length
       return index
 
-
-
+  # returns true if the room is full, false therwise
   isFull: () -> @playerManager.full()
+  # returns the number of players currently in the room
   getNumPlayers: () -> @playerManager.numPlayers()
 
+  
+  ###*
+   * [goalStart description]
+   * @param  {[type]} turnEndCallback [description]
+   * @return {[type]}                 [description]
+  ###
   goalStart: (turnEndCallback) ->
     @started = true
-    # TODO: add callback for timer
     @state.turnNumber = 0
     @resetTurnTimer(Settings.goalSeconds, turnEndCallback)
 
-
+  ###*
+   * For allocation turns, start with the player after goal setter.
+   * @param  {Function} turnEndCallback What to do if time ends on his turn.
+  ###
   start: (turnEndCallback) ->
     @state.currentPlayer = (@playerManager.goalSetter+1)%@getNumPlayers()
     @state.turnNumber = 1
     @resetTurnTimer(Settings.turnSeconds, turnEndCallback)
     
-
+  ###*
+   * For allocation turns, move to the next player.
+   * @param  {Function} turnEndCallback What to do if time ends on his turn.
+  ###
   nextTurn: (turnEndCallback) ->
+    # Only move onto the next player if the goal has been set
     if @started
       @state.currentPlayer = (@state.currentPlayer+1)%@getNumPlayers()
       @state.turnNumber += 1
@@ -323,13 +324,16 @@ class Game
     else
       clearInterval(@turnTimer)
 
+  # For debug purposes - pause the timer for the current turn
   pauseTurnTimer: () ->
+    # Make idempotent - only pause if game isn't already paused
     if !@pausedTime?
       @pausedTime = Date.now()
       clearInterval(@turnTimer)
     else
       console.log "Game already paused."
 
+  # For debug purposes - resume a paused timer
   resumeTurnTimer: () ->
     @state.turnStartTime = Date.now()
     resumeDuration = @state.turnEndTime -  @pausedTime
@@ -340,7 +344,11 @@ class Game
 
 
 
-
+  ###*
+   * This is called whenever the timer runs on on a turn. This looks at the current point
+   * of the game - does any code that was no in previous turn's turnEndCallback 
+   * @param  {[type]} turnEndCallback (Optional) A new turnEndCallback for next turn
+  ###
   handleTimeOut: (turnEndCallback) ->
     if @started
       if @challengeMode
@@ -392,43 +400,46 @@ class Game
         return true
     return true
 
-
+  # Used on each allocation turn to check player if valid and check allocation move is valid.
   checkValidAllocationMove: (index, clientId) ->
-    if @challengeMode
+    if @challengeMode # prevents moves from taking place during challenge mode
       ErrorManager.throw(ErrorManager.codes.moveDuringChallenge, {}, "Can't move during challenge mode")
-    if !@goalHasBeenSet()
+    if !@goalHasBeenSet() # prevents moves from taking place before setting the goal
       ErrorManager.throw(ErrorManager.codes.moveWithoutGoal, {}, "Can't move yet, goal has not been set")
-    if !@playerManager.authenticateMove(clientId, @state.currentPlayer)
+    if !@playerManager.authenticateMove(clientId, @state.currentPlayer) # prevents moves from taking place it's not the player's turn
       ErrorManager.throw(ErrorManager.codes.notYourTurn, {}, "Not your turn")
-    else if index < 0 || index >= @state.unallocated.length
+    else if index < 0 || index >= @state.unallocated.length # prevents moves from taking place if the dice is out of baounds
       ErrorManager.throw(ErrorManager.codes.outOfBoundsDice, {}, "Index for move out of bounds")
     else true
 
+  # Moves the dice to the required array or 'mat'
   moveToRequired: (index, clientId, turnEndCallback) ->
-    if(@checkValidAllocationMove(index, clientId))
-      @state.required.push(@state.unallocated[index])
-      @state.unallocated.splice(index, 1)
-      @playerManager.players[@playerManager.getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
-      @nextTurn(turnEndCallback)
+    if(@checkValidAllocationMove(index, clientId)) # checks move is valid
+      @state.required.push(@state.unallocated[index]) # pushes the dice at index to required
+      @state.unallocated.splice(index, 1) #  removes the dice from unallocated at index
+      @playerManager.players[@playerManager.getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0 # resets missed turns to 0
+      @nextTurn(turnEndCallback) # moves to next turn
 
+  # Moves the dice to the optional array or 'mat'
   moveToOptional: (index, clientId, turnEndCallback) ->
-   if(@checkValidAllocationMove(index, clientId))
-      @state.optional.push(@state.unallocated[index])
-      @state.unallocated.splice(index, 1)
-      @playerManager.players[@playerManager.getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
-      @nextTurn(turnEndCallback)
+   if(@checkValidAllocationMove(index, clientId)) # checks move is valid
+      @state.optional.push(@state.unallocated[index]) # pushes the dice at index to optional
+      @state.unallocated.splice(index, 1)  # removes the dice from unallocated at index
+      @playerManager.players[@playerManager.getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0 # resets missed turns to 0
+      @nextTurn(turnEndCallback) # moves to next turn
 
+  # Moves the dice to the forbidden array or 'mat'
   moveToForbidden: (index, clientId, turnEndCallback) ->
-    if(@checkValidAllocationMove(index, clientId))
-      @state.forbidden.push(@state.unallocated[index])
-      @state.unallocated.splice(index, 1)
-      @playerManager.players[@playerManager.getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0
-      @nextTurn(turnEndCallback)
+    if(@checkValidAllocationMove(index, clientId)) # checks move is valid
+      @state.forbidden.push(@state.unallocated[index]) # pushes the dice at index to forbidden
+      @state.unallocated.splice(index, 1) # removes the dice from unallocated at index
+      @playerManager.players[@playerManager.getPlayerIdBySocket(clientId)].consecutiveTurnMisses = 0 # resets missed turns to 0
+      @nextTurn(turnEndCallback) # moves to next turn
 
 
   ###*
-   * Attempt to g into the decide stage of a now challenge.
-   * @param  {Integer} clientId The nowjs unqiue id for client
+   * Attempt to get into the decide stage of a now challenge.
+   * @param  {Integer} clientId The nowjs unique id for client
   ###
   nowChallenge: (clientId, turnEndCallback) ->
     @challengeMode = true
@@ -437,7 +448,10 @@ class Game
     @state.possiblePlayers.push(challengerId)
     @resetTurnTimer(Settings.challengeDecisionTurnSeconds, turnEndCallback)
 
-
+  ###*
+   * Attempt to get into the decide stage of a never challenge.
+   * @param  {Integer} clientId The nowjs unique id for client
+  ###
   neverChallenge: (clientId, turnEndCallback) ->
     @challengeMode = true
     @challengeModeNow = false
@@ -445,6 +459,11 @@ class Game
     @state.impossiblePlayers.push(challengerId)
     @resetTurnTimer(Settings.challengeDecisionTurnSeconds, turnEndCallback)
 
+  ###*
+   * A player has submitted that he thinks a challenge is possible.
+   * @param  {Integer} clientId        The now.js socketid given to player
+   * @param  {Function} turnEndCallback What to do if the timer ends on the solutions turn.
+  ###
   submitPossible: (clientId, turnEndCallback) ->
     @checkChallengeDecision()
     agreedId = @playerManager.getPlayerIdBySocket(clientId) #The player id of the player who agreed
@@ -453,17 +472,27 @@ class Game
       # Give 40 seconds for the solutions turn
       @resetTurnTimer(Settings.submitTurnSeconds, turnEndCallback)
 
+  ###*
+   * A player has submitted that he thinks a challenge is not possible.
+   * @param  {Integer} clientId        The now.js socketid given to player
+   * @param  {Function} turnEndCallback What to do if the timer ends on the solutions turn.
+  ###
   submitImpossible: (clientId, turnEndCallback) ->
     @checkChallengeDecision()
     disagreedId = @playerManager.getPlayerIdBySocket(clientId) #The player id of the player who disagreed
     @state.impossiblePlayers.push(disagreedId)
+    # Once we have accepted his decision, check whether all are made.
+    # If so, and everyone thinks it's impossible then it's the end of round. Add up scores.
     if(@allDecisionsMade())
-      # Give 40 seconds for the solutions turn
       @resetTurnTimer(Settings.submitTurnSeconds, turnEndCallback)
       if(@state.possiblePlayers.length == 0)
         @scoreAdder()
 
-
+  ###*
+   * Check whether a possible/impossible decision make sense.
+   * Prevent people making duplicate decisions or decisions at the wrong time.
+   * @param  {Integer} clientId The now.js socketid given to player
+  ###
   checkChallengeDecision:(clientId) ->
     if !@challengeMode
       ErrorManager.throw(ErrorManager.codes.submitNotChallengeMode, {}, "Can't submit opinion, not currently challenge mode")
@@ -496,19 +525,24 @@ class Game
       numGlobalDice = @globalDice.length
       for i in [0 ... dice.length]
         for j in [i+1 ... dice.length]
+          # If he uses globalDice indices that don't make sense, give error.
+          # If he uses globalDice indices twice, then he's used two identical dice twice. He's cheated. Give error.
           if (dice[i] < -2  || dice[i] >= numGlobalDice) then ErrorManager.throw(ErrorManager.codes.outOfBoundsDice, {}, "Solution has out of bounds array index")
           if (dice[i] == dice[j] && i!=j  && dice[i] >= 0) then ErrorManager.throw(ErrorManager.codes.duplicateDice, {}, "Solution uses duplicate dice")
-
+        # -1 and -2 are pseudo-indicies reserved for left/right brackets. handle this case.
+        # otherwise add the corresponding globalDice into our temporary solutions array we are building
         if dice[i] == -1
           diceValues.push(DICEFACESYMBOLS.bracketL)
         else if dice[i] == -2
           diceValues.push(DICEFACESYMBOLS.bracketR)
         else
           diceValues.push(@globalDice[dice[i]])
+        # Now check that he has used the allocations correctly.
+        # He can't use any forbidden dice, must use all the required, and only one unallocated.
         if(dice[i] in @state.forbidden) then ErrorManager.throw(ErrorManager.codes.usesForbidden, {}, "Solution uses dice from forbidden")
         if(dice[i] in @state.required) then numRequiredInAns++
         if(dice[i] in @state.unallocated) then numUnallocatedInAns++
-
+      # Checks for using all the required and only one unallocated. 
       if(numRequiredInAns < @state.required.length) then ErrorManager.throw(ErrorManager.codes.doesntUseAllRequired, {}, "Solution doesn't use all of the required dice.")
       if(numUnallocatedInAns > 1 && @challengeModeNow) then ErrorManager.throw(ErrorManager.codes.doesntUseOneUnallocated, {}, "Solution doesnt use one grey dice")
 
@@ -524,8 +558,10 @@ class Game
     else
       playerid = @playerManager.getPlayerIdBySocket(socketId)
       ErrorManager.throw(ErrorManager.codes.possibleSubmitSolution, {}, "Client not in 'possible' list")
+    # If everyone has submitted their solutions, it's the end of round. Add up the scores for the round.
     if(@allSolutionsSent()) then @scoreAdder()
 
+  # returns true if all players that believe a solution is possible have sent their solution
   allSolutionsSent: () ->
     for i in @state.possiblePlayers
       if !@playerManager.isPlayerSubmittedSolution(i)
@@ -534,14 +570,20 @@ class Game
 
   # Return a copy of the submitted solutions
   getSubmittedSolutions: () -> @playerManager.submittedSolutions[..]
+  # Has at least one person make a solution that solves the goal?
   getAnswerExists: () -> @answerExists
+  # Return an array that gives the points for actually making the challenge.
   getRoundChallengePoints: () -> @playerManager.challengePoints[..]
+  # Return an array that gives the points for whether they decided with challenge.
   getRoundDecisionPoints: () -> @playerManager.decisionPoints[..]
+  # Return an array that gives the points for whether solutions submitted are correct
   getRoundSolutionPoints: () -> @playerManager.solutionPoints[..]
 
 
 
-
+  ###*
+   * Once every one has submitted their solutions. It's the end of the round. Add up points.
+  ###
   scoreAdder: ->
     # See if we definitely know it's solvable. See if somebody got the goal.
     numPlayers = @getNumPlayers()
@@ -576,12 +618,15 @@ class Game
       if(@playerManager.solutionPoints[i]?) then @state.playerScores[i] += @playerManager.solutionPoints[i]
       if(@playerManager.challengePoints[i]?) then @state.playerScores[i] += @playerManager.challengePoints[i]
   
+  # A player has said that he is ready for the next round.
   readyForNextRound: (clientid) ->
     index = @playerManager.getPlayerIdBySocket(clientid)
     if(index not in @state.readyForNextRound) then @state.readyForNextRound.push(index)
 
+  # Returns true iff everyone has said they are ready for the next round.
   allNextRoundReady: () -> @state.readyForNextRound.length == @playerManager.players.length
 
+  # sets up the next round in the game, resetting certain values.
   nextRound: ->
     @playerManager.nextRound()
 
@@ -608,12 +653,14 @@ class Game
     # check if it's the last round and update the current round
     if @state.currentRound > @state.numRounds then @endGame() else @state.currentRound++
 
-
+  # Set that the game has ended.
   endGame: ->
     @endOfGame = true
 
+  # Has the game ended? 
   isGameOver: -> @endOfGame or @state.currentRound > @state.numRounds
 
+  # Restart a new round of the game. 
   restartGame: ->
     @nextRound()
     @constructor(@gameNumber, @name, @gameSize, @state.numRounds, @endOfGameCallback)

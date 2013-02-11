@@ -10,4 +10,5 @@ report/*.aux
 report/*.log
 report/*.synctex.gz
 report/*.toc
+node_modules/
 .idea/

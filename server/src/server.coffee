@@ -14,27 +14,49 @@ ERRORCODES = ErrorManager.codes
 
 Settings.DEBUG = debugmode
 
+# Initialise now.js and hook it up with the server
+# 
+# This also means that the now.js javascript libraries don't need
+# to be manually included in the client code.
 everyone = nowjs.initialize(server)
+
+###*
+ * When someone connects, this method gets called.
+###
+everyone.on 'connect', ->
+  console.log "CONNECT: #{this.user.clientId}"
+
+
+###*
+ * Handles the event when anyone disconnects
+###
 everyone.on 'disconnect', ->
   console.log "DISCONNECT: #{this.user.clientId}"
 
   if(this.now.gameNumber?)
+    # The client that just disconnected is in a game.
     clientId = this.user.clientId
     gameNumber = this.now.gameNumber
+
+    # Get the game instance and the now.js group.
     {game, group} = getThisGameGroup(gameNumber)
-    groupReference = group.now
-    playerIndex = game.removeClient(clientId)
+
+    groupReference = group.now # Closure reference fix
+
+    playerIndex = game.removeClient(clientId) # Remove the player from the game
+
     game.nextTurn( ->
       groupReference.receiveMoveTimeUp()
       groupReference.receiveState(game.state))
+
+    # Tell everyone in the group that the player has disconnect
     group.now.receivePlayerDisconnect(playerIndex)
     group.now.receiveState(game.state)
+
+  # Remove empty games, and send everyone an update with the games.
   gamesManager.cleanGames()
   everyone.now.getGames()
 
-
-everyone.on 'connect', ->
-  console.log "CONNECT: #{this.user.clientId}"
 
 gamesManager = new GamesManager()
 if Settings.DEBUG
@@ -44,7 +66,7 @@ if Settings.DEBUG
 
 ###*
  * Returns a pair {game,group} specifying the game and group for the given gameNumber
- * @param  {[type]} gameNumber [description]
+ * @param  {Number} gameNumber The game number to get
  * @return {Json} with game: {Game} the Game object for the game
  *                     group: {String} the string id nowjs uses for nowjs groups
 ###
@@ -54,12 +76,24 @@ getThisGameGroup = (gameNumber) =>
   return {game: game, group: group}
     
 
+###*
+ * Creates a new game and tells everyone to update their game lists
+ * @param  {String} name       The name of the game
+ * @param  {Number} numPlayers The number of the players
+ * @param  {String} playerName The name of the first player (since they make the game)
+ * @param  {Number} numRounds  The number of rounds the game will have
+###
 everyone.now.createGame = (name, numPlayers, playerName, numRounds) ->
   gameNumber = gamesManager.newGame(name, numPlayers, numRounds)
   this.now.addClient(gameNumber, playerName)
   everyone.now.getGames()
 
-
+###*
+ * Adds a new player to the game, updates the new players game number in his now pocket
+ * and tells everyone to update their list of games.
+ * @param {Number} gameNumber The game number the player wants to join
+ * @param {String} playerName The name of the player to add.
+###
 everyone.now.addClient = (gameNumber, playerName) -> #called by client when connected
   {game, group} = getThisGameGroup(gameNumber)
   
@@ -88,7 +122,9 @@ everyone.now.addClient = (gameNumber, playerName) -> #called by client when conn
     # else the game is already full, so tell him - tough luck
 
 
-
+###*
+ * When the client wants to get a list of games, this method is called.
+###
 everyone.now.getGames = ->
   gamesList = gamesManager.getGamesListJson()
   this.now.receiveGameList(gamesList)
@@ -96,9 +132,13 @@ everyone.now.getGames = ->
 
 
 
-# client telling the server about the goal
-# this is when the goal setter sends his goal. 
-# if the goal is valid, we tell everyone what the goal is.
+
+###*
+ * Client telling the server about the goal
+ * this is when the goal setter sends his goal. 
+ * if the goal is valid, we tell everyone what the goal is.
+ * @param  {Number[]} goalArray The goal that the player has set
+###
 everyone.now.receiveGoal = (goalArray) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -116,15 +156,20 @@ everyone.now.receiveGoal = (goalArray) ->
 
 
 
-# put this in everyone's pocket. Server calls this when a player took too long.
+###*
+ * When the player takes too long, this method gets called.
+ * @param  {String} nextPlayerSocId  The socket id of the next player
+###
 everyone.now.moveTimeUp = (nextPlayerSocId) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   group.now.receiveState(game.state)
   this.now.receiveMoveTimeUp()
   
 
-# client telling the server that he wants to move a dice from unallocated to required
-# index = index to the unallocated array
+###*
+ * client telling the server that he wants to move a dice from unallocated to required
+ * @param  {Number} index index to the unallocated array
+###
 everyone.now.moveToRequired = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -142,8 +187,11 @@ everyone.now.moveToRequired = (index) ->
     this.now.badMove(e)
     console.log e
 
-# client telling the server that he wants to move a dice from unallocated to optional
-# index = index to the unallocated array
+
+###*
+ * client telling the server that he wants to move a dice from unallocated to optional
+ * @param  {Number} index index to the unallocated array
+###
 everyone.now.moveToOptional = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -161,7 +209,10 @@ everyone.now.moveToOptional = (index) ->
     this.now.badMove(e)
     console.log e
 
-# client telling the server that he wants to move a dice to forbidden
+###*
+ * client telling the server that he wants to move a dice from unallocated to Forbidden
+ * @param  {Number} index index to the unallocated array
+###
 everyone.now.moveToForbidden = (index) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -180,7 +231,9 @@ everyone.now.moveToForbidden = (index) ->
     console.log e
   
 
-# client telling the server that he wants to make a now challenge
+###*
+ * client telling the server that he wants to make a now challenge
+###
 everyone.now.nowChallengeRequest = () ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -192,7 +245,10 @@ everyone.now.nowChallengeRequest = () ->
   group.now.receiveNowChallengeDecideTurn(game.playerManager.getPlayerIdBySocket(this.user.clientId))
   group.now.receiveState(game.state)
 
-# client telling the server that he wants to make a never challenge
+
+###*
+ * client telling the server that he wants to make a never challenge
+###
 everyone.now.neverChallengeRequest = () ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -205,7 +261,10 @@ everyone.now.neverChallengeRequest = () ->
   group.now.receiveState(game.state)
 
 
-# client telling the server that he has made a decision about the challenge
+
+###*
+ * client telling the server that he has made a decision about the challenge
+###
 everyone.now.challengeDecision = (agree) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   groupReference = group.now
@@ -262,7 +321,9 @@ everyone.now.challengeDecision = (agree) ->
     
 
 
-# client telling the server that he wants to submit a solution
+###*
+ * client telling the server that he wants to submit a solution
+###
 everyone.now.challengeSolution = (answer) ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   try
@@ -291,8 +352,9 @@ everyone.now.challengeSolution = (answer) ->
     console.log e
     
 
-
-# client telling the server that he is ready for next round
+###*
+ * client telling the server that he is ready for next round
+###
 everyone.now.nextRoundReady = ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   game.readyForNextRound(this.user.clientId)
@@ -302,18 +364,29 @@ everyone.now.nextRoundReady = ->
     group.now.receiveState(game.state)
     group.now.receiveGoalTurn(game.playerManager.players, game.globalDice, game.playerManager.getGoalSetterPlayerId(), Settings.goalSeconds)
   
+###*
+ * client telling the server that he wants to pause the turn timer
+###
 everyone.now.pauseTurnTimer = ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   game.pauseTurnTimer()
   group.now.receivePauseTurnTimer()
   group.now.receiveState(game.state)
 
+
+###*
+ * client telling the server that he wants to resume the turn timer
+###
 everyone.now.resumeTurnTimer = ->
   {game, group} = getThisGameGroup(this.now.gameNumber)
   game.resumeTurnTimer()
   group.now.receiveResumeTurnTimer()
   group.now.receiveState(game.state)
 
+
+###*
+ * client telling the server that he wants to skip the current players turn
+###
 everyone.now.skipTurn = ->
   console.log this.now.gameNumber
   {game, group} = getThisGameGroup(this.now.gameNumber)

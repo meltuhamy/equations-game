@@ -1,5 +1,7 @@
 class ErrorManager
 
+  # Error codes for errors that get sent to the client.
+  # Prevents writing magic numbers when checking for error types 
   @codes:
     parseError                  : 0
     parserTooManyDigits         : 1
@@ -25,7 +27,12 @@ class ErrorManager
     moveWithoutGoal             : 21
     notYourTurn                 : 22
 
-
+  ###*
+   * Throw an error. Add our error code information to error object.
+   * @param  {Integer} errorCode    An error code from ErrorManager.codes
+   * @param  {Json} jsonParams   A json of parameters to add to the error object.
+   * @param  {String} errorMessage A message added to the error object and put into error object constructor.
+  ###
   @throw: (errorCode, jsonParams, errorMessage) ->
     error = new Error(errorMessage)
     error.code = errorCode
