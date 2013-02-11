@@ -285,24 +285,21 @@ class Tutorial
       {
         modal: true
         header: "It's your turn"
-        content: "We must now make a move. Try clicking on one of the dice to move it to another area of the mat."
-      }
-      {
-        modal: false
+        content: "We must now make a move. This means moving a grey dice to another area, namely required, optional and forbidden..."
       }
       {
         modal: true
         header: "Forbidden, required and optional"
-        content: "As you can see, in a move, you can move a die to one of three areas of the board:
-        <ul>
-        <li>Forbidden: The forbidden section includes all dice that can not be used when forming a solution to the goal.</li> 
-        <li>Optional: You can use any number of optional dice to form the goal.</li>
-        <li>Required: You must use ALL of these dice when forming the goal.</li>
-        The idea is that when someone makes a 'challenge', you must use a combination of NONE of the forbidden dice, ANY of the optional dice and ALL of the required dice to form your solution to the goal.
-        </ul>
+        content: "When you click on a dice to make a move, you can move it to one of three areas of the board:
+        <br /><br /><p><span style='color:red'>Forbidden:</span> The forbidden section includes all dice that can not be used when forming a solution to the goal.</p> 
+        <br /><p><span style='color:green'>Optional:</span> You can use any number of optional dice to form the goal.</p>
+        <br /><p><span style='color:orange'>Required:</span> You must use ALL of these dice when forming the goal.</p>
+        <br /><br /><p>The idea is that when someone makes a 'challenge', you must use a combination of NONE of the forbidden dice, ANY of the optional dice and ALL of the required dice to form your solution to the goal.</p>
         "
       }
       {
+        tipselector: 'li.dice[data-index="1"]'
+        tipmessage: 'As an example, we want to make this dice required. <br />Click on it and move it to <span style="color:orange">required</span>.'
         modal: false
       }
 
