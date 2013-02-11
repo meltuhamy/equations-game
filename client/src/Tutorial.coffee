@@ -1,3 +1,6 @@
+###*
+ * class Tutorial
+###
 class Tutorial
   @window: undefined
   @windowOptions: undefined
@@ -198,106 +201,100 @@ class Tutorial
    * Adds all the steps of the tutorial system. These steps are added *in order*
   ###
   @initSteps: ->
-    @addStep
-      header: 'Welcome to the Equations Tutorial!'
-      content: 'Why hello there young chap. Welcome to Equations! In no time, you\'ll be up and running and ready to play'
-      modal: true
+    @addStep step for step in [
+      {
+        header: 'Welcome to the Equations Tutorial!'
+        content: 'Why hello there young chap. Welcome to Equations! In no time, you\'ll be up and running and ready to play'
+        modal: true
+      }
+      {
+        header: "The Lobby"
+        content: "We're now in the Lobby. Here, we get to see what games are available to join, or we could create our own game."
+      }
+      {
+        header: "Join a game"
+        content: "Let's get started! So there's a game that is available to join right now."
+        modal: true
+      }
+      {
+        modal: false
+        tipselector: 'tr[data-gamenumber="0"] td:first-child'
+        tipheading: 'Join this game'
+        tipmessage: 'Click here to join the game!'
+        callback: =>
+          @addStep 
+            id: "goal"
+            modal: true
+            header: "Goal setting"
+            content: "Great, we're in a game! You've been chosen to be the goal setter. Let's make the goal '1+2'."
+          @doStepWhenScreen GoalScreen, "goal"
+      }
+      {
+        modal: false
+        tipselector: 'li.dice[data-index="0"]'
+        tipmessage: 'Let\'s make the goal "1+2". Click this dice to add it to the goal.'
+      }
+      {
+        modal: false
+        tipselector: 'li.dice[data-index="19"]'
+        tipmessage: 'Finally, add the number "2" to the goal.'
+      }
+      {
+        modal: false
+        tipselector: '#sendgoal'
+        tipmessage: 'Great, now click here to submit the goal and start the game.'
+        callback: =>
+          @addStep
+            id: "game"
+            modal: true
+            header: "We're in!"
+            content: "We've finally started playing the game. Let me now show you around."
+          @doStepWhenScreen GameScreen, "game"
+      }
+      {
+        modal: false
+        tipselector: '#goal-ctnr'
+        tipmessage: 'This is the goal.'
+        tipnext: true
+      }
+      {
+        tipselector: '#dice_container'
+        tipmessage: 'These are the dice. We must use these to either prove that the goal is possible to achieve using these dice or impossible.'
+        tipnext: true        
+      }
+      {
+        tipselector: '#timer-knob-ctnr'
+        tipmessage: 'This is the turn timer. A player must make a move on the dice within this time if it is their turn.'
+        tipnext: true
+      }
+      {
+        tipselector: '#rough-area-board'
+        tipmessage: 'This is your personal rough area. Feel free to take notes and do rough working here.'
+        tipnext: true
+      }
+      {
+        modal: true
+        header: "It's your turn"
+        content: "We must now make a move. Try clicking on one of the dice to move it to another area of the mat."
+      }
+      {
+        modal: false
+      }
+      {
+        modal: true
+        header: "Forbidden, required and optional"
+        content: "As you can see, in a move, you can move a die to one of three areas of the board:
+        <ul>
+        <li>Forbidden: The forbidden section includes all dice that can not be used when forming a solution to the goal.</li> 
+        <li>Optional: You can use any number of optional dice to form the goal.</li>
+        <li>Required: You must use ALL of these dice when forming the goal.</li>
+        The idea is that when someone makes a 'challenge', you must use a combination of NONE of the forbidden dice, ANY of the optional dice and ALL of the required dice to form your solution to the goal.
+        </ul>
+        "
+      }
+      {
+        modal: false
+      }
 
-    @addStep 
-      header: "The Lobby"
-      content: "We're now in the Lobby. Here, we get to see what games are available to join, or we could create our own game."
-
-    @addStep 
-      header: "Join a game"
-      content: "Let's get started! So there's a game that is available to join right now."
-      modal: true
-
-    @addStep 
-      modal: false
-      tipselector: 'tr[data-gamenumber="0"] td:first-child'
-      tipheading: 'Join this game'
-      tipmessage: 'Click here to join the game!'
-      callback: =>
-        @addStep 
-          id: "goal"
-          modal: true
-          header: "Goal setting"
-          content: "Great, we're in a game! You've been chosen to be the goal setter. Let's make the goal '1+2'."
-        @doStepWhenScreen GoalScreen, "goal"
-
-    @addStep
-      modal: false
-      tipselector: 'li.dice[data-index="0"]'
-      tipmessage: 'Let\'s make the goal "1+2". Click this dice to add it to the goal.'
-
-    @addStep
-      modal: false
-      tipselector: 'li.dice[data-index="4"]'
-      tipmessage: 'Cool, we can see that "1" has been added below. Now let\'s add "+".'
-
-    @addStep
-      modal: false
-      tipselector: 'li.dice[data-index="19"]'
-      tipmessage: 'Finally, add the number "2" to the goal.'
-
-    @addStep
-      modal: false
-      tipselector: '#sendgoal'
-      tipmessage: 'Great, now click here to submit the goal and start the game.'
-      callback: =>
-        @addStep
-          id: "game"
-          modal: true
-          header: "We're in!"
-          content: "We've finally started playing the game. Let me now show you around."
-        @doStepWhenScreen GameScreen, "game"
-
-    @addStep
-      modal: false
-      tipselector: '#goal-ctnr'
-      tipmessage: 'This is the goal.'
-      tipnext: true
-
-    @addStep
-      tipselector: '#dice_container'
-      tipmessage: 'These are the dice. We must use these to either prove that the goal is possible to achieve using these dice or impossible.'
-      tipnext: true
-
-    @addStep
-      tipselector: '#player-list'
-      tipmessage: 'This shows you the players who are in the game. The player highlighted in orange is the player whose turn it currently is.'
-      tipnext: true
-
-    @addStep
-      tipselector: '#timer-knob-ctnr'
-      tipmessage: 'This is the turn timer. A player must make a move on the dice within this time if it is their turn.'
-      tipnext: true
-
-    @addStep
-      tipselector: '#rough-area-board'
-      tipmessage: 'This is your personal rough area. Feel free to take notes and do rough working here.'
-      tipnext: true
-
-    @addStep
-      modal: true
-      header: "It's your turn"
-      content: "We must now make a move. Try clicking on one of the dice to move it to another area of the mat."
-
-    @addStep
-      modal: false
-
-    @addStep
-      modal: true
-      header: "Forbidden, required and optional"
-      content: "As you can see, in a move, you can move a die to one of three areas of the board:
-      <ul>
-      <li>Forbidden: The forbidden section includes all dice that can not be used when forming a solution to the goal.</li> 
-      <li>Optional: You can use any number of optional dice to form the goal.</li>
-      <li>Required: You must use ALL of these dice when forming the goal.</li>
-      The idea is that when someone makes a 'challenge', you must use a combination of NONE of the forbidden dice, ANY of the optional dice and ALL of the required dice to form your solution to the goal.
-      </ul>
-      "
-
-    @addStep
-      modal: false
-      
+    ]
+    return true
