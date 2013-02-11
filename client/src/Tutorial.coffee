@@ -236,6 +236,11 @@ class Tutorial
       }
       {
         modal: false
+        tipselector: 'li.dice[data-index="4"]'
+        tipmessage: 'Cool, we can see that "1" has been added below. Now let\'s add "+".'
+      }
+      {
+        modal: false
         tipselector: 'li.dice[data-index="19"]'
         tipmessage: 'Finally, add the number "2" to the goal.'
       }
@@ -261,6 +266,11 @@ class Tutorial
         tipselector: '#dice_container'
         tipmessage: 'These are the dice. We must use these to either prove that the goal is possible to achieve using these dice or impossible.'
         tipnext: true        
+      }
+      {
+        tipselector: '#player-list'
+        tipmessage: 'This shows you the players who are in the game. The player highlighted in orange is the player whose turn it currently is.'
+        tipnext: true
       }
       {
         tipselector: '#timer-knob-ctnr'
