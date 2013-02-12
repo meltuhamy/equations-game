@@ -5,11 +5,12 @@
 class TutorialNetwork extends Network
   ###** @override ###
   initialise: ->
-    now.ready ->
-      Game.onConnection()
+    @moveToRequiredOrdering = [1]
+    Game.onConnection()
+
   ###** @override ###      
   sendGameListRequest: () ->
-    now.getGames()
+    console.warn("game list request in tutorial")
 
   ###** @override ###
   sendCreateGameRequest: (gameName, numberPlayers, playerName) ->
@@ -55,32 +56,32 @@ class TutorialNetwork extends Network
 
   ###** @override ###
   moveToRequired: (index) ->
-    now.moveToRequired(index)
+    console.warn("move to required in tutorial")
 
   ###** @override ###
   moveToOptional: (index) ->
-    now.moveToOptional(index)
+    console.warn("move to optional in tutorial")
 
   ###** @override ###
   moveToForbidden: (index) ->
-    now.moveToForbidden(index)
+    console.warn("move to forbidden in tutorial")
 
   ###** @override ###
   sendNowChallengeRequest: () ->
-    now.nowChallengeRequest()
+    console.warn("now challenge in tutorial")
 
   ###** @override ###
   sendNeverChallengeRequest: () ->
-    now.neverChallengeRequest()
+    console.warn("never challenge in tutorial")
 
   ###** @override ###
   sendChallengeDecision: (agree) ->
-    now.challengeDecision(agree)
+    console.warn("agreed with challenge in tutorial")
 
   ###** @override ###
   sendChallengeSolution: (answer) ->
-    now.challengeSolution(answer)
+    console.warn("sent answer in tutorial")
 
   ###** @override ###
   sendNextRoundReady: () ->
-    now.nextRoundReady()
+    console.warn("next round ready in tutorial")
