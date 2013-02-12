@@ -1,4 +1,3 @@
-config = require('./config.js')
 express = require("express")
 http = require('http')
 nowjs = require("now")
@@ -15,12 +14,10 @@ app.get('/views/:viewName', (req, res) ->
   res.sendfile(__dirname + "/views/#{req.params.viewName}")
 )
 
-if config.inCloudEditor? and config.inCloudEditor
-  console.log "In C9 environment. port: #{process.env.PORT}; host: #{process.env.IP}"
-  server.listen(process.env.PORT, process.env.IP)
-else
-  server.listen(8080)
-console.log "Listening"
+port = if process.env.PORT? then process.env.PORT else '8080'
+ip = if process.env.IP then process.env.IP else '127.0.0.1'
+server.listen(port, ip)
+console.log("Listening on #{ip}:#{port}")
 
 isDebug = 'debug' in process.argv
 if isDebug then console.warn "DEBUG MODE IS ON"
