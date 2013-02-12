@@ -1,6 +1,5 @@
 
 # Load the user's config file and get the required names of programs
-config = require('./config.js')
 myCoffee = './node_modules/coffee-script/bin/coffee'
 myStylus = './node_modules/stylus/bin/stylus'
 myJnode  = './node_modules/jasmine-node/bin/jasmine-node'
