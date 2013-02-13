@@ -5,7 +5,9 @@
 class TutorialNetwork extends Network
   ###** @override ###
   initialise: ->
-    @moveToRequiredOrdering = [1]
+    # The next two lines are used for the moving dice to required dice.
+    @allowedMoves = [{type: 'required', index:0}] 
+    @allowedMoveIndex = 0;
     Game.onConnection()
 
   ###** @override ###      
@@ -35,7 +37,7 @@ class TutorialNetwork extends Network
     if screen instanceof TutorialGoalScreen and screen.nextTargetIndex is screen.allowedIndices.length
       goalArray = screen.allowedIndices
       myunallocated = []
-      allindices = [1..23]
+      allindices = [0..23]
       myunallocated.push i for i in allindices when not (i in screen.allowedIndices)
       state =
         unallocated: myunallocated
@@ -57,6 +59,29 @@ class TutorialNetwork extends Network
   ###** @override ###
   moveToRequired: (index) ->
     console.warn("move to required in tutorial")
+    nextMove = @allowedMoves[@allowedMoveIndex]
+    if nextMove.type is 'required' and index is nextMove.index
+      now.receiveMoveToRequired(0, 0)
+      state = 
+        unallocated:[2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23]
+        required:[1]
+        optional:[]
+        forbidden:[]
+        currentPlayer:0
+        turnNumber:2
+        possiblePlayers:[]
+        impossiblePlayers:[]
+        turnStartTime:Date.now()
+        turnDuration:99
+        playerScores:[0,0]
+        readyForNextRound:[],
+        currentRound:1
+        numRounds:2
+        turnEndTime:Date.now()
+      now.receiveState(state)
+      Tutorial.doStep()
+      @allowedMoveIndex++
+
 
   ###** @override ###
   moveToOptional: (index) ->

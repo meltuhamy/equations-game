@@ -302,6 +302,17 @@ class Tutorial
         tipmessage: 'As an example, we want to make this dice required. <br />Click on it and move it to <span style="color:orange">required</span>.'
         modal: false
       }
+      {
+        modal: true
+        header: "2 is now required"
+        content: "We moved the '2' to required. What this means is that when someone thinks they have found a solution, they <strong>must</strong> use this dice and <strong>all</strong> other dice in required."
+      }
+      {
+        tipselector: 'li.dice[data-index="1"]'
+        tipmessage: 'We can see that the two is now orange, meaning it is now required.'
+        tipnext: true
+        modal: false
+      }
 
     ]
     return true
